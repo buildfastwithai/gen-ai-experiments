@@ -18,19 +18,19 @@ Welcome to the Gen-AI-Experiments repository! This collection of Jupyter noteboo
 
 This notebook provides a step-by-step guide on how to use the Gemini 1.5 Flash model with Portkey. You'll learn how to set up the environment, load the model, and perform inference.
 
-- **File**: [How_to_use_Gemini_1_5_Flash_with_Portkey.ipynb](How_to_use_Gemini_1_5_Flash_with_Portkey.ipynb)
+- **File**: [How_to_use_Gemini_1_5_Flash_with_Portkey.ipynb](Experiments/How_to_use_Gemini_1_5_Flash_with_Portkey.ipynb)
 
 ### Image Processing Using Vision Models
 
 Explore the capabilities of various vision models for image processing tasks. This notebook includes examples of image classification, object detection, and segmentation.
 
-- **File**: [Image_processing_using_Vision-Models.ipynb](Image_processing_using_Vision-Models.ipynb)
+- **File**: [Image_processing_using_Vision-Models.ipynb](Experiments/Image_processing_using_Vision-Models.ipynb)
 
 ### Introduction to Guardrails
 
 Guardrails are essential for ensuring the robustness and safety of AI models. This notebook introduces you to the concept of guardrails and demonstrates how to implement them in your projects.
 
-- **File**: [Introduction_to_Guardrails.ipynb](Introduction_to_Guardrails.ipynb)
+- **File**: [Introduction_to_Guardrails.ipynb](Experiments/Introduction_to_Guardrails.ipynb)
 
 ### Introduction to Phidata
 
@@ -42,13 +42,13 @@ Phidata is a powerful tool for data management and analysis. This notebook cover
 
 Learn how to generate questions automatically using the Educhain framework. This notebook walks you through the process of setting up Educhain and generating various types of questions.
 
-- **File**: [Question_generation_using_educhain.ipynb](Question_generation_using_educhain.ipynb)
+- **File**: [Question_generation_using_educhain.ipynb](Experiments/Question_generation_using_educhain.ipynb)
 
 ### Using Discriminator Guardrails v2
 
 Discover the advanced techniques for using discriminator guardrails to improve the performance and safety of your AI models. This notebook provides detailed examples and best practices.
 
-- **File**: [Using_discriminator_guardrails_v2.ipynb](Using_discriminator_guardrails_v2.ipynb)
+- **File**: [Using_discriminator_guardrails_v2.ipynb](Experiments/Using_discriminator_guardrails_v2.ipynb)
 
 ## Getting Started
 
