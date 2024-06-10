@@ -55,5 +55,5 @@ Discover the advanced techniques for using discriminator guardrails to improve t
 To get started with these notebooks, clone the repository and open the notebooks in Jupyter or any other compatible environment.
 
 ```bash
-git clone https://github.com/yourusername/gen-ai-experiments.git
-cd gen-ai-experiments
+git clone https://github.com/buildfastwithai/gen-ai-experiments.git 
+cd Experiments
