@@ -6,12 +6,18 @@ Welcome to the Gen-AI-Experiments repository! This collection of Jupyter noteboo
 
 ## Table of Contents
 
-- [How to Use Gemini 1.5 Flash with Portkey](#how-to-use-gemini-15-flash-with-portkey)
-- [Image Processing Using Vision Models](#image-processing-using-vision-models)
-- [Introduction to Guardrails](#introduction-to-guardrails)
-- [Introduction to Phidata](#introduction-to-phidata)
-- [Question Generation Using Educhain](#question-generation-using-educhain)
-- [Using Discriminator Guardrails v2](#using-discriminator-guardrails-v2)
+- [gen-ai-experiments](#gen-ai-experiments)
+- [Gen-AI-Experiments](#gen-ai-experiments-1)
+  - [Table of Contents](#table-of-contents)
+  - [Notebooks](#notebooks)
+    - [How to Use Gemini 1.5 Flash with Portkey](#how-to-use-gemini-15-flash-with-portkey)
+    - [Image Processing Using Vision Models](#image-processing-using-vision-models)
+    - [Introduction to Guardrails](#introduction-to-guardrails)
+    - [Introduction to Phidata](#introduction-to-phidata)
+    - [Question Generation Using Educhain](#question-generation-using-educhain)
+    - [Using Discriminator Guardrails v2](#using-discriminator-guardrails-v2)
+    - [Medical Chatbot using Mistal-7B model and llamaindex](#medical-chatbot-using-mistal-7b-model-and-llamaindex)
+  - [Getting Started](#getting-started)
 
 ## Notebooks
 
@@ -51,6 +57,12 @@ Discover the advanced techniques for using discriminator guardrails to improve t
 
 - **File**: [Using_discriminator_guardrails_v2.ipynb](Using_discriminator_guardrails_v2.ipynb)
 
+### Medical Chatbot using Mistal-7B model and llamaindex
+
+Learn how to create a medical chatbot using Mistal-7B model and llamaindex using your own custom data.
+
+- **File**: [Medical_Bot_using_Mistral7_and_llamaindex.ipynb](Medical_Bot_using_Mistral7_and_llamaindex.ipynb)
+- 
 ## Getting Started
 
 To get started with these notebooks, clone the repository and open the notebooks in Jupyter or any other compatible environment.
