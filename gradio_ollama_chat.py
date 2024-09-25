@@ -4,7 +4,7 @@ from langchain.schema import AIMessage, HumanMessage
 import gradio as gr 
 
 # Initialize the language model
-llm = ChatOllama(model="gemma2:2b")  # Create an instance of ChatOllama using the Gemma 2B model
+llm = ChatOllama(model="llama3.2:3b")  # Create an instance of ChatOllama using the Llama 3.2 3B model
 
 # Define the prediction function
 def predict(message, history):
