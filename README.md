@@ -60,10 +60,10 @@ This repository is a structured collection of **Jupyter notebooks** and AI exper
    ```
 3. Navigate to the relevant folder and start experimenting! 🚀
 
-##🌟 Pro Tip
+## 🌟 Pro Tip
 If you find this repository useful, don’t forget to 🌟 Star this repo! Your support helps us create even more valuable resources.
 
-##🌐 Contribution
+## 🌐 Contribution
 We welcome contributions! Here's how you can contribute:
 
 - **Report Bugs**: Open an issue for any problems or improvements.
