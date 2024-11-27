@@ -51,7 +51,7 @@ This repository is a structured collection of **Jupyter notebooks** and AI exper
 
 1. Clone this repository:  
    ```bash
-   git clone https://github.com/yourusername/Gen-AI-Experiments.git
+   git clone https://github.com/buildfastwithai/gen-ai-experiments.git
    cd Gen-AI-Experiments
 
 2. Install the required dependencies:  
