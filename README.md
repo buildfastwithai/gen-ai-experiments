@@ -1,6 +1,6 @@
 # Gen-AI-Experiments
 
-Welcome to the **Gen-AI-Experiments** repository! 🚀  
+Welcome to the **Gen-AI-Experiments** repository!🚀  
 This repository is a structured collection of **Jupyter notebooks** and AI experiments designed to guide users through various AI tools, frameworks, and models. Whether you're a beginner or an experienced practitioner, this repository offers something valuable for everyone!
 
 ---
