@@ -7,6 +7,9 @@ This repository is a structured collection of **Jupyter notebooks** and AI exper
 
 ## 📂 Folder Structure
 
+- **100-OS-Libraries**  
+  A curated collection of 100 essential open-source libraries with practical examples and use cases.
+
 - **AI-agents**  
   Contains notebooks and scripts for building intelligent agents, including examples for **JEE preparation** and **travel assistance**.
 
