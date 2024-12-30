@@ -1,11 +1,30 @@
-# Gen-AI-Experiments
+<p align="center">
+  <a href="https://www.buildfastwithai.com/">
+    <img src="https://github.com/shubh-vedi/gen-ai-experiments/blob/main/Banner.png" width="900px" alt="BuildFastWithAI">
+  </a>
+</p>
+
+
+<p align="center">
+  <a href="https://www.linkedin.com/company/build-fast-with-ai/">
+    <img src="https://img.shields.io/badge/-Follow%20BuildFast%20With%20AI-blue?logo=linkedin&style=flat-square" alt="LinkedIn">
+  </a>
+  <a href="https://x.com/BuildFastWithAI">
+    <img src="https://img.shields.io/twitter/follow/BuildFastWithAI" alt="Twitter">
+  </a>
+</p>
+
+<hr/>
+
+# 🌟 Gen-AI-Experiments
 
 Welcome to the **Gen-AI-Experiments** repository! 🚀  
 This repository is a structured collection of **Jupyter notebooks** and AI experiments designed to guide users through various AI tools, frameworks, and models. Whether you're a beginner or an experienced practitioner, this repository offers something valuable for everyone!
 
----
-
 ## 📂 Folder Structure
+
+- **100-OS-Libraries**  
+  A curated collection of 100 essential open-source libraries with practical examples and use cases.
 
 - **AI-agents**  
   Contains notebooks and scripts for building intelligent agents, including examples for **JEE preparation** and **travel assistance**.
@@ -25,8 +44,6 @@ This repository is a structured collection of **Jupyter notebooks** and AI exper
 - **educhain-experiments**  
   Dedicated to experiments and use cases for AI in educational domains and blockchain integration.
 
----
-
 ## 🌟 What You'll Learn
 
 - **AI Agents**: How to build intelligent systems for specific tasks.  
@@ -34,8 +51,6 @@ This repository is a structured collection of **Jupyter notebooks** and AI exper
 - **RAG Systems**: Techniques for combining retrieval systems with language models for enhanced performance.  
 - **Real-World Applications**: Practical examples of AI in **education**, **automation**, and **data analysis**.  
 - **Open-Source Tools**: Hands-on usage of popular open-source libraries.  
-
----
 
 ## 🛠️ Tools & Frameworks
 
@@ -45,20 +60,20 @@ This repository is a structured collection of **Jupyter notebooks** and AI exper
 - **Visualization Tools**: Matplotlib, Seaborn  
 - **Libraries**: Hugging Face, PyTorch, TensorFlow  
 
----
-
 ## 🚀 Getting Started
 
-1. Clone this repository:  
+1. **Clone this repository**:  
    ```bash
    git clone https://github.com/buildfastwithai/gen-ai-experiments.git
    cd Gen-AI-Experiments
+   ```
 
-2. Install the required dependencies:  
+2. **Install the required dependencies**:  
    ```bash
    pip install -r requirements.txt
    ```
-3. Navigate to the relevant folder and start experimenting! 🚀
+
+3. **Navigate to the relevant folder and start experimenting!** 🚀
 
 ## 🌟 Pro Tip
 If you find this repository useful, don’t forget to 🌟 Star this repo! Your support helps us create even more valuable resources.
@@ -74,6 +89,6 @@ We welcome contributions! Here's how you can contribute:
 This repository is licensed under the MIT License. Feel free to use, modify, and share it in your projects—just don’t forget to give credit!
 
 ## 💬 Stay Connected
-For questions, suggestions, or collaborations, feel free to reach out via [email/contact link] or create an issue in this repository.
+For questions, suggestions, or collaborations, feel free to reach out via satvik@buildfastwithai.com or create an issue in this repository.
 
 Happy experimenting! 🤖✨
