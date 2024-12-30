@@ -9,6 +9,7 @@
   <a href="https://www.linkedin.com/company/build-fast-with-ai/">
     <img src="https://img.shields.io/badge/-Follow%20BuildFast%20With%20AI-blue?logo=linkedin&style=flat-square" alt="LinkedIn">
   </a>
+  
   <a href="https://x.com/BuildFastWithAI">
     <img src="https://img.shields.io/twitter/follow/BuildFastWithAI" alt="Twitter">
   </a>
