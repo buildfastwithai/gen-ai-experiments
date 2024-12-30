@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://www.buildfastwithai.com/">
-    <img src="docs/banner/unwind_black.png" width="900px" alt="BuildFastWithAI">
+    <img src="https://github.com/shubh-vedi/gen-ai-experiments/blob/main/Banner.png" width="900px" alt="BuildFastWithAI">
   </a>
 </p>
 
