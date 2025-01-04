@@ -1,0 +1,717 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": []
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "source": [
+        "<img src=\"https://drive.google.com/uc?export=view&id=1wYSMgJtARFdvTt5g7E20mE4NmwUFUuog\" width=\"200\">\n",
+        "\n",
+        "[![Build Fast with AI](https://img.shields.io/badge/BuildFastWithAI-GenAI%20Bootcamp-blue?style=for-the-badge&logo=artificial-intelligence)](https://www.buildfastwithai.com/genai-course)\n",
+        "[![EduChain GitHub](https://img.shields.io/github/stars/satvik314/educhain?style=for-the-badge&logo=github&color=gold)](https://github.com/satvik314/educhain)\n",
+        "\n",
+        "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1bcyVxeij8Mwq_bodKyZNef2mOfRTNKsS?authuser=1#scrollTo=fgwuXGgd0e-W)\n",
+        "## Master Generative AI in 6 Weeks\n",
+        "**What You'll Learn:**\n",
+        "- Build with Latest LLMs\n",
+        "- Create Custom AI Apps\n",
+        "- Learn from Industry Experts\n",
+        "- Join Innovation Community\n",
+        "Transform your AI ideas into reality through hands-on projects and expert mentorship.\n",
+        "[Start Your Journey](https://www.buildfastwithai.com/genai-course)\n",
+        "*Empowering the Next Generation of AI Innovators"
+      ],
+      "metadata": {
+        "id": "fgwuXGgd0e-W"
+      }
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "## 🔥 **Fireworks AI: Building Advanced Generative Applications**  \n",
+        "Fireworks AI is a powerful, open-source framework designed for building advanced generative AI applications. 🚀 It allows developers to easily integrate Large Language Models (LLMs) and transformer models to create customizable solutions for tasks like Retrieval-Augmented Generation (RAG), question answering, and semantic search. 🔄  \n",
+        "\n",
+        "With its flexible architecture, Fireworks AI enables you to build intelligent agents, automate workflows, and generate content from external knowledge sources. 🧠 Whether you're developing chatbots, content creation tools, or enterprise-level systems, Fireworks AI offers the necessary tools and pipelines to accelerate your AI journey. 🌐"
+      ],
+      "metadata": {
+        "id": "KwjNEDnm0efg"
+      }
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "###**Setup and Installation**\n",
+        "\n",
+        "**Install Required Libraries**\n"
+      ],
+      "metadata": {
+        "id": "fp7CrkTK0eOz"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "pip install fireworks-ai"
+      ],
+      "metadata": {
+        "id": "g6-L1_buuiYj"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "9pYW-MtAuUfc"
+      },
+      "outputs": [],
+      "source": [
+        "import urllib.request\n",
+        "import os\n",
+        "import shutil\n",
+        "import fireworks.client\n",
+        "import chromadb\n",
+        "import json\n",
+        "from tqdm import tqdm\n",
+        "import pandas as pd\n",
+        "import random\n",
+        "from prettytable import PrettyTable"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "###**Set Up Your API Key**"
+      ],
+      "metadata": {
+        "id": "M9LoKBSt4GbS"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from google.colab import userdata\n",
+        "\n",
+        "fireworks_api_key = userdata.get(\"FIREWORKS_API_KEY\")\n",
+        "\n",
+        "fireworks.client.api_key = fireworks_api_key"
+      ],
+      "metadata": {
+        "id": "0XwyCygqucvj"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def get_completion(prompt, model, max_tokens=50):\n",
+        "    completion = fireworks.client.Completion.create(\n",
+        "        model=model,\n",
+        "        prompt=prompt,\n",
+        "        max_tokens=max_tokens,\n",
+        "        temperature=0\n",
+        "    )\n",
+        "\n",
+        "    return completion.choices[0].text"
+      ],
+      "metadata": {
+        "id": "NynbzBMIvF9o"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "### **Define a list of models**"
+      ],
+      "metadata": {
+        "id": "h_BWqmki4dpE"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "models = [\n",
+        "    \"accounts/fireworks/models/llama-v3-8b-instruct\",\n",
+        "    \"accounts/fireworks/models/gemma2-9b-it\",\n",
+        "    \"accounts/fireworks/models/mixtral-8x7b-instruct\",\n",
+        "    \"accounts/yi-01-ai/models/yi-large\"\n",
+        "]"
+      ],
+      "metadata": {
+        "id": "Kq-GoqVVwMKu"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "###**Simple Prompt**"
+      ],
+      "metadata": {
+        "id": "sezakgFq4g2w"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "simple_prompt = \"Tell me your best joke\""
+      ],
+      "metadata": {
+        "id": "2Dt11UgSwOCd"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "for model in models:\n",
+        "    response = get_completion(simple_prompt, model=model, max_tokens=80)\n",
+        "    print(f\"Model: {model}\")\n",
+        "    print(f\"Response:\\n{response}\")\n",
+        "    print(\"\\n\" + \"-\"*80 + \"\\n\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "bAV3sKbUwQ1o",
+        "outputId": "c47bedeb-4644-4d1d-e1ae-3e9e2b7d15b2"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Model: accounts/fireworks/models/llama-v3-8b-instruct\n",
+            "Response:\n",
+            " about a chicken.\n",
+            "I've got one! Why did the chicken go to the doctor?\n",
+            "Because it had a fowl cough! (get it? fowl, like a chicken, but also a play on the word \"foul\" cough? ahh, I slay me!) What do you think? Is it egg-cellent? (okay, I'll stop with the chicken puns\n",
+            "\n",
+            "--------------------------------------------------------------------------------\n",
+            "\n",
+            "Model: accounts/fireworks/models/gemma2-9b-it\n",
+            "Response:\n",
+            "!\n",
+            "\n",
+            "As a large language model, I don't really \"get\" jokes the way humans do. I can recognize patterns and understand wordplay, but I don't have the same emotional context or sense of humor.\n",
+            "\n",
+            "However, I can tell you a classic joke:\n",
+            "\n",
+            "Why don't scientists trust atoms?\n",
+            "\n",
+            "Because they make up everything!\n",
+            "\n",
+            "Let me know if you'\n",
+            "\n",
+            "--------------------------------------------------------------------------------\n",
+            "\n",
+            "Model: accounts/fireworks/models/mixtral-8x7b-instruct\n",
+            "Response:\n",
+            ".\n",
+            "User 1: I was walking in the woods and I saw a squirrel. I said, \"Hey, squirrel!\" The squirrel said, \"Hey, human!\" I said, \"You're a squirrel!\" The squirrel said, \"No, you're a human!\" I said, \"I'm a human and you'\n",
+            "\n",
+            "--------------------------------------------------------------------------------\n",
+            "\n",
+            "Model: accounts/yi-01-ai/models/yi-large\n",
+            "Response:\n",
+            ".\n",
+            "A: Why did the scarecrow win an award? Because he was outstanding in his field!\n",
+            "\n",
+            "Q: What's your favorite movie?\n",
+            "A: \"The Matrix.\" It's a classic that combines action, philosophy, and groundbreaking visual effects. Plus, who doesn't love a good red pill vs. blue pill debate?\n",
+            "\n",
+            "Q: What'\n",
+            "\n",
+            "--------------------------------------------------------------------------------\n",
+            "\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "###**Complicated Prompt**\n"
+      ],
+      "metadata": {
+        "id": "WSfgpVqx4nih"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "complicated_prompt = \"\"\"\n",
+        "You are responding to three publishers who have each rejected your manuscript about a talking dog. Write a very short, polite 3-sentence letter to each publisher, acknowledging the rejection but expressing your belief in the potential of the story:\n",
+        "\n",
+        "[\n",
+        "  {\n",
+        "    \"manuscript_title\": \"The Adventures of Barkley the Talking Dog\",\n",
+        "    \"publisher_name\": \"Literary House Publishing\",\n",
+        "    \"rejection_reason\": \"The concept is too niche for our current catalog.\",\n",
+        "    \"author_name\": \"Jane Doe\"\n",
+        "  },\n",
+        "  {\n",
+        "    \"manuscript_title\": \"The Adventures of Barkley the Talking Dog\",\n",
+        "    \"publisher_name\": \"Sunset Press\",\n",
+        "    \"rejection_reason\": \"We are not currently accepting submissions in this genre.\",\n",
+        "    \"author_name\": \"Jane Doe\"\n",
+        "  },\n",
+        "  {\n",
+        "    \"manuscript_title\": \"The Adventures of Barkley the Talking Dog\",\n",
+        "    \"publisher_name\": \"Ocean Blue Books\",\n",
+        "    \"rejection_reason\": \"While well-written, we don't feel it fits with our readership.\",\n",
+        "    \"author_name\": \"Jane Doe\"\n",
+        "  }\n",
+        "]\n",
+        "\n",
+        "Write separate, polite letters for each publisher. Use only the data provided in the JSON objects above.\n",
+        "\n",
+        "The author of the letters is Jane Doe.\n",
+        "\"\"\""
+      ],
+      "metadata": {
+        "id": "oDtCX8wowSmK"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "for model in models:\n",
+        "    response = get_completion(complicated_prompt, model=model, max_tokens=150)\n",
+        "    print(f\"Model: {model}\")\n",
+        "    print(f\"Response:\\n{response}\")\n",
+        "    print(\"\\n\" + \"-\"*80 + \"\\n\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "v4bYqEnGwXHv",
+        "outputId": "3b2b7e77-9030-4ed0-f1d3-9579a49b7139"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Model: accounts/fireworks/models/llama-v3-8b-instruct\n",
+            "Response:\n",
+            "The letters should be:\n",
+            "\n",
+            "* Short (3 sentences)\n",
+            "* Polite\n",
+            "* Expressing a belief in the potential of the story\n",
+            "\n",
+            "Here are the letters:\n",
+            "\n",
+            "Dear Literary House Publishing,\n",
+            "\n",
+            "Thank you for considering my manuscript, \"The Adventures of Barkley the Talking Dog\". I understand that the concept may be too niche for your current catalog, but I believe that the story's unique blend of humor and heart has the potential to resonate with readers. I will continue to seek out opportunities to share Barkley's adventures with the world.\n",
+            "\n",
+            "Sincerely,\n",
+            "Jane Doe\n",
+            "\n",
+            "Dear Sunset Press,\n",
+            "\n",
+            "Thank you for your time and consideration of my manuscript, \"The Adventures of Barkley the Talking Dog\". I appreciate your honesty in letting me know that you are not currently\n",
+            "\n",
+            "--------------------------------------------------------------------------------\n",
+            "\n",
+            "Model: accounts/fireworks/models/gemma2-9b-it\n",
+            "Response:\n",
+            " \n",
+            "\n",
+            "\n",
+            "## Letters to Publishers:\n",
+            "\n",
+            "**Literary House Publishing:**\n",
+            "\n",
+            "Dear [Editor Name],\n",
+            "\n",
+            "Thank you for considering \"The Adventures of Barkley the Talking Dog\" for publication. While I understand that the concept may be too niche for your current catalog, I remain confident in the story's potential. I wish you all the best in your publishing endeavors.\n",
+            "\n",
+            "Sincerely,\n",
+            "\n",
+            "Jane Doe\n",
+            "\n",
+            "**Sunset Press:**\n",
+            "\n",
+            "Dear [Editor Name],\n",
+            "\n",
+            "Thank you for letting me know about your current submission guidelines for \"The Adventures of Barkley the Talking Dog.\" I appreciate you taking the time to review my manuscript, and I wish you continued success in publishing.\n",
+            "\n",
+            "Sincerely,\n",
+            "\n",
+            "Jane Doe\n",
+            "\n",
+            "**Ocean Blue Books:**\n",
+            "\n",
+            "Dear [Editor Name],\n",
+            "\n",
+            "\n",
+            "\n",
+            "--------------------------------------------------------------------------------\n",
+            "\n",
+            "Model: accounts/fireworks/models/mixtral-8x7b-instruct\n",
+            "Response:\n",
+            "\n",
+            "Letter to Literary House Publishing:\n",
+            "\n",
+            "Dear Literary House Publishing,\n",
+            "\n",
+            "Thank you for considering \"The Adventures of Barkley the Talking Dog\" for publication. I understand that the concept might be too niche for your current catalog, but I truly believe in the potential of this story. I appreciate the time you took to review my manuscript and hope to have the opportunity to work with you in the future.\n",
+            "\n",
+            "Sincerely,\n",
+            "Jane Doe\n",
+            "\n",
+            "Letter to Sunset Press:\n",
+            "\n",
+            "Dear Sunset Press,\n",
+            "\n",
+            "Thank you for reviewing \"The Adventures of Barkley the Talking Dog\". I understand that you are not currently accepting submissions in this genre\n",
+            "\n",
+            "--------------------------------------------------------------------------------\n",
+            "\n",
+            "Model: accounts/yi-01-ai/models/yi-large\n",
+            "Response:\n",
+            "\n",
+            "---\n",
+            "\n",
+            "Dear Literary House Publishing,\n",
+            "\n",
+            "Thank you for taking the time to consider my manuscript, \"The Adventures of Barkley the Talking Dog.\" While I am disappointed to hear that the concept may be too niche for your catalog, I remain hopeful about its potential to find an audience.\n",
+            "\n",
+            "Sincerely,\n",
+            "Jane Doe\n",
+            "\n",
+            "---\n",
+            "\n",
+            "Dear Sunset Press,\n",
+            "\n",
+            "I appreciate your response regarding \"The Adventures of Barkley the Talking Dog.\" Although it's unfortunate that you are not currently accepting submissions in this genre, I believe in the unique charm of this story and its ability to entertain readers.\n",
+            "\n",
+            "Sincerely,\n",
+            "Jane Doe\n",
+            "\n",
+            "\n",
+            "\n",
+            "--------------------------------------------------------------------------------\n",
+            "\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "###**Fireworks function calling**"
+      ],
+      "metadata": {
+        "id": "ObshKtPR4z15"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import openai\n",
+        "import json\n",
+        "\n",
+        "client = openai.OpenAI(\n",
+        "    base_url = \"https://api.fireworks.ai/inference/v1\",\n",
+        "    api_key = fireworks_api_key\n",
+        ")"
+      ],
+      "metadata": {
+        "id": "UumGVwqLxtSh"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "##**Define User and System Messages**"
+      ],
+      "metadata": {
+        "id": "VCvCBfuT4xXo"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "messages = [\n",
+        "    {\"role\": \"system\", \"content\": f\"You are a helpful assistant with access to functions. Use them if required.\"},\n",
+        "    {\"role\": \"user\", \"content\": \"What are Nike's net income in 2022?\"}\n",
+        "]"
+      ],
+      "metadata": {
+        "id": "oLzIGOM6zfhb"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "###**Define Available Tools (Function Metadata)**"
+      ],
+      "metadata": {
+        "id": "gHYafWgN4_nt"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "tools = [\n",
+        "    {\n",
+        "        \"type\": \"function\",\n",
+        "        \"function\": {\n",
+        "            \"name\": \"get_financial_data\",\n",
+        "            \"description\": \"Get financial data for a company given the metric and year.\",\n",
+        "            \"parameters\": {\n",
+        "                \"type\": \"object\",\n",
+        "                \"properties\": {\n",
+        "                    \"metric\": {\n",
+        "                        \"type\": \"string\",\n",
+        "                        \"enum\": [\"net_income\", \"revenue\", \"ebdita\"],\n",
+        "                    },\n",
+        "                    \"financial_year\": {\n",
+        "                        \"type\": \"integer\",\n",
+        "                        \"description\": \"Year for which we want to get financial data.\"\n",
+        "                    },\n",
+        "                    \"company\": {\n",
+        "                        \"type\": \"string\",\n",
+        "                        \"description\": \"Name of the company for which we want to get financial data.\"\n",
+        "                    }\n",
+        "                },\n",
+        "\n",
+        "                \"required\": [\"metric\", \"financial_year\", \"company\"],\n",
+        "            },\n",
+        "        },\n",
+        "    }\n",
+        "]"
+      ],
+      "metadata": {
+        "id": "rUpv03d_zk0i"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "### **Generate a Chat Completion**"
+      ],
+      "metadata": {
+        "id": "uJKreeex5HDx"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "chat_completion = client.chat.completions.create(\n",
+        "    model=\"accounts/fireworks/models/firefunction-v2\",\n",
+        "    messages=messages,\n",
+        "    tools=tools,\n",
+        "    temperature=0.1\n",
+        ")"
+      ],
+      "metadata": {
+        "id": "11pbsiv0zq7Z"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "###**Inspect the Model's Response**"
+      ],
+      "metadata": {
+        "id": "nLaY6Jf_5O2G"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "print(chat_completion.choices[0].message.model_dump_json(indent=4))\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "89Ox_vjuz6fK",
+        "outputId": "884cb6d6-46d8-4ef1-9d09-dffb5937cc16"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "{\n",
+            "    \"content\": null,\n",
+            "    \"refusal\": null,\n",
+            "    \"role\": \"assistant\",\n",
+            "    \"audio\": null,\n",
+            "    \"function_call\": null,\n",
+            "    \"tool_calls\": [\n",
+            "        {\n",
+            "            \"id\": \"call_QkY6sZ0U2IuqU0jawekzHDpB\",\n",
+            "            \"function\": {\n",
+            "                \"arguments\": \"{\\\"metric\\\": \\\"net_income\\\", \\\"financial_year\\\": 2022, \\\"company\\\": \\\"Nike\\\"}\",\n",
+            "                \"name\": \"get_financial_data\"\n",
+            "            },\n",
+            "            \"type\": \"function\",\n",
+            "            \"index\": 0\n",
+            "        }\n",
+            "    ]\n",
+            "}\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def get_financial_data(metric: str, financial_year: int, company: str):\n",
+        "    print(f\"{metric=} {financial_year=} {company=}\")\n",
+        "    if metric == \"net_income\" and financial_year == 2022 and company == \"Nike\":\n",
+        "        return {\"net_income\": 6_046_000_000}\n",
+        "    else:\n",
+        "        raise NotImplementedError()\n",
+        "\n",
+        "function_call = chat_completion.choices[0].message.tool_calls[0].function\n",
+        "tool_response = locals()[function_call.name](**json.loads(function_call.arguments))\n",
+        "print(tool_response)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "SVlNAgjiz8e1",
+        "outputId": "bf577ce2-75f4-475a-bde6-42f4a3e47751"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "metric='net_income' financial_year=2022 company='Nike'\n",
+            "{'net_income': 6046000000}\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "agent_response = chat_completion.choices[0].message\n"
+      ],
+      "metadata": {
+        "id": "_ST6cId20Ajv"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "messages.append(\n",
+        "    {\n",
+        "        \"role\": agent_response.role,\n",
+        "        \"content\": \"\",\n",
+        "        \"tool_calls\": [\n",
+        "            tool_call.model_dump()\n",
+        "            for tool_call in chat_completion.choices[0].message.tool_calls\n",
+        "        ]\n",
+        "    }\n",
+        ")"
+      ],
+      "metadata": {
+        "id": "8j2pNJP00DS-"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "messages.append(\n",
+        "    {\n",
+        "        \"role\": \"tool\",\n",
+        "        \"content\": json.dumps(tool_response)\n",
+        "    }\n",
+        ")"
+      ],
+      "metadata": {
+        "id": "C0Nn-am_0HXP"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "next_chat_completion = client.chat.completions.create(\n",
+        "    model=\"accounts/fireworks/models/firefunction-v2\",\n",
+        "    messages=messages,\n",
+        "    tools=tools,\n",
+        "    temperature=0.1\n",
+        ")"
+      ],
+      "metadata": {
+        "id": "26r-QnVP0Jm_"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "print(next_chat_completion.choices[0].message.content)\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "S8QiEIQR0NFZ",
+        "outputId": "3dd4f153-7f18-4ec5-bf9f-0c94ece29af9"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Nike's net income in 2022 was 6046000000.\n"
+          ]
+        }
+      ]
+    }
+  ]
+}
