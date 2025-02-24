@@ -1,0 +1,6 @@
+streamlit 
+crewai
+google-search-results
+crewai[tools]
+chromadb
+IPython
