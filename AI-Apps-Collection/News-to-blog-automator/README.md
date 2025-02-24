@@ -67,6 +67,6 @@ Contributions are welcome! Feel free to open an issue or submit a pull request.
 
 For questions or suggestions, reach out via email or open an issue on GitHub.
 
----
+----
 
 Happy blogging! 🚀

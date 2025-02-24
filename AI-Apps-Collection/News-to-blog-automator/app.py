@@ -100,7 +100,7 @@ def main():
             with st.spinner("Crafting your blog post..."):
                 try:
                     blog_result = create_news_blog_crew(topic)
-                    st.markdown("### Your Blog Post")
+                    st.markdown("### Your Blog Post is ")
                     st.markdown(blog_result.raw)
                 except Exception as e:
                     st.error(f"An error occurred: {str(e)}")
