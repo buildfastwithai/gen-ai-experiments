@@ -1,0 +1,5 @@
+streamlit
+google-generativeai
+langchain-google-genai
+Pillow
+google-genai
