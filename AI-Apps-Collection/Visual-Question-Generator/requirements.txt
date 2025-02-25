@@ -1,0 +1,9 @@
+streamlit
+langchain_google_genai
+dataframe_image
+git+https://github.com/satvik314/educhain.git@dev3
+matplotlib
+pandas
+IPython
+langchain-openai
+

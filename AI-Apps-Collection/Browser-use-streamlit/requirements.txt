@@ -1,0 +1,14 @@
+playwright
+lxml
+browser-use
+langchain_openai
+langchain_google_genai
+pillow
+streamlit
+anyio<4
+langchain-core
+langchain-community
+openai
+google-generativeai
+langgraph
+langchain_groq
