@@ -24,24 +24,25 @@ This Streamlit app allows users to generate multiple-choice quiz questions in va
 ```bash
 git clone https://github.com/your-username/multilingual-quiz-generator.git
 cd multilingual-quiz-generator
+```
 
 ### 2. Create a Virtual Environment (Optional but Recommended)
 ```bash
 python -m venv venv
 source venv/bin/activate  # or venv\Scripts\activate on Windows
-
+```
 
 ###3. Install Dependencies
 ```bash
 pip install -r requirements.txt
-
+```
 
 ### 4. 🚀 Run the App
 ```bash
 streamlit run app.py
+```
 
-
-📚 Technologies Used
+###📚 Technologies Used
 - Streamlit
 - Educhain
 - LangChain
