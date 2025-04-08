@@ -42,17 +42,17 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
-###📚 Technologies Used
+### 📚 Technologies Used
 - Streamlit
 - Educhain
 - LangChain
 
-###Sutra Model (TwoAI)
+### Sutra Model (TwoAI)
 
-###🤝 Contributing
+### 🤝 Contributing
 Contributions, issues, and feature requests are welcome!
 
-###📄 License
+### 📄 License
 This project is licensed under the MIT License.
 
 Made with ❤️ using Educhain and the Sutra model
