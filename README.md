@@ -13,8 +13,8 @@
 </p>
 
 <p align="center">
-    <a href="https://github.com/buildfastwithai/gen-ai-experiments/stargazers">
-        <img src="https://img.shields.io/github/stars/buildfastwithai/gen-ai-experiments?style=social" alt="GitHub Stars">
+      <a href="https://www.buildfastwithai.com/">
+        <img src="https://img.shields.io/badge/Website-blue?style=flat-square&logo=google-chrome&logoColor=white" alt="Website">
     </a>
     <a href="https://x.com/BuildFastWithAI">
         <img src="https://img.shields.io/twitter/follow/BuildFastWithAI?style=social" alt="Twitter Follow">
@@ -22,6 +22,7 @@
     <a href="https://www.linkedin.com/company/build-fast-with-ai/">
         <img src="https://img.shields.io/badge/LinkedIn-Follow_Us-blue?style=flat-square&logo=linkedin" alt="LinkedIn">
     </a>
+ 
 </p>
 
 ---
