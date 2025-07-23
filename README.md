@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://www.buildfastwithai.com/">
-    <img src="https://github.com/shubh-vedi/gen-ai-experiments/blob/main/Banner.png" width="900px" alt="BuildFastWithAI: Master Generative AI">
+    <img src=".resorces/Banner.png" width="900px" alt="BuildFastWithAI: Master Generative AI">
   </a>
 </p>
 
@@ -38,29 +38,42 @@ This repository is your ultimate launchpad for diving into the world of **Genera
 - **100+ Open-Source Libraries:** A curated collection of essential AI libraries like LangChain, Weaviate, and Hugging Face.
 - **Real-World Applications:** Build impressive AI projects and strengthen your portfolio.
 
-## 📂 Repository Structure
+## 🧩 Featured AI Projects
 
-This repository is organized to guide you through the diverse landscape of Generative AI.
+Explore hands-on projects at different levels:
 
-| Folder                  | Description                                                                        | Key Takeaway                                                              |
-| ----------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| `100-OS-Libraries/`     | A curated collection of 100+ essential open-source libraries with examples.        | Master tools like Langchain, FAISS, and Streamlit.                        |
-| `AI-Apps-Collection/`   | A showcase of end-to-end Generative AI applications.                               | See how different AI components come together to create full applications. |
-| `AI-agents/`            | Notebooks for building intelligent AI agents for various tasks.                    | Build autonomous agents for web browsing, research, and more.             |
-| `Experiments/`          | Exploratory notebooks on innovative AI workflows and use cases.                    | Discover creative AI applications in various domains.                     |
-| `LLM-Testing/`          | Notebooks for testing and benchmarking Large Language Models (LLMs).               | Evaluate and compare the performance of models like GPT and Llama.        |
-| `Open-Source-Libraries/`| In-depth demos of key open-source AI libraries and frameworks.                     | Deep-dive into advanced usage of libraries like LangGraph and Guardrails. |
-| `RAG-Experiments/`      | Experiments focusing on Retrieval-Augmented Generation (RAG) systems.              | Implement and optimize RAG pipelines for enhanced AI responses.           |
-| `educhain-experiments/` | Use cases for AI in education, including blockchain integration (EduChain).         | Explore the potential of AI in education and innovative integrations.     |
-| `Lectures/`             | Lecture materials and notebooks for structured, in-depth learning.                 | Access structured learning content on a variety of AI topics.             |
+**🌱 Starter AI Projects**
+- [Beginner Guide of AI Suite](100-OS-Libraries/Beginner_Guide_of_AI_Suite.ipynb)
+- [Gradio: Build Interactive AI Applications](100-OS-Libraries/Gradio_Build_Interactive_AI_Applications_with_Ease.ipynb)
+- [LangChain Basics](100-OS-Libraries/LangChain_Basics_Building_Intelligent_Workflows.ipynb)
 
-## 🛠️ Technologies You'll Use
+**Intermediate Gen-AI Projects**
+- [RAG (Retrieval Augmented Generation) System using Llama 3 405B](RAG-techniques/RAG_(Retrieval_Augmented_Generation)_System_using_Llama_3_405B_.ipynb)
+- [Travel Agent Streamlit App](Agents/projects/Travel_Agent_Streamlit_App.py)
+- [Educhain MultiLanguage Quiz Generator](ai-agents/Travel_Agent_Streamlit_App.py)
 
-- **Language:** `Python`
-- **Notebooks:** `Jupyter`
-- **Core Libraries:** `Hugging Face Transformers`, `LangChain`, `PyTorch`, `TensorFlow`
-- **Models:** `GPT`, `Llama`, `Nemotron`, and other state-of-the-art LLMs
-- **Data Viz:** `Matplotlib`, `Seaborn`
+**🚀 Advanced GenAI Projects**
+- [Vision RAG with Cohere Embed v4 + Gemini Flash](RAG-techniques/Vision_RAG_with_Cohere_Embed_v4_+_Gemini_Flash.ipynb)
+- [Medical Bot using Mistral7 and LlamaIndex](experiment-notebooks/medical-bot/Medical_Bot_using_Mistral7_and_llamaindex.ipynb)
+- [Suno AI Advanced Speech Synthesis Platform](100-OS-Libraries/Suno_AI_Advanced_Speech_Synthesis_Platform.ipynb)
+
+---
+
+## 🗂️ Folder Structure
+
+```
+100-os-libraries/           # 100+ open-source AI library notebooks
+ai-agents/                  # Agent frameworks and projects
+experiment-notebooks/       # Core utilities, outputs, and webscraping
+ai-apps-collection/         # End-to-end GenAI apps and demos
+LLM-Testing/                # LLM-specific experiments (Gemini, Llama, OpenAI, etc.)
+RAG-techniques/             # Retrieval Augmented Generation projects
+workshop-notebooks/         # Workshop and tutorial notebooks
+README.md                   # This file
+LICENSE                     # License
+```
+
+---
 
 ## 🚀 Get Started
 
