@@ -5,8 +5,7 @@ import os
 # ========== Setup ==========
 
 st.set_page_config(page_title="🎮 Qwen Game Generator", layout="centered")
-
-st.sidebar.image("logo.png", use_container_width=True)
+st.sidebar.image("https://github.com/pratik-gond/temp_files/blob/main/image-removebg-preview.png?raw=true", use_container_width=True)
 st.sidebar.header("⚙️ Configuration")
 api_key = st.sidebar.text_input("Enter your OpenRouter API Key", type="password")
 model_name = st.sidebar.selectbox("Model", ["qwen/qwen3-coder"], index=0)
