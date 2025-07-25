@@ -7,7 +7,7 @@ import streamlit as st
 
 load_dotenv()
 
-BASE_URL="https://openrouter.ai/api/v1"
+
 
 def build_agent(api_key: str):
     return Agent(
