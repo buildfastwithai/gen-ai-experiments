@@ -131,7 +131,7 @@ if api_key:
         ####################################################################
         with st.sidebar:
             st.markdown("### Game Settings")
-            os.environ["OPENROUTER_API_KEY"] = api_key
+            
             # Model selection
             model_options = {
                 "gpt-4o": "openai:openai/gpt-4o",
@@ -173,6 +173,7 @@ if api_key:
                 if not st.session_state.game_started:
                     if st.button("▶️ Start Game"):
                         st.session_state.team = get_chess_team(
+                            api_token=api_key,
                             white_model=model_options[selected_white],
                             black_model=model_options[selected_black],
                             master_model=model_options[selected_master],
@@ -195,6 +196,7 @@ if api_key:
                 if st.session_state.game_started:
                     if st.button("🔄 New Game"):
                         st.session_state.team = get_chess_team(
+                            api_token=api_key,
                             white_model=model_options[selected_white],
                             black_model=model_options[selected_black],
                             master_model=model_options[selected_master],

@@ -35,7 +35,7 @@ if project_root not in sys.path:
     sys.path.append(project_root)
 
 
-def get_model_for_provider(provider: str, model_name: str):
+def get_model_for_provider(provider: str, model_name: str, api_token: str):
     """
     Creates and returns the appropriate model instance based on the provider.
 
@@ -51,27 +51,28 @@ def get_model_for_provider(provider: str, model_name: str):
     """
     if provider == "openai":
         return OpenAILike(
-            api_key="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",
+            api_key=api_token,
             base_url=BASE_URL,
             id="openai/gpt-4o",
         )
     elif provider == "GLM":
         return OpenAILike(
-            api_key="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",
+            api_key=api_token,
             base_url=BASE_URL,
             id="z-ai/glm-4.5-air",
         )
     elif provider == "google":
         return OpenAILike(
-            api_key="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",
-            base_url=BASE_URL,
-            id="google/gemini-pro-1.5",
+            api_key=api_token,
+            base_url="https://openrouter.ai/api/v1",
+            id=BASE_URL,
         )
     else:
         raise ValueError(f"Unsupported model provider: {provider}")
 
 
 def get_chess_team(
+    api_token,
     white_model: str = "GLM:z-ai/glm-4.5-air",
     black_model: str = "google:google/gemini-pro-1.5",
     master_model: str = "openai:openai/gpt-4o",
@@ -95,9 +96,9 @@ def get_chess_team(
         black_provider, black_name = black_model.split(":")
         master_provider, master_name = master_model.split(":")
 
-        white_piece_model = get_model_for_provider(white_provider, white_name)
-        black_piece_model = get_model_for_provider(black_provider, black_name)
-        master_model = get_model_for_provider(master_provider, master_name)
+        white_piece_model = get_model_for_provider(white_provider, white_name, api_token)
+        black_piece_model = get_model_for_provider(black_provider, black_name, api_token)
+        master_model = get_model_for_provider(master_provider, master_name, api_token)
 
         white_piece_agent = Agent(
             name="white_piece_agent",
