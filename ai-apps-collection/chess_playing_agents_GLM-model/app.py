@@ -32,7 +32,23 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
-st.sidebar.image("https://github.com/pratik-gond/temp_files/blob/main/image-removebg-preview.png?raw=true", use_container_width=True)
+with st.sidebar:
+    # === BRANDING SECTION ===
+    st.markdown(
+        "<div style='text-align: center; margin: 2px 0;'>"
+        "<a href='https://www.buildfastwithai.com/' target='_blank' style='text-decoration: none;'>"
+        "<div style='border: 2px solid #e0e0e0; border-radius: 6px; padding: 4px; "
+        "background: linear-gradient(145deg, #ffffff, #f5f5f5); "
+        "box-shadow: 0 2px 6px rgba(0,0,0,0.1); "
+        "transition: all 0.3s ease; display: inline-block; width: 100%;'>"
+        "<img src='https://github.com/Shubhwithai/chat-with-qwen/blob/main/company_logo.png?raw=true' "
+        "style='width: 100%; max-width: 100%; height: auto; border-radius: 8px; display: block;' "
+        "alt='Build Fast with AI Logo'>"
+        "</div>"
+        "</a>"
+    "</div>",
+    unsafe_allow_html=True
+)
 
 ####################################################################
 # App header

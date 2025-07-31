@@ -76,7 +76,7 @@ def get_chess_team(
     white_model: str = "GLM:z-ai/glm-4.5-air",
     black_model: str = "google:google/gemini-pro-1.5",
     master_model: str = "openai:openai/gpt-4o",
-    debug_mode: bool = True,
+    debug_mode: bool = False,
 ) -> Team:
 
     """
