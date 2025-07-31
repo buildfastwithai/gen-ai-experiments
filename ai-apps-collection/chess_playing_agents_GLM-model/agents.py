@@ -64,8 +64,8 @@ def get_model_for_provider(provider: str, model_name: str, api_token: str):
     elif provider == "google":
         return OpenAILike(
             api_key=api_token,
-            base_url="https://openrouter.ai/api/v1",
-            id=BASE_URL,
+            base_url=BASE_URL,
+            id="google/gemini-pro-1.5",
         )
     else:
         raise ValueError(f"Unsupported model provider: {provider}")
