@@ -60,21 +60,18 @@ Explore hands-on projects at different levels:
 
 **🌱 Starter Projects**
 - [Beginner Guide of AI Suite](100-os-libraries/Beginner_Guide_of_AI_Suite.ipynb)
-- [Gradio: Build Interactive AI Applications](100-os-libraries/Gradio_Build_Interactive_AI_Applications_with_Ease.ipynb)
 - [LangChain Basics](100-os-libraries/LangChain_Basics_Building_Intelligent_Workflows.ipynb)
-- [Streamlit: Simplify Interactive Web Apps](100-os-libraries/🌟_Streamlit_Simplify_Interactive_Web_Apps_Development.ipynb)
 - [TextBlob: Simplified NLP](100-os-libraries/Exploring_TextBlob_Simplified_NLP_for_Everyone.ipynb)
 - [Getting Started with Pydantic AI](100-os-libraries/Getting_Started_with_Pydantic_AI.ipynb)
-- [ChatGPT Replica Workshop](workshop/ChatGPT_Replica_Workshop.ipynb)
+
 
 **🧠 Intermediate Projects**
-- [RAG System using Llama 3 405B](rag/rag__system_using_llama_3_405b.ipynb)
+- [RAG System using Llama 3.2 405B](rag/rag__system_using_llama_3_405b.ipynb)
 - [AutoGen: Building Collaborative AI Agents](100-os-libraries/AutoGen_Building_Collaborative_AI_Agents_in_Python.ipynb)
 - [CrewAI Essentials Quick Start](100-os-libraries/CrewAI_Essentials_Quick_Start_Guide.ipynb)
 - [LangGraph Multi-Agent Swarm](100-os-libraries/LangGraph_Multi_Agent_Swarm.ipynb)
 - [CSV Agents with LangChain & LlamaIndex](ai-agents/csv_agents_with_langchain_&_llamaIndex.ipynb)
 - [Travel Agent Streamlit App](ai-apps-collection/educhain_multilanguge_quiz_generator/app.py)
-- [Financial Analysis Lecture](workshop/Financial_Analysis_Lecture.ipynb)
 - [AI Customer Support Agent](workshop/AI_Customer_Support_Agent_.ipynb)
 - [Chat with PDF or Webpage](ai-apps-collection/Chat_with_pdf_or_webpage/main.py)
 - [Educhain MultiLanguage Quiz Generator](ai-apps-collection/educhain_multilanguge_quiz_generator/app.py)
@@ -84,9 +81,7 @@ Explore hands-on projects at different levels:
 - [Suno AI: Advanced Speech Synthesis](100-os-libraries/Suno_AI_Advanced_Speech_Synthesis_Platform.ipynb)
 - [Browser Use Agent Automation](100-os-libraries/Browser_Use_Agent_Automation.ipynb)
 - [Open Interpreter: Local Code Execution](100-os-libraries/Open_Interpreter_Local_Code_Execution_with_LLMs.ipynb)
-- [Phidata Agents in Action](100-os-libraries/Phidata_Agents_in_Action_A_Hands_On_Guide.ipynb)
 - [GameQuest Generator (RAG + CrewAI)](experiment/GameQuest_Generator_(RAG_+_CrewAI)%20(1).ipynb)
-- [Browser Use Workshop](workshop/Browser_Use_Workshop.ipynb)
 - [Chess Playing Agents with GLM](ai-apps-collection/chess_playing_agents_GLM-model/app.py)
 - [Gemini 2.0 Multimodal App](ai-apps-collection/gemini-2.0-multimodal/app.py)
 - [Perplexity AI Research Assistant](ai-apps-collection/perplexity-ai-research-assistant/app.py)
