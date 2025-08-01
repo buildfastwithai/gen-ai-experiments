@@ -156,6 +156,4 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 **BuildFastWithAI** - [@BuildFastWithAI](https://x.com/BuildFastWithAI) - satvik@buildfastwithai.com
 
-Project Link: [https://github.com/buildfastwithai/gen-ai-experiments](https://github.com/buildfastwithai/gen-ai-experiments)
-
 **Happy experimenting!**
