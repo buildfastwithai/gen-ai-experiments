@@ -7,75 +7,111 @@
 <h1 align="center">Gen-AI-Experiments</h1>
 
 <p align="center">
-  <strong>A comprehensive collection of hands-on experiments in Generative AI.</strong>
-  <br />
-  Master LLMs, AI Agents, RAG, and more with practical, open-source examples.
+  <strong>A comprehensive, hands-on collection of experiments in Generative AI. Master LLMs, AI Agents, RAG, and more with practical, open-source examples.</strong>
 </p>
 
 <p align="center">
-      <a href="https://www.buildfastwithai.com/">
-        <img src="https://img.shields.io/badge/Website-blue?style=flat-square&logo=google-chrome&logoColor=white" alt="Website">
+    <a href="https://github.com/buildfastwithai/gen-ai-experiments/stargazers">
+        <img src="https://img.shields.io/github/stars/buildfastwithai/gen-ai-experiments?style=social" alt="GitHub Stars">
+    </a>
+    <a href="https://github.com/buildfastwithai/gen-ai-experiments/network/members">
+        <img src="https://img.shields.io/github/forks/buildfastwithai/gen-ai-experiments?style=social" alt="GitHub Forks">
+    </a>
+    <a href="https://github.com/buildfastwithai/gen-ai-experiments/issues">
+        <img src="https://img.shields.io/github/issues/buildfastwithai/gen-ai-experiments?style=flat-square&logo=github" alt="GitHub Issues">
+    </a>
+    <a href="https://github.com/buildfastwithai/gen-ai-experiments/blob/main/LICENSE">
+        <img src="https://img.shields.io/github/license/buildfastwithai/gen-ai-experiments?style=flat-square" alt="License">
     </a>
     <a href="https://x.com/BuildFastWithAI">
         <img src="https://img.shields.io/twitter/follow/BuildFastWithAI?style=social" alt="Twitter Follow">
     </a>
-    <a href="https://www.linkedin.com/company/build-fast-with-ai/">
-        <img src="https://img.shields.io/badge/LinkedIn-Follow_Us-blue?style=flat-square&logo=linkedin" alt="LinkedIn">
-    </a>
- 
 </p>
 
 ---
 
 ## 🚀 Welcome to Gen-AI-Experiments!
 
-This repository is your ultimate launchpad for diving into the world of **Generative AI**. Whether you're a beginner taking your first steps or an experienced practitioner, these hands-on experiments are designed to enhance your skills and deepen your understanding of the latest AI technologies.
+This repository is your ultimate launchpad into the world of **Generative AI**. Whether you're a beginner or an experienced practitioner, these hands-on experiments are designed to enhance your skills and deepen your understanding of the latest AI technologies.
 
-## ✨ Key Features
+### ✨ Key Features
 
 - **Learn by Doing:** Practical Jupyter notebooks that you can run, modify, and learn from.
 - **Cutting-Edge Topics:** Explore AI Agents, Retrieval-Augmented Generation (RAG), LLM Testing, and more.
 - **100+ Open-Source Libraries:** A curated collection of essential AI libraries like LangChain, Weaviate, and Hugging Face.
 - **Real-World Applications:** Build impressive AI projects and strengthen your portfolio.
 
+---
+
+### 📚 Table of Contents
+
+- [Featured AI Projects](#-featured-ai-projects)
+- [Repository Structure](#-repository-structure)
+- [Getting Started](#-getting-started)
+- [Contributing](#-contributing)
+- [License](#-license)
+- [Contact](#-contact)
+
+---
+
 ## 🧩 Featured AI Projects
 
 Explore hands-on projects at different levels:
 
-**🌱 Starter AI Projects**
-- [Beginner Guide of AI Suite](100-OS-Libraries/Beginner_Guide_of_AI_Suite.ipynb)
-- [Gradio: Build Interactive AI Applications](100-OS-Libraries/Gradio_Build_Interactive_AI_Applications_with_Ease.ipynb)
-- [LangChain Basics](100-OS-Libraries/LangChain_Basics_Building_Intelligent_Workflows.ipynb)
+**🌱 Starter Projects**
+- [Beginner Guide of AI Suite](100-os-libraries/Beginner_Guide_of_AI_Suite.ipynb)
+- [LangChain Basics](100-os-libraries/LangChain_Basics_Building_Intelligent_Workflows.ipynb)
+- [TextBlob: Simplified NLP](100-os-libraries/Exploring_TextBlob_Simplified_NLP_for_Everyone.ipynb)
+- [Getting Started with Pydantic AI](100-os-libraries/Getting_Started_with_Pydantic_AI.ipynb)
 
-**Intermediate Gen-AI Projects**
-- [RAG (Retrieval Augmented Generation) System using Llama 3 405B](RAG-techniques/RAG_(Retrieval_Augmented_Generation)_System_using_Llama_3_405B_.ipynb)
-- [Travel Agent Streamlit App](Agents/projects/Travel_Agent_Streamlit_App.py)
-- [Educhain MultiLanguage Quiz Generator](ai-agents/Travel_Agent_Streamlit_App.py)
 
-**🚀 Advanced GenAI Projects**
-- [Vision RAG with Cohere Embed v4 + Gemini Flash](RAG-techniques/Vision_RAG_with_Cohere_Embed_v4_+_Gemini_Flash.ipynb)
-- [Medical Bot using Mistral7 and LlamaIndex](experiment-notebooks/medical-bot/Medical_Bot_using_Mistral7_and_llamaindex.ipynb)
-- [Suno AI Advanced Speech Synthesis Platform](100-OS-Libraries/Suno_AI_Advanced_Speech_Synthesis_Platform.ipynb)
+**🧠 Intermediate Projects**
+- [RAG System using Llama 3.2 405B](rag/rag__system_using_llama_3_405b.ipynb)
+- [AutoGen: Building Collaborative AI Agents](100-os-libraries/AutoGen_Building_Collaborative_AI_Agents_in_Python.ipynb)
+- [CrewAI Essentials Quick Start](100-os-libraries/CrewAI_Essentials_Quick_Start_Guide.ipynb)
+- [LangGraph Multi-Agent Swarm](100-os-libraries/LangGraph_Multi_Agent_Swarm.ipynb)
+- [CSV Agents with LangChain & LlamaIndex](ai-agents/csv_agents_with_langchain_&_llamaIndex.ipynb)
+- [Travel Agent Streamlit App](ai-apps-collection/educhain_multilanguge_quiz_generator/app.py)
+- [AI Customer Support Agent](workshop/AI_Customer_Support_Agent_.ipynb)
+- [Chat with PDF or Webpage](ai-apps-collection/Chat_with_pdf_or_webpage/main.py)
+- [Educhain MultiLanguage Quiz Generator](ai-apps-collection/educhain_multilanguge_quiz_generator/app.py)
 
----
-
-## 🗂️ Folder Structure
-
-```
-100-os-libraries/           # 100+ open-source AI library notebooks
-ai-agents/                  # Agent frameworks and projects
-experiment-notebooks/       # Core utilities, outputs, and webscraping
-ai-apps-collection/         # End-to-end GenAI apps and demos
-LLM-Testing/                # LLM-specific experiments (Gemini, Llama, OpenAI, etc.)
-RAG-techniques/             # Retrieval Augmented Generation projects
-workshop-notebooks/         # Workshop and tutorial notebooks
-README.md                   # This file
-LICENSE                     # License
-```
+**🚀 Advanced Projects**
+- [Vision RAG with Cohere & Gemini](rag/vision_rag_with_cohere_embed_v4__gemini_flash.ipynb)
+- [Suno AI: Advanced Speech Synthesis](100-os-libraries/Suno_AI_Advanced_Speech_Synthesis_Platform.ipynb)
+- [Browser Use Agent Automation](100-os-libraries/Browser_Use_Agent_Automation.ipynb)
+- [Open Interpreter: Local Code Execution](100-os-libraries/Open_Interpreter_Local_Code_Execution_with_LLMs.ipynb)
+- [GameQuest Generator (RAG + CrewAI)](experiment/GameQuest_Generator_(RAG_+_CrewAI)%20(1).ipynb)
+- [Chess Playing Agents with GLM](ai-apps-collection/chess_playing_agents_GLM-model/app.py)
+- [Gemini 2.0 Multimodal App](ai-apps-collection/gemini-2.0-multimodal/app.py)
+- [Perplexity AI Research Assistant](ai-apps-collection/perplexity-ai-research-assistant/app.py)
 
 ---
 
-## 🚀 Get Started
+## 🗂️ Repository Structure
+
+Here's an overview of our repository's structure:
+
+```
+/gen-ai-experiments
+├── .github/              # GitHub configuration files
+├── 100-os-libraries/     # 100+ open-source AI library notebooks
+├── ai-agents/            # Agent frameworks and projects
+├── ai-apps-collection/   # End-to-end GenAI apps and demos
+├── experiment/           # Core utilities, outputs, and webscraping
+├── llm-testing/          # LLM-specific experiments (Gemini, Llama, etc.)
+├── rag/                  # Retrieval Augmented Generation projects
+├── workshop/             # Workshop and tutorial notebooks
+├── .gitignore            # Files to be ignored by Git
+├── LICENSE               # Project's license
+└── README.md             # This file
+```
+
+---
+
+## 🚀 Getting Started
+
+Follow these steps to get your local environment set up.
 
 1.  **Clone the repository:**
     ```bash
@@ -84,29 +120,42 @@ LICENSE                     # License
     ```
 
 2.  **Install dependencies:**
+    We recommend creating a virtual environment to manage dependencies.
     ```bash
+    python -m venv venv
+    source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
     pip install -r requirements.txt
     ```
 
-3.  **Explore and experiment!**
-    Navigate to the folders and run the Jupyter Notebooks to begin your journey.
+3.  **Explore and Experiment!**
+    Navigate to the project folders and run the Jupyter Notebooks to begin your journey.
 
-## 🤝 Contribute
+---
 
-Contributions are welcome! Please feel free to submit a pull request, create an issue, or share your feedback.
+## 🤝 Contributing
 
-1.  **Fork the Project**
-2.  **Create your Feature Branch** (`git checkout -b feature/AmazingFeature`)
-3.  **Commit your Changes** (`git commit -m 'Add some AmazingFeature'`)
-4.  **Push to the Branch** (`git push origin feature/AmazingFeature`)
-5.  **Open a Pull Request**
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+1.  Fork the Project
+2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4.  Push to the Branch (`git push origin feature/AmazingFeature`)
+5.  Open a Pull Request
+
+Please read our `CONTRIBUTING.md` for more details on our code of conduct and the process for submitting pull requests.
+
+---
 
 ## 📄 License
 
-This repository is distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the MIT License. See `LICENSE` for more information.
+
+---
 
 ## 📧 Contact
 
-For questions or collaboration, please reach out to [satvik@buildfastwithai.com](mailto:satvik@buildfastwithai.com).
+**BuildFastWithAI** - [@BuildFastWithAI](https://x.com/BuildFastWithAI) - satvik@buildfastwithai.com
+
+Project Link: [https://github.com/buildfastwithai/gen-ai-experiments](https://github.com/buildfastwithai/gen-ai-experiments)
 
 **Happy experimenting!**
