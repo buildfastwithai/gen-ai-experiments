@@ -28,7 +28,7 @@ st.markdown(
     "<h1 style='text-align: center;'>🤖 MCP Agent Chat</h1>",
     unsafe_allow_html=True
 )
-st.markdown("<p style='text-align: center;'>Configure your MCP servers in the sidebar and start chatting!</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center;'>Configure your MCP servers in the sidebar, activate the agent and start chatting!</p>", unsafe_allow_html=True)
 
 # Initialize session state
 if "messages" not in st.session_state:
@@ -58,7 +58,7 @@ def get_example_config() -> Dict[str, Any]:
                 "args": [
                     "-y",
                     "@modelcontextprotocol/server-filesystem",
-                    "D:\\Work\\mcp\\MCP",
+                    os.getcwd(),
                 ],
             },
         }
@@ -249,9 +249,8 @@ if api_key:
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
-
     # Chat input
-    if prompt := st.chat_input("Ask your agent a question..."):
+    if prompt := st.chat_input("Ask agent a question..."):
         # Add user message to chat history
         st.session_state.messages.append({"role": "user", "content": prompt})
         
