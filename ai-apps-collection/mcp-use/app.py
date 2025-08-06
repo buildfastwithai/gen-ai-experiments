@@ -5,7 +5,7 @@ import os
 from typing import Dict, Any
 import threading
 from concurrent.futures import ThreadPoolExecutor
-from langchain_openai import ChatOpenAI
+from langchain_groq import ChatGroq
 
 # Import the MCP components
 try:
@@ -90,7 +90,7 @@ async def create_agent(config: Dict[str, Any]) -> tuple[bool, str]:
         client = MCPClient.from_dict(config)
         
         # Create LLM
-        llm = ChatOpenAI(model="gpt-4o")
+        llm = ChatGroq(model="openai/gpt-oss-20b")
         
         # Create agent with the client
         agent = MCPAgent(llm=llm, client=client, max_steps=30)
@@ -149,8 +149,8 @@ with st.sidebar:
     )
 
 # st.sidebar.markdown("### Game Settings")
-api_key = st.sidebar.text_input("Enter your OpenAI API Key", type="password")
-os.environ["OPENAI_API_KEY"] = api_key
+api_key = st.sidebar.text_input("Enter your GROQ API Key", type="password", help="To use latest openai's Groq-oss model")
+os.environ["GROQ_API_KEY"] = api_key
 
 # Sidebar for MCP Configuration
 if api_key:
@@ -177,7 +177,7 @@ if api_key:
                         success, message = run_async_create_agent(config)
                         if success:
                             st.session_state.agent = MCPAgent(
-                                llm=ChatOpenAI(model="gpt-4o"),
+                                llm=ChatGroq(model="openai/gpt-oss-20b"),
                                 client=MCPClient.from_dict(config),
                                 max_steps=30
                             )
@@ -274,4 +274,4 @@ if api_key:
         st.session_state.messages.append({"role": "assistant", "content": response})
 
 else:
-    st.error("Please enter your OpenAI API Key")
+    st.error("Please enter your GROQ API Key")
