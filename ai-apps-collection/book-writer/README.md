@@ -4,7 +4,7 @@
 
 Prompt2Prose is a Streamlit app that lets you generate a complete book, chapter by chapter, using advanced AI agents. Enter your book idea, genre, and audience, and watch as the app creates an outline and writes each chapter in real time. Download your finished book as a markdown file!
 
-Try the app by [clicking here]()
+Try the app by [clicking here](https://prompt2prose.streamlit.app/)
 
 ---
 
