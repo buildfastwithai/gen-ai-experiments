@@ -4,6 +4,7 @@ pydantic
 duckduckgo-search
 newspaper4k
 lxml_html_clean
+groq
 pathlib2
 asyncio
 typing-extensions
