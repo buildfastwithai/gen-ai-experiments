@@ -93,7 +93,7 @@ if api_key:
 
 if start_button:
     if not api_key:
-        st.error("Please enter your OpenAI API key in the sidebar.")
+        st.error("Please enter your Groq API key in the sidebar.")
         st.stop()
     if not topic or not genre or not audience:
         st.error("Please fill in all book details.")
