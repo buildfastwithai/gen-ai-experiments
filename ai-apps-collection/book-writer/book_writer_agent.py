@@ -3,13 +3,14 @@ from pathlib import Path
 from textwrap import dedent
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel
-
+from agno.models.groq import Groq
 from agno.agent import Agent
-from agno.models.openai import OpenAIChat
 from agno.team import Team
 from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.tools.newspaper4k import Newspaper4kTools
+import os
 
+llm = Groq(id="openai/gpt-oss-120b")
 
 # Data models for structured output
 class Chapter(BaseModel):
@@ -45,7 +46,7 @@ class CompleteBook(BaseModel):
 # 1. Research and Outline Agent
 outline_agent = Agent(
     name="Book Outliner",
-    model=OpenAIChat(id="gpt-4o"),
+    model=llm,
     tools=[DuckDuckGoTools()],
     description=dedent("""\
         You are an expert book planner and literary architect with decades of experience in publishing.
@@ -122,7 +123,7 @@ outline_agent = Agent(
 # 2. Chapter Writer Agent
 chapter_writer_agent = Agent(
     name="Chapter Writer",
-    model=OpenAIChat(id="gpt-4o"),
+    model=llm,
     tools=[DuckDuckGoTools(), Newspaper4kTools()],
     description=dedent("""\
         You are a master storyteller and content creator with expertise in engaging narrative writing.
@@ -187,7 +188,7 @@ chapter_writer_agent = Agent(
 # 3. Book Compiler Agent
 book_compiler_agent = Agent(
     name="Book Compiler",
-    model=OpenAIChat(id="gpt-4o"),
+    model=llm,
     description=dedent("""\
         You are a professional book editor and publisher with expertise in manuscript preparation.
         Your skills include: 📖
@@ -264,7 +265,7 @@ book_compiler_agent = Agent(
 book_writing_team = Team(
     name="Book Writing Team",
     mode="coordinate",
-    model=OpenAIChat("gpt-4o"),
+    model=llm,
     members=[outline_agent, chapter_writer_agent, book_compiler_agent],
     instructions=[
         "You are coordinating a complete book writing process.",
@@ -286,7 +287,7 @@ book_writing_team = Team(
 # 5. Individual Book Writer Agent (Simplified Version)
 book_writer_agent = Agent(
     name="Book Writer",
-    model=OpenAIChat(id="gpt-4o"),
+    model=llm,
     tools=[DuckDuckGoTools()],
     description=dedent("""\
         You are a bestselling author and writing coach with expertise in creating compelling books.

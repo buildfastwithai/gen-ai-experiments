@@ -3,7 +3,6 @@ import os
 import re
 import json
 from pathlib import Path
-from book_writer_agent import outline_agent, chapter_writer_agent
 
 def slugify(text):
     return re.sub(r'[^a-zA-Z0-9]+', '-', text.strip().lower()).strip('-')
@@ -81,7 +80,7 @@ with st.sidebar:
 # Sidebar for API key and book info
 with st.sidebar:
     st.header("Configuration ⚙️")
-    api_key = st.text_input("OpenAI API Key", type="password")
+    api_key = st.text_input("Enter Your Groq API Key", type="password")
     topic = st.text_input("Book Topic", value="The Power of Mindful Productivity")
     genre = st.text_input("Genre", value="self-help")
     audience = st.text_input("Audience", value="busy professionals")
@@ -89,7 +88,8 @@ with st.sidebar:
 
 
 if api_key:
-    os.environ["OPENAI_API_KEY"] = api_key
+    os.environ["GROQ_API_KEY"] = api_key
+    from book_writer_agent import outline_agent, chapter_writer_agent
 
 if start_button:
     if not api_key:
