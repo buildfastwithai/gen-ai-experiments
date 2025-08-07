@@ -1,0 +1,8 @@
+agno
+openai
+pydantic
+duckduckgo-search
+newspaper4k
+pathlib2
+asyncio
+typing-extensions
