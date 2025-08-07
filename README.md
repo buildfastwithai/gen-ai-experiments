@@ -14,17 +14,11 @@
     <a href="https://github.com/buildfastwithai/gen-ai-experiments/stargazers">
         <img src="https://img.shields.io/github/stars/buildfastwithai/gen-ai-experiments?style=social" alt="GitHub Stars">
     </a>
-    <a href="https://github.com/buildfastwithai/gen-ai-experiments/network/members">
-        <img src="https://img.shields.io/github/forks/buildfastwithai/gen-ai-experiments?style=social" alt="GitHub Forks">
-    </a>
-    <a href="https://github.com/buildfastwithai/gen-ai-experiments/issues">
-        <img src="https://img.shields.io/github/issues/buildfastwithai/gen-ai-experiments?style=flat-square&logo=github" alt="GitHub Issues">
-    </a>
-    <a href="https://github.com/buildfastwithai/gen-ai-experiments/blob/main/LICENSE">
-        <img src="https://img.shields.io/github/license/buildfastwithai/gen-ai-experiments?style=flat-square" alt="License">
-    </a>
     <a href="https://x.com/BuildFastWithAI">
         <img src="https://img.shields.io/twitter/follow/BuildFastWithAI?style=social" alt="Twitter Follow">
+    </a>
+    <a href="https://in.linkedin.com/company/build-fast-with-ai">
+        <img src="https://img.shields.io/badge/LinkedIn-blue?style=social&logo=linkedin" alt="LinkedIn Follow">
     </a>
 </p>
 
@@ -41,32 +35,42 @@ This repository is your ultimate launchpad into the world of **Generative AI**. 
 - **100+ Open-Source Libraries:** A curated collection of essential AI libraries like LangChain, Weaviate, and Hugging Face.
 - **Real-World Applications:** Build impressive AI projects and strengthen your portfolio.
 
----
-
-### 📚 Table of Contents
-
-- [Featured AI Projects](#-featured-ai-projects)
-- [Repository Structure](#-repository-structure)
-- [Getting Started](#-getting-started)
-- [Contributing](#-contributing)
-- [License](#-license)
-- [Contact](#-contact)
-
----
+---   
 
 ## 🧩 Featured AI Projects
 
 Explore hands-on projects at different levels:
 
+**Ai-Apps Collection**
+- [Chat with QWEN3 Coder](ai-apps-collection/chat-with-qwen3-coder)
+- [Chat with PDF or Webpage](ai-apps-collection/Chat_with_pdf_or_webpage)
+- [GitHub Readme File Generator](ai-apps-collection/Github-Readme-File-Generator)
+- [Browser Use Streamlit](ai-apps-collection/browser-use-streamlit)
+- [Chat with GPT-OSS](ai-apps-collection/chat-with-gpt-oss)
+- [Chess Playing Agents (GLM-model)](ai-apps-collection/chess_playing_agents_GLM-model)
+- [Educhain Multilingual Quiz Generator](ai-apps-collection/educhain_multilanguge_quiz_generator)
+- [Gemini 2.0 Multimodal](ai-apps-collection/gemini-2.0-multimodal)
+- [Indian Language Quiz Using Sutra](ai-apps-collection/indian_language_quiz_Using_Sutra)
+- [News to Blog Automator](ai-apps-collection/news-to-blog-automator)
+- [Perplexity AI Research Assistant](ai-apps-collection/perplexity-ai-research-assistant)
+- [QWEN Game Generator](ai-apps-collection/qwen-game-generator)
+- [Sutra V2 Multilingual Chatbot](ai-apps-collection/sutra-v2-multilingual-chatbot)
+- [Visual Question Generator](ai-apps-collection/visual-question-generator)
+
+
 **🌱 Starter Projects**
-- [Beginner Guide of AI Suite](100-os-libraries/Beginner_Guide_of_AI_Suite.ipynb)
 - [LangChain Basics](100-os-libraries/LangChain_Basics_Building_Intelligent_Workflows.ipynb)
 - [TextBlob: Simplified NLP](100-os-libraries/Exploring_TextBlob_Simplified_NLP_for_Everyone.ipynb)
 - [Getting Started with Pydantic AI](100-os-libraries/Getting_Started_with_Pydantic_AI.ipynb)
+- [Hugging Face Transformers](100-os-libraries/Hugging_Face_Transformers_A_Powerful_Foundation_for_Generative_AI_and_NLP.ipynb)
+- [CrewAI Essentials](100-os-libraries/CrewAI_Essentials_Quick_Start_Guide.ipynb)
+- [LlamaIndex](100-os-libraries/LlamaIndex_Enhancing_Language_Models_with_Intelligent_Data_Integration.ipynb)
+- [ChromaDB](100-os-libraries/ChromaDB_Efficient_Vector_Database_for_Embeddings.ipynb)
+- [Pinecone](100-os-libraries/🚀_Pinecone_Scalable_Vector_Database_for_AI_Applications.ipynb)
+
 
 
 **🧠 Intermediate Projects**
-- [RAG System using Llama 3.2 405B](rag/rag__system_using_llama_3_405b.ipynb)
 - [AutoGen: Building Collaborative AI Agents](100-os-libraries/AutoGen_Building_Collaborative_AI_Agents_in_Python.ipynb)
 - [CrewAI Essentials Quick Start](100-os-libraries/CrewAI_Essentials_Quick_Start_Guide.ipynb)
 - [LangGraph Multi-Agent Swarm](100-os-libraries/LangGraph_Multi_Agent_Swarm.ipynb)
@@ -74,62 +78,21 @@ Explore hands-on projects at different levels:
 - [Travel Agent Streamlit App](ai-apps-collection/educhain_multilanguge_quiz_generator/app.py)
 - [AI Customer Support Agent](workshop/AI_Customer_Support_Agent_.ipynb)
 - [Chat with PDF or Webpage](ai-apps-collection/Chat_with_pdf_or_webpage/main.py)
-- [Educhain MultiLanguage Quiz Generator](ai-apps-collection/educhain_multilanguge_quiz_generator/app.py)
 
-**🚀 Advanced Projects**
-- [Vision RAG with Cohere & Gemini](rag/vision_rag_with_cohere_embed_v4__gemini_flash.ipynb)
-- [Suno AI: Advanced Speech Synthesis](100-os-libraries/Suno_AI_Advanced_Speech_Synthesis_Platform.ipynb)
-- [Browser Use Agent Automation](100-os-libraries/Browser_Use_Agent_Automation.ipynb)
-- [Open Interpreter: Local Code Execution](100-os-libraries/Open_Interpreter_Local_Code_Execution_with_LLMs.ipynb)
-- [GameQuest Generator (RAG + CrewAI)](experiment/GameQuest_Generator_(RAG_+_CrewAI)%20(1).ipynb)
-- [Chess Playing Agents with GLM](ai-apps-collection/chess_playing_agents_GLM-model/app.py)
-- [Gemini 2.0 Multimodal App](ai-apps-collection/gemini-2.0-multimodal/app.py)
-- [Perplexity AI Research Assistant](ai-apps-collection/perplexity-ai-research-assistant/app.py)
-
----
-
-## 🗂️ Repository Structure
-
-Here's an overview of our repository's structure:
-
-```
-/gen-ai-experiments
-├── .github/              # GitHub configuration files
-├── 100-os-libraries/     # 100+ open-source AI library notebooks
-├── ai-agents/            # Agent frameworks and projects
-├── ai-apps-collection/   # End-to-end GenAI apps and demos
-├── experiment/           # Core utilities, outputs, and webscraping
-├── llm-testing/          # LLM-specific experiments (Gemini, Llama, etc.)
-├── rag/                  # Retrieval Augmented Generation projects
-├── workshop/             # Workshop and tutorial notebooks
-├── .gitignore            # Files to be ignored by Git
-├── LICENSE               # Project's license
-└── README.md             # This file
-```
-
----
-
-## 🚀 Getting Started
-
-Follow these steps to get your local environment set up.
-
-1.  **Clone the repository:**
-    ```bash
+1.  Clone the repo
+    ```sh
     git clone https://github.com/buildfastwithai/gen-ai-experiments.git
-    cd gen-ai-experiments
     ```
-
-2.  **Install dependencies:**
-    We recommend creating a virtual environment to manage dependencies.
-    ```bash
-    python -m venv venv
-    source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+2.  Navigate to a project directory and install the required packages.
+    ```sh
+    cd gen-ai-experiments/ai-apps-collection/some-app
     pip install -r requirements.txt
     ```
 
-3.  **Explore and Experiment!**
-    Navigate to the project folders and run the Jupyter Notebooks to begin your journey.
+<!-- CONTRIBUTING -->
+## Contributing
 
+Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 ---
 
 ## 🤝 Contributing
