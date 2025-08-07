@@ -2,7 +2,7 @@ agno
 openai
 pydantic
 duckduckgo-search
-newspaper4k lxml_html_clean
+newspaper4k
 pathlib2
 asyncio
 typing-extensions
