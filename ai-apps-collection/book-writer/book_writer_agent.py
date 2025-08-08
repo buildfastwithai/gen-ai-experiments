@@ -8,9 +8,10 @@ from agno.agent import Agent
 from agno.team import Team
 from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.tools.newspaper4k import Newspaper4kTools
+from agno.models.openai import OpenAIChat
 import os
 
-llm = Groq(id="openai/gpt-oss-120b")
+llm = OpenAIChat(id="gpt-5")
 
 # Data models for structured output
 class Chapter(BaseModel):
