@@ -58,8 +58,12 @@ st.markdown(
     unsafe_allow_html=True,
 )
 st.markdown(
-    "<h3 class='second-title'>watch two best performing models compete in a chess battle</h3>",
-    unsafe_allow_html=True,
+    """
+    <h3 class='second-title' style='text-align: center;'>
+        watch two best performing models compete in a chess battle
+    </h3>
+    """,
+    unsafe_allow_html=True
 )
 
 # Load custom CSS with dark mode support
