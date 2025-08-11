@@ -54,7 +54,15 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 st.markdown(
-    "<h1 style='text-align: center;'>𓂃🖊 Prompt2Prose</h1>",
+    "<h1 style='text-align: center;'>𓂃🖊</h1>",
+    unsafe_allow_html=True
+)
+st.markdown(
+    "<h1 style='text-align: center;'>Prompt2Prose</h1>",
+    unsafe_allow_html=True
+)
+st.markdown(
+    "<h3 style='text-align: center;'>Leveraging latest Gpt-5 model</h3>",
     unsafe_allow_html=True
 )
 st.markdown("<p style='text-align: center;'>Turn your ideas into full-length books with chapters in seconds using AI</p>", unsafe_allow_html=True)
@@ -80,7 +88,7 @@ with st.sidebar:
 # Sidebar for API key and book info
 with st.sidebar:
     st.header("Configuration ⚙️")
-    api_key = st.text_input("Enter Your Groq API Key", type="password")
+    api_key = st.text_input("Enter Your OpenAI API Key", type="password")
     topic = st.text_input("Book Topic", value="The Power of Mindful Productivity")
     genre = st.text_input("Genre", value="self-help")
     audience = st.text_input("Audience", value="busy professionals")
@@ -88,12 +96,12 @@ with st.sidebar:
 
 
 if api_key:
-    os.environ["GROQ_API_KEY"] = api_key
+    os.environ["OPENAI_API_KEY"] = api_key
     from book_writer_agent import outline_agent, chapter_writer_agent
 
 if start_button:
     if not api_key:
-        st.error("Please enter your Groq API key in the sidebar.")
+        st.error("Please enter your OpenAI API key in the sidebar.")
         st.stop()
     if not topic or not genre or not audience:
         st.error("Please fill in all book details.")
