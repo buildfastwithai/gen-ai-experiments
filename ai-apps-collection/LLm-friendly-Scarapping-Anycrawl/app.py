@@ -205,4 +205,7 @@ if st.button("Scrape Webpage", type="primary"):
 
 # Footer
 st.markdown("---")
-st.markdown("Made with ❤️ using AnyCrawl and Streamlit")
+st.markdown(
+        "**❤️ Built by** [Build Fast with AI](https://buildfastwithai.com/genai-course)",
+        unsafe_allow_html=True
+    )
