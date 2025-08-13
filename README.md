@@ -4,7 +4,7 @@
   </a>
 </p>
 
-<h1 align="center"># 🌟 Gen-AI-Experiments</h1>
+<h1 align="center">🌟 Gen-AI-Experiments</h1>
 
 <p align="center">
   <strong>A comprehensive, hands-on collection of experiments in Generative AI. Master LLMs, AI Agents, RAG, and more with practical, open-source examples.</strong>
