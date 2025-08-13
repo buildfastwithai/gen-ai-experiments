@@ -4,21 +4,18 @@
   </a>
 </p>
 
-<h1 align="center">Gen-AI-Experiments</h1>
+<h1 align="center">🌟 Gen-AI-Experiments</h1>
 
 <p align="center">
   <strong>A comprehensive, hands-on collection of experiments in Generative AI. Master LLMs, AI Agents, RAG, and more with practical, open-source examples.</strong>
 </p>
 
 <p align="center">
-    <a href="https://github.com/buildfastwithai/gen-ai-experiments/stargazers">
-        <img src="https://img.shields.io/github/stars/buildfastwithai/gen-ai-experiments?style=social" alt="GitHub Stars">
+    <a href="https://www.linkedin.com/company/build-fast-with-ai">
+        <img src="https://img.shields.io/badge/-Follow%20BuildFastWithAI-blue?logo=linkedin&style=flat-square" alt="LinkedIn">
     </a>
-    <a href="https://x.com/BuildFastWithAI">
-        <img src="https://img.shields.io/twitter/follow/BuildFastWithAI?style=social" alt="Twitter Follow">
-    </a>
-    <a href="https://in.linkedin.com/company/build-fast-with-ai">
-        <img src="https://img.shields.io/badge/LinkedIn-blue?style=social&logo=linkedin" alt="LinkedIn Follow">
+    <a href="https://twitter.com/BuildFastWithAI">
+        <img src="https://img.shields.io/twitter/follow/BuildFastWithAI" alt="Twitter">
     </a>
 </p>
 
@@ -79,44 +76,37 @@ Explore hands-on projects at different levels:
 - [AI Customer Support Agent](workshop/AI_Customer_Support_Agent_.ipynb)
 - [Chat with PDF or Webpage](ai-apps-collection/Chat_with_pdf_or_webpage/main.py)
 
-1.  Clone the repo
-    ```sh
-    git clone https://github.com/buildfastwithai/gen-ai-experiments.git
+## 🚀 Getting Started
+
+1. **Clone the repository** 
+
+    ```bash 
+    git clone https://github.com/buildfastwithai/gen-ai-experiments.git 
     ```
-2.  Navigate to a project directory and install the required packages.
-    ```sh
-    cd gen-ai-experiments/ai-apps-collection/some-app
+
+2. **Navigate to the desired project directory**
+
+    ```bash 
+    cd gen-ai-experiments/ai-apps-collection/your-desired-project
+    ```
+
+3. **Install the required dependencies**
+
+    ```bash
     pip install -r requirements.txt
     ```
 
-<!-- CONTRIBUTING -->
-## Contributing
+4. **Follow the project-specific instructions** in each project's `README.md` file to set up and run the app.
 
-Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
----
+## 🤝 Contributing to Open Source
 
-## 🤝 Contributing
+Contributions are welcome! If you have any ideas, improvements, or new apps to add, please create a new [GitHub Issue](https://github.com/buildfastwithai/gen-ai-experiments/issues) or submit a pull request. Make sure to follow the existing project structure and include a detailed `README.md` for each new app.
 
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
-1.  Fork the Project
-2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4.  Push to the Branch (`git push origin feature/AmazingFeature`)
-5.  Open a Pull Request
+## 📬 Connect With Us
 
-Please read our `CONTRIBUTING.md` for more details on our code of conduct and the process for submitting pull requests.
-
----
-
-## 📄 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
-
----
-
-## 📧 Contact
-
-**BuildFastWithAI** - [@BuildFastWithAI](https://x.com/BuildFastWithAI) - satvik@buildfastwithai.com
-
-**Happy experimenting!**
+<div align="center">
+  <a href="https://buildfastwithai.com" target="_blank"><img src="https://img.shields.io/badge/Website-buildfastwithai.com-blue?style=for-the-badge&logo=globe" alt="Website"></a>
+  <a href="https://x.com/BuildFastWithAI" target="_blank"><img src="https://img.shields.io/badge/Twitter-@BuildFastWithAI-1DA1F2?style=for-the-badge&logo=twitter" alt="Twitter"></a>
+  <a href="mailto:satvik@buildfastwithai.com"><img src="https://img.shields.io/badge/Email-Contact%20Us-red?style=for-the-badge&logo=gmail" alt="Email"></a>
+</div>
