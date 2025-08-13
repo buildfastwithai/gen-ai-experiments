@@ -112,5 +112,3 @@ Contributions are welcome! If you have any ideas, improvements, or new apps to a
   <a href="https://x.com/BuildFastWithAI" target="_blank"><img src="https://img.shields.io/badge/Twitter-@BuildFastWithAI-1DA1F2?style=for-the-badge&logo=twitter" alt="Twitter"></a>
   <a href="mailto:satvik@buildfastwithai.com"><img src="https://img.shields.io/badge/Email-Contact%20Us-red?style=for-the-badge&logo=gmail" alt="Email"></a>
 </div>
-
-**Happy experimenting!**
