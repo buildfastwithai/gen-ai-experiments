@@ -1,0 +1,8 @@
+streamlit
+plotly
+pandas
+agno
+openai
+sqlalchemy
+pydantic
+
