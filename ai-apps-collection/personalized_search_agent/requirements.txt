@@ -1,0 +1,5 @@
+streamlit
+mem0ai
+langchain_tavily
+langchain_openai
+langchain

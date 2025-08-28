@@ -1,0 +1,8 @@
+chromadb
+openai
+python-dotenv
+streamlit
+pypdf
+langchain-community
+pysqlite3-binary
+
