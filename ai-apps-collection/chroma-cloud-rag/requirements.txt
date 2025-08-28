@@ -4,4 +4,3 @@ python-dotenv
 streamlit
 pypdf
 langchain-community
-sqlite3
