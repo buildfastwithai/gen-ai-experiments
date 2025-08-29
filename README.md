@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://www.buildfastwithai.com/">
-    <img src=".resorces/Banner.png" width="900px" alt="BuildFastWithAI: Master Generative AI">
+    <img src=".resorces/Banner2.png" width="900px" alt="BuildFastWithAI: Master Generative AI">
   </a>
 </p>
 
