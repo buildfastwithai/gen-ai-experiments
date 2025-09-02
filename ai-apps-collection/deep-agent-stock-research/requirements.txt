@@ -1,0 +1,9 @@
+deepagents
+langchain-openai
+langchain-core
+yfinance
+gradio
+streamlit
+pandas
+numpy
+python-dotenv
