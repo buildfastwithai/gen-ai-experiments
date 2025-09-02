@@ -13,10 +13,7 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-from dotenv import load_dotenv
-load_dotenv()
 
-os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
 
 with st.sidebar:
     # === BRANDING SECTION ===

@@ -38,7 +38,7 @@ export OPENAI_API_KEY="YOUR_KEY_HERE"
 ### Run the App
 From the project root:
 ```bash
-streamlit run deepagents/research_agent.py
+streamlit run deepagents/app.py
 ```
 Open the local URL shown in your terminal.
 
