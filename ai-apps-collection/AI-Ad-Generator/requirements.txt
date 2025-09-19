@@ -1,0 +1,7 @@
+streamlit==1.39.0
+browser-use==1.4.9
+google-generativeai==0.8.3
+aiofiles==24.1.0
+Pillow==10.4.0
+playwright==1.48.0
+python-dotenv==1.0.1
