@@ -39,7 +39,7 @@ This repository is your ultimate launchpad into the world of **Generative AI**. 
 Explore hands-on projects at different levels:
 
 **Ai-Apps Collection**
-- [Chat with QWEN3 Coder](ai-apps-collection/chat-with-qwen3-coder)
+- [Chat with QWEN3 Coder](ai-apps-collection/%20chat-with-qwen3-coder)
 - [Chat with PDF or Webpage](ai-apps-collection/Chat_with_pdf_or_webpage)
 - [GitHub Readme File Generator](ai-apps-collection/Github-Readme-File-Generator)
 - [Browser Use Streamlit](ai-apps-collection/browser-use-streamlit)
