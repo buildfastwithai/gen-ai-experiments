@@ -102,6 +102,11 @@ Explore hands-on projects at different levels:
 
 Contributions are welcome! If you have any ideas, improvements, or new apps to add, please create a new [GitHub Issue](https://github.com/buildfastwithai/gen-ai-experiments/issues) or submit a pull request. Make sure to follow the existing project structure and include a detailed `README.md` for each new app.
 
+Thank you for your continued support!
+
+[![Star History Chart](https://api.star-history.com/svg?repos=buildfastwithai/gen-ai-experiments&type=Date)](https://www.star-history.com/#buildfastwithai/gen-ai-experiments&Date)
+
+
 
 ## 📬 Connect With Us
 
