@@ -64,7 +64,7 @@ st.markdown('This streamlit app is made using [Baseten](https://www.baseten.co/)
 # Display chat history
 for msg in st.session_state.messages:
     if msg["role"] in "assistant":
-        with st.chat_message(msg["assistant"]):
+        with st.chat_message(msg["role"]):
             st.markdown("Code as per requiremnet below HTML/CSS/JS below:")
     else: 
         with st.chat_message(msg["role"]):
