@@ -92,7 +92,7 @@ if prompt := st.chat_input("💬 Enter your description, suggestion, or improvem
 
             # Generate HTML content
             response = client.chat.completions.create(
-                model="moonshotai/Kimi-K2-Instruct",
+                model="z-ai/glm-4.6",
                 messages=messages,
                 max_tokens=1500,
                 temperature=0.8
