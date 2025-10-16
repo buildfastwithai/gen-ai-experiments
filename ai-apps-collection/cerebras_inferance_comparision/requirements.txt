@@ -1,0 +1,10 @@
+# Core dependencies
+asyncio
+concurrent-log-handler
+
+# API clients
+openai
+cerebras-cloud-sdk
+
+# Typing & utilities
+typing-extensions
