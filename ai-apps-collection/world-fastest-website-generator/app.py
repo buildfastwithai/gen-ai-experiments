@@ -7,7 +7,27 @@ import os
 
 st.set_page_config(page_title="🌐 Website Generator (Cerebras)", layout="centered")
 
+
+with st.sidebar:
+    # === BRANDING SECTION ===
+    st.markdown(
+        "<div style='text-align: center; margin: 2px 0;'>"
+        "<a href='https://www.buildfastwithai.com/' target='_blank' style='text-decoration: none;'>"
+        "<div style='border: 2px solid #e0e0e0; border-radius: 6px; padding: 4px; "
+        "background: linear-gradient(145deg, #ffffff, #f5f5f5); "
+        "box-shadow: 0 2px 6px rgba(0,0,0,0.1); "
+        "transition: all 0.3s ease; display: inline-block; width: 100%;'>"
+        "<img src='https://github.com/Shubhwithai/chat-with-qwen/blob/main/company_logo.png?raw=true' "
+        "style='width: 100%; max-width: 100%; height: auto; border-radius: 8px; display: block;' "
+        "alt='Build Fast with AI Logo'>"
+        "</div>"
+        "</a>"
+    "</div>",
+    unsafe_allow_html=True
+    )
+
 st.sidebar.header("⚙️ Configuration")
+
 
 # Cerebras API key + models
 api_key = st.sidebar.text_input("Enter your Cerebras API Key", type="password")
@@ -17,7 +37,8 @@ model_name = st.sidebar.selectbox(
         # Solid production picks; adjust as you like
         "gpt-oss-120b",
         "qwen-3-32b",
-        "llama-3.3-70b"
+        "llama-3.3-70b",
+        "qwen-3-coder-480b"
   
     ],
     index=0,
@@ -76,7 +97,7 @@ if "site_code" not in st.session_state:
     st.session_state.site_code = ""
 
 # ========== UI Header ==========
-st.title("🌐 Website Generator using Cerebras")
+st.title("🌐 World Fastest Website Generator using Cerebras")
 
 # Small helper to build a starter brief from presets
 def build_brief(user_idea: str, preset: str, style: str) -> str:
