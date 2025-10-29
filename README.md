@@ -115,3 +115,11 @@ Thank you for your continued support!
   <a href="https://x.com/BuildFastWithAI" target="_blank"><img src="https://img.shields.io/badge/Twitter-@BuildFastWithAI-1DA1F2?style=for-the-badge&logo=twitter" alt="Twitter"></a>
   <a href="mailto:satvik@buildfastwithai.com"><img src="https://img.shields.io/badge/Email-Contact%20Us-red?style=for-the-badge&logo=gmail" alt="Email"></a>
 </div>
+
+#### AI Agent Marketplace Index And Router | [API Doc](https://www.deepnlp.org/doc/ai_agent_marketplace)
+[![AI Agent Marketplace and Router Badge](https://www.deepnlp.org/api/ai_agent_marketplace/svg?name=buildfastwithai/gen-ai-experiments&badge_type=review)](https://www.deepnlp.org/store/ai-agent/ai-agent/pub-buildfastwithai/gen-ai-experiments)
+
+```
+curl 'https://www.deepnlp.org/api/ai_agent_marketplace/v2?id=buildfastwithai/gen-ai-experiments'
+```
+    
