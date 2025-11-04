@@ -1,63 +1,63 @@
 """
-AgentOS — Personal Life Assistant with ChromaDB vector retrieval
+improved_personal_agent.py
+
+Improved AgentOS single-file app:
+- Uses SqliteDb for agent persistence (like your example).
+- Uses Claude model (as in your example) for the agent.
+- Uses ChromaDB for vector knowledge (with OpenAI or SentenceTransformer embeddings).
+- Exposes a KnowledgeChroma wrapper with the attributes AgentOS expects.
+- Preloads a few sample docs and user helpers (todos/budget/workouts).
 """
 
 import os
 from datetime import datetime, timezone, timedelta
-from typing import Dict, Any
+from typing import Dict, Any, Optional, List
 
+# AgentOS imports
 from agno.agent import Agent
-from agno.models.openai import OpenAIChat
+from agno.db.sqlite import SqliteDb
+from agno.models.anthropic import Claude
 from agno.os import AgentOS
 from agno.team import Team
+from agno.tools.mcp import MCPTools
 from agno.tools.duckduckgo import DuckDuckGoTools
 
-# --- Vector DB and embeddings ---
-import chromadb
-from chromadb.utils import embedding_functions
+# Chroma + Embeddings
+try:
+    import chromadb
+    from chromadb.utils import embedding_functions
+except Exception as e:
+    raise RuntimeError(
+        "chromadb import failed. Install chromadb and its dependencies: `pip install chromadb`.\n"
+        f"Original error: {e}"
+    )
 
-# Initialize Chroma client (in-memory or persistent)
+# Optional local embedding fallback
+USE_OPENAI = bool(os.getenv("OPENAI_API_KEY"))
+
+# ---------- Chroma client & embedding setup ----------
+# Use in-memory client by default; change to PersistentClient(path=...) if you want persistence.
 chroma_client = chromadb.Client()
-from dotenv import load_dotenv
-load_dotenv()
 
-# Choose embedding function:
-if os.getenv("OPENAI_API_KEY"):
-    embedding_fn = embedding_functions.OpenAIEmbeddingFunction(
-        api_key=os.getenv("OPENAI_API_KEY"), model_name="text-embedding-3-small"
+if USE_OPENAI:
+    emb_fn = embedding_functions.OpenAIEmbeddingFunction(
+        api_key=os.getenv("OPENAI_API_KEY"),
+        model_name="text-embedding-3-small"
     )
 else:
-    embedding_fn = embedding_functions.SentenceTransformerEmbeddingFunction(
+    # SentenceTransformer fallback
+    emb_fn = embedding_functions.SentenceTransformerEmbeddingFunction(
         model_name="all-MiniLM-L6-v2"
     )
 
-# Create collection for knowledge base
+# Create or get a collection for the assistant KB
+KB_COLLECTION_NAME = "personal_assistant_kb"
 kb_collection = chroma_client.get_or_create_collection(
-    name="personal_assistant_kb",
-    embedding_function=embedding_fn
+    name=KB_COLLECTION_NAME,
+    embedding_function=emb_fn
 )
 
-# --- Add sample docs ---
-docs = [
-    {"id": "r1", "title": "5-Min Avocado Toast",
-     "text": "Mash avocado with lemon/salt, toast bread, spread, add chili or egg if desired."},
-    {"id": "r2", "title": "Simple Budget Template",
-     "text": "Track monthly income and expenses using 50/30/20 rule."},
-    {"id": "f1", "title": "10-Min Low Impact Home Workout",
-     "text": "Warm-up 2 min march in place. Circuit: squats, push-ups, glute bridges, side planks."},
-]
-
-for d in docs:
-    kb_collection.add(
-        ids=[d["id"]],
-        documents=[d["text"]],
-        metadatas=[{"title": d["title"], "created_at": datetime.now(timezone.utc).isoformat()}]
-    )
-
-# --- Knowledge wrapper ---
-# --- Knowledge wrapper that AgentOS expects (updated) ---
-from typing import Dict, Any, List, Optional
-
+# ---------- Knowledge wrapper that AgentOS expects ----------
 class KnowledgeChroma:
     """
     Thin wrapper around a Chroma collection that exposes:
@@ -74,12 +74,16 @@ class KnowledgeChroma:
 
     def add_doc(self, doc_id: str, title: str, text: str, metadata: Dict[str, Any] = None):
         metadata = metadata or {}
+        # Keep title in metadata for quick retrieval
+        meta = {"title": title, **metadata}
+        # Add/Upsert to collection
+        # Chroma will deduplicate by id if same id exists
         self.collection.add(
             ids=[doc_id],
             documents=[text],
-            metadatas=[{"title": title, **metadata}],
+            metadatas=[meta],
         )
-        return {"id": doc_id, "title": title, "text": text, "metadata": metadata}
+        return {"id": doc_id, "title": title, "text": text, "metadata": meta}
 
     def get_doc(self, doc_id: str) -> Optional[Dict[str, Any]]:
         try:
@@ -102,10 +106,9 @@ class KnowledgeChroma:
         - filters: a dict used as Chroma 'where' clause (optional).
         """
         n = int(top_k) if top_k is not None else int(self.max_results)
-        # Chroma's query supports `where` for filtering; only pass it if filters provided.
         query_kwargs = {"query_texts": [query], "n_results": n}
         if filters:
-            # Chroma expects 'where' to be a dict
+            # Chroma expects 'where' to be a dict describing metadata filters
             query_kwargs["where"] = filters
 
         res = self.collection.query(**query_kwargs)
@@ -127,54 +130,101 @@ class KnowledgeChroma:
             })
         return results
 
+# Instantiate wrapper
+knowledge = KnowledgeChroma(kb_collection, max_results=6)
 
-knowledge = KnowledgeChroma(kb_collection, max_results=8)
+# ---------- Preload KB with sample docs (idempotent) ----------
+SAMPLE_DOCS = [
+    {"id": "r1", "title": "5-Min Avocado Toast",
+     "text": "Mash avocado with lemon/salt, toast bread, spread, add chili or egg if desired. Ready in 5-7 minutes."},
+    {"id": "r2", "title": "Simple Budget Template",
+     "text": "Track monthly income and expenses. Try 50% needs / 30% wants / 20% savings. Keep recurring expenses separate."},
+    {"id": "w1", "title": "10-Min Low Impact Home Workout",
+     "text": "Warm-up 2 min march in place. Circuit: chair squats 40s, incline push-ups 30s, glute bridges 40s, side plank 20s each side. Repeat 2 rounds."},
+    {"id": "m1", "title": "Egg Spinach Omelette",
+     "text": "Beat eggs, add chopped spinach and tomato, fry on low-med heat, fold and serve with toast."}
+]
 
-# --- Set up agents ---
-fast_model = OpenAIChat(id="gpt-5-mini")
+for d in SAMPLE_DOCS:
+    # add_doc is idempotent if same id is added again
+    knowledge.add_doc(d["id"], d["title"], d["text"], metadata={"source": "sample"})
 
-life_agent = Agent(
-    name="Life Agent",
-    id="life_agent",
-    role="Personal assistant for everyday tasks.",
-    model=fast_model,
-    instructions=[
-        "Use ChromaDB-backed KB for recipes, workouts, or budget tips.",
-        "Keep responses short and practical."
-    ],
+# ---------- Simple in-memory helpers (user-facing) ----------
+# These are not persisted in Chroma; agent DB will use SqliteDb for history/memories
+def add_todo(store: Dict[str, Dict[str, Any]], todo_id: str, title: str, due: Optional[str] = None, note: str = ""):
+    item = {"id": todo_id, "title": title, "note": note, "created_at": datetime.now(timezone.utc).isoformat(), "due": due, "status": "open"}
+    store[todo_id] = item
+    return item
+
+# lightweight in-file user store (non-persistent across process restarts)
+USER_STORE: Dict[str, Dict[str, Any]] = {}
+add_todo(USER_STORE, "todo-1", "Buy groceries: milk, eggs, spinach", (datetime.now(timezone.utc) + timedelta(days=1)).isoformat(), "Prefer fresh spinach")
+
+# ---------- Agent configuration (following your simple_agent logic) ----------
+# Database file for agent memory & persistence
+SQLITE_DB_FILE = os.getenv("AGENT_SQLITE_DB", "tmp/personal_agent.db")
+db = SqliteDb(db_file=SQLITE_DB_FILE)
+
+# Model - follow your example (Claude). Swap out for OpenAI/Anthropic as you prefer.
+agent_model = Claude(id=os.getenv("CLAUDE_MODEL_ID", "claude-sonnet-4-5"))
+
+# Tools
+mcp = MCPTools(transport="streamable-http", url=os.getenv("MCP_URL", "https://docs.agno.com/mcp"))
+ddg = DuckDuckGoTools()
+
+# Create the Agent
+personal_agent = Agent(
+    name="Personal Life Agent",
+    model=agent_model,
+    db=db,
+    tools=[mcp, ddg],
+    add_history_to_context=True,
+    add_datetime_to_context=True,
+    enable_agentic_memory=True,
+    num_history_runs=3,
+    markdown=True,
+    # Provide our Chroma-backed knowledge directly
     knowledge=knowledge,
+    role="Friendly personal assistant: recipes, budgets, quick planning, workouts.",
+    instructions=[
+        "Check the KB (Chroma) first for quick recipes, workouts, or tips.",
+        "When the user asks to add/complete/list todos or budgets, use helper functions and confirm action.",
+        "Be concise and show short snippets of matched knowledge when relevant."
+    ],
 )
 
-team = Team(
+# Optional: create a small team (mirrors your earlier multi-agent idea)
+personal_team = Team(
     name="Personal Life Team",
     id="personal_life_team",
-    description="Agents for personal productivity, fitness, travel, and finance.",
-    members=[life_agent],
-    model=fast_model,
+    description="Agents that help with everyday life tasks (recipes, travel, finance, fitness).",
+    members=[personal_agent],
+    model=agent_model,
+    instructions=["Coordinate sensibly when multi-agent responses are requested."],
+    db=db,
+    enable_user_memories=True,
+    add_datetime_to_context=True,
+    markdown=True,
 )
 
+# Create AgentOS
 agent_os = AgentOS(
-    id="agentos-personal-assistant-chroma",
-    agents=[life_agent],
-    teams=[team],
+    agents=[personal_agent],
+    teams=[personal_team],
+    id="improved-personal-agent"
 )
 
 app = agent_os.get_app()
 
-SAMPLE_PROMPTS = [
-    # Life agent tasks
-    'Add a to-do: "Schedule dentist appointment next Monday at 10am" and remind me the day before.',
-    'List my open to-dos and show which are due within 48 hours.',
-    # Recipe
-    'I have eggs, spinach, bread, and tomatoes. Suggest 3 quick recipes for dinner and a shopping list for missing items.',
-    'Create a 3-day vegetarian meal plan with breakfast, lunch, dinner and a compact shopping list.',
-    # Travel
-    'Plan a weekend trip to Goa from Nov 21-23: suggest a 2-day itinerary, packing checklist, and rough cost estimate for 2 people.',
-    # Finance
-    'Summarize my budget for 2025-11 (income $2500, expenses rent $800, groceries $250, transport $100). Suggest 3 ways to save $100/month.',
-    # Fitness
-    'I have 15 minutes and a bad knee. Give me a low-impact workout I can do at home.',
-]
+# ---------- Small CLI helper to show searching works ----------
+def debug_search(q: str):
+    print(f"\n== Searching KB for: {q}")
+    results = knowledge.search(q)
+    for r in results:
+        print(f"- {r['title']} ({r['doc_id']}) score={r['score']} snippet={r['snippet'][:120]}")
 
 if __name__ == "__main__":
-    agent_os.serve(app="personel_agent:app", port=7777)
+    # Quick debug: run a sample search
+    debug_search("quick dinner recipes using eggs, spinach, bread, tomatoes")
+    # Serve the web UI (reload useful in dev)
+    agent_os.serve(app="improved_personal_agent:app", reload=True)
