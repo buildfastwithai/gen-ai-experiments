@@ -5,23 +5,26 @@ from agno.os import AgentOS
 from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.tools.file import FileTools
 
+# Create shared database for all agents
+shared_db = SqliteDb(db_file="finance_system.db")
+
 # Financial Assistant Agent
 finance_agent = Agent(
     name="Finance Assistant",
-    model=OpenAIChat(id="gpt-4.1"),
+    model=OpenAIChat(id="gpt-4o"),
     description="AI financial advisor for budgeting, investments, and planning",
     tools=[DuckDuckGoTools(), FileTools()],
-    db=SqliteDb(db_file="finance.db", id="finance_db"),
+    db=shared_db,
     instructions=["Provide practical financial advice with proper disclaimers"]
 )
 
 # Budget Tracker Agent
 budget_agent = Agent(
     name="Budget Tracker", 
-    model=OpenAIChat(id="gpt-4.1"),
+    model=OpenAIChat(id="gpt-4o"),
     description="Expense tracking and budget management specialist",
     tools=[FileTools()],
-    db=SqliteDb(db_file="budget.db", id="budget_db"),
+    db=shared_db,
     instructions=["Track expenses, analyze spending patterns, suggest optimizations"]
 )
 
@@ -36,5 +39,5 @@ finance_os = AgentOS(
 app = finance_os.get_app()
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8001)
+    finance_os.serve(app="finance_assistant_app:app", host="0.0.0.0", port=8001)
  
