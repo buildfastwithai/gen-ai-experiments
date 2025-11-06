@@ -1,184 +1,269 @@
-# Personal Finance Management System
+# 🏦 Personal Finance Management System
 
-A comprehensive AI-powered financial assistant built with Agno v2.0 that helps you manage your personal finances through intelligent agents.
+A multi-agent AI financial advisor built with [Agno](https://docs.agno.com) - featuring two specialized agents for comprehensive financial management.
 
-## Overview
+## 🎯 What This Does
 
-This application provides two specialized AI agents:
-- **Personal Finance Assistant**: Expert financial advisor for budgeting, investments, and financial planning
-- **Budget Tracker**: Specialized in expense tracking and budget management
+This application creates a **Personal Finance Management System** with two AI agents:
 
-## Features
+- **💰 Finance Assistant**: Provides investment advice, financial planning, and market research
+- **📊 Budget Tracker**: Handles expense tracking, spending analysis, and budget optimization
 
-- 🤖 **Dual AI Agents**: Specialized agents for different financial tasks
-- 💾 **Persistent Memory**: SQLite database storage for conversation history
-- 🔍 **Web Search**: DuckDuckGo integration for market research
-- 📁 **File Management**: File tools for document handling
-- 🌐 **Web Interface**: FastAPI-based web application
-- 📊 **Personalized Advice**: Context-aware recommendations based on conversation history
+Both agents share a unified database and work together to provide comprehensive financial guidance.
 
-## Prerequisites
+## 🚀 Quick Start
 
-Before running the application, ensure you have:
+### Prerequisites
 
-1. **Python 3.8+** installed
-2. **Agno v2.0** framework
-3. **OpenAI API Key** (for GPT-4 access)
+- Python 3.12+
+- OpenAI API Key
 
-## Installation
-
-### Step 1: Clone or Download the Project
+### 1. Setup Environment
 
 ```bash
-# If using git
-git clone <your-repository-url>
-cd <project-directory>
+# Create virtual environment
+uv venv --python 3.12
+source .venv/bin/activate
 
-# Or simply ensure you have the finance_assistant_app.py file
+# Install dependencies
+uv pip install -U agno openai 'fastapi[standard]' sqlalchemy
 ```
 
-### Step 2: Install Dependencies
+### 2. Set API Key
 
 ```bash
-pip install agno
-```
-
-### Step 3: Set Up Environment Variables
-
-Create a `.env` file in your project directory or set environment variables:
-
-```bash
-# Required for OpenAI integration
 export OPENAI_API_KEY="your-openai-api-key-here"
 ```
 
-## Quick Start
-
-### Step 1: Run the Application
+### 3. Run the Application
 
 ```bash
-python finance_assistant_app.py
+# Start the development server
+fastapi dev finance_assistant_app.py
+
+# Your app will be running at:
+# 🌐 http://localhost:8000
+# 📚 API docs: http://localhost:8000/docs
 ```
 
-### Step 2: Access the Web Interface
+### 4. Connect to AgentOS UI
 
-Open your browser and navigate to:
-```
-http://localhost:8001
-```
+1. Go to [os.agno.com](https://os.agno.com)
+2. Click "Add new OS" 
+3. Select "Local"
+4. Enter endpoint: `http://localhost:8000`
+5. Name it "Finance Management System"
+6. Click "Connect"
 
-### Step 3: Start Chatting
+## 🏗️ Architecture Overview
 
-You'll see the AgentOS interface where you can:
-- Chat with the **Personal Finance Assistant** for general financial advice
-- Use the **Budget Tracker** for expense tracking and budget management
+### Multi-Agent System
 
-## Usage Examples
-
-### Personal Finance Assistant
-
-Ask questions like:
-- "Help me create a retirement savings plan"
-- "What's the current state of the stock market?"
-- "Should I invest in index funds or individual stocks?"
-- "How much should I save for an emergency fund?"
-
-### Budget Tracker
-
-Use for tasks like:
-- "Track my monthly expenses"
-- "Analyze my spending patterns"
-- "Create a budget for next month"
-- "Show me where I can cut costs"
-
-## File Structure
-
-```
-project-directory/
-├── finance_assistant_app.py    # Main application file
-├── README.md                   # This file
-├── finance_assistant.db        # SQLite database (created automatically)
-├── budget_tracker.db          # SQLite database (created automatically)
-└── .env                       # Environment variables (create this)
-```
-
-## Configuration
-
-### Customizing Agents
-
-You can modify the agents in `finance_assistant_app.py`:
-
-1. **Change AI Model**: Replace `OpenAIChat(id="gpt-4.1")` with other models
-2. **Add Tools**: Include additional tools from the Agno toolkit
-3. **Modify Instructions**: Update the `instructions` list for each agent
-4. **Change Database**: Modify database file names or use different database types
-
-### Port Configuration
-
-To run on a different port, modify the last line:
 ```python
-uvicorn.run(app, host="0.0.0.0", port=YOUR_PORT)
+# Two specialized agents
+finance_agent = Agent(...)  # Investment & planning advice
+budget_agent = Agent(...)   # Expense tracking & analysis
+
+# Unified system
+finance_os = AgentOS(agents=[finance_agent, budget_agent])
 ```
 
-## Database Storage
+### Key Components
 
-The application creates two SQLite databases:
-- `finance_assistant.db`: Stores conversations with the Personal Finance Assistant
-- `budget_tracker.db`: Stores conversations with the Budget Tracker
+| Component | Purpose |
+|-----------|---------|
+| **AgentOS** | Production runtime for multi-agent orchestration |
+| **SqliteDb** | Shared database for persistent conversations |
+| **OpenAI GPT-4o** | Language model powering both agents |
+| **DuckDuckGo Tools** | Web search for market research |
+| **File Tools** | Document processing and analysis |
 
-These databases enable:
-- Conversation history persistence
-- Personalized recommendations
-- Context-aware responses
+## 🤖 Agent Capabilities
 
-## Troubleshooting
+### Finance Assistant Agent
+- **Model**: GPT-4o
+- **Tools**: DuckDuckGo search, File processing
+- **Specialization**: Investment advice, financial planning, market research
+- **Instructions**: Provides practical financial advice with proper disclaimers
 
-### Common Issues
+### Budget Tracker Agent  
+- **Model**: GPT-4o
+- **Tools**: File processing
+- **Specialization**: Expense tracking, spending pattern analysis
+- **Instructions**: Tracks expenses, analyzes patterns, suggests optimizations
 
-1. **OpenAI API Key Error**
-   ```
-   Solution: Ensure your OPENAI_API_KEY environment variable is set correctly
-   ```
+## 📊 Features
 
-2. **Port Already in Use**
-   ```
-   Solution: Change the port number in the uvicorn.run() call
-   ```
+### ✅ Core Features
+- **Multi-agent collaboration** - Two specialized financial agents
+- **Persistent conversations** - Shared database maintains context
+- **Real-time web search** - Market research and financial data
+- **File processing** - Analyze financial documents
+- **Production-ready API** - FastAPI with automatic documentation
 
-3. **Module Import Errors**
-   ```
-   Solution: Ensure Agno v2.0 is properly installed: pip install agno
-   ```
+### ✅ AgentOS Benefits
+- **Pre-built FastAPI Runtime** - Ready-to-use web application
+- **Integrated Control Plane** - Monitor and manage via web UI
+- **Private by Design** - Runs entirely in your environment
 
-### Getting Help
+## 🛠️ Code Structure
 
-If you encounter issues:
-1. Check the console output for error messages
-2. Verify your OpenAI API key is valid and has sufficient credits
-3. Ensure all dependencies are installed correctly
+```python
+# 1. Create shared database
+shared_db = SqliteDb(db_file="finance_system.db")
 
-## Security Notes
+# 2. Define specialized agents
+finance_agent = Agent(
+    name="Finance Assistant",
+    model=OpenAIChat(id="gpt-4o"),
+    tools=[DuckDuckGoTools(), FileTools()],
+    db=shared_db
+)
 
-- Never commit your `.env` file or API keys to version control
-- The SQLite databases contain conversation history - handle with care
-- Consider using environment-specific configurations for production deployment
+budget_agent = Agent(
+    name="Budget Tracker",
+    model=OpenAIChat(id="gpt-4o"), 
+    tools=[FileTools()],
+    db=shared_db
+)
 
-## Next Steps
+# 3. Create AgentOS system
+finance_os = AgentOS(
+    agents=[finance_agent, budget_agent],
+    name="Personal Finance Management System"
+)
 
-Consider extending the application with:
-- Additional financial tools (stock APIs, banking integrations)
-- More specialized agents (tax advisor, investment analyst)
-- Enhanced UI customization
-- Export functionality for financial reports
-- Integration with external financial services
+# 4. Get FastAPI app
+app = finance_os.get_app()
+```
 
-## Support
+## 🔧 Configuration Options
 
-For issues related to:
-- **Agno Framework**: Check the official Agno documentation
-- **OpenAI API**: Refer to OpenAI's documentation
-- **This Application**: Review the code comments and error messages
+### Environment Variables
+```bash
+# Required
+OPENAI_API_KEY=your-openai-api-key
+
+# Optional
+AGNO_LOG_LEVEL=INFO
+AGNO_DB_URL=sqlite:///finance_system.db
+```
+
+### Customization
+
+#### Add More Tools
+```python
+from agno.tools.calculator import CalculatorTools
+from agno.tools.email import EmailTools
+
+# Add to agent tools
+tools=[DuckDuckGoTools(), FileTools(), CalculatorTools(), EmailTools()]
+```
+
+#### Change Models
+```python
+from agno.models.anthropic import Claude
+
+# Use Claude instead
+model=Claude(id="claude-sonnet-4-5")
+```
+
+#### Add Memory
+```python
+from agno.memory.db import DbMemory
+
+# Add long-term memory
+memory=DbMemory(db=shared_db)
+```
+
+## 📡 API Endpoints
+
+Once running, your application provides these endpoints:
+
+- `GET /health` - Health check
+- `GET /agents` - List available agents  
+- `POST /agents/{agent_name}/runs` - Chat with specific agent
+- `GET /sessions` - Manage conversation sessions
+- `GET /docs` - Interactive API documentation
+
+## 🎯 Usage Examples
+
+### Chat with Finance Assistant
+```bash
+curl -X POST "http://localhost:8000/agents/finance-assistant/runs" \
+  -H "Content-Type: application/json" \
+  -d '{"message": "What should I know about investing in index funds?"}'
+```
+
+### Chat with Budget Tracker
+```bash
+curl -X POST "http://localhost:8000/agents/budget-tracker/runs" \
+  -H "Content-Type: application/json" \
+  -d '{"message": "Analyze my monthly spending patterns"}'
+```
+
+## 🚀 Production Deployment
+
+### Using AgentOS Serve
+```python
+if __name__ == "__main__":
+    finance_os.serve(
+        app="finance_assistant_app:app",
+        host="0.0.0.0", 
+        port=8001
+    )
+```
+
+### Using Docker
+```dockerfile
+FROM python:3.12-slim
+
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+COPY . .
+EXPOSE 8000
+
+CMD ["fastapi", "run", "finance_assistant_app.py", "--host", "0.0.0.0", "--port", "8000"]
+```
+
+## 🔍 Monitoring & Debugging
+
+### View Logs
+```bash
+# Enable debug mode
+export AGNO_LOG_LEVEL=DEBUG
+fastapi dev finance_assistant_app.py
+```
+
+### Database Inspection
+```python
+# Check stored conversations
+from agno.db.sqlite import SqliteDb
+db = SqliteDb(db_file="finance_system.db")
+# Inspect tables and data
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## 📚 Learn More
+
+- [Agno Documentation](https://docs.agno.com)
+- [AgentOS Guide](https://docs.agno.com/concepts/agentos)
+- [Agent Building Guide](https://docs.agno.com/concepts/agents/building-agents)
+- [Cookbook Examples](https://github.com/agno-agi/agno/tree/main/cookbook)
+
+## 📄 License
+
+This project is licensed under the MIT License.
 
 ---
 
-**Disclaimer**: This application provides general financial information and should not be considered as professional financial advice. Always consult with qualified financial advisors for important financial decisions.
+**Built with ❤️ using [Agno](https://agno.com) - The fastest multi-agent framework**
