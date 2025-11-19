@@ -1,0 +1,8 @@
+streamlit==1.39.0
+pandas==2.2.3
+plotly==5.24.1
+google-generativeai==0.8.2
+agno==2.2.13
+python-dotenv==1.0.1
+pytest==8.3.3
+

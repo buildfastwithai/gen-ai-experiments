@@ -1,0 +1,1197 @@
+What is Agno?
+
+Copy page
+
+Agno is a python framework for building multi-agent systems with shared memory, knowledge and reasoning.
+
+Engineers and researchers use Agno to build:
+Level 1: Agents with tools and instructions (example).
+Level 2: Agents with knowledge and storage (example).
+Level 3: Agents with memory and reasoning (example).
+Level 4: Agent Teams that can reason and collaborate (example).
+Level 5: Agentic Workflows with state and determinism (example).
+Example: Level 1 Reasoning Agent that uses the YFinance API to answer questions:
+Reasoning Finance Agent
+
+Copy
+
+Ask AI
+from agno.agent import Agent
+from agno.models.anthropic import Claude
+from agno.tools.reasoning import ReasoningTools
+from agno.tools.yfinance import YFinanceTools
+
+reasoning_agent = Agent(
+    model=Claude(id="claude-sonnet-4-20250514"),
+    tools=[
+        ReasoningTools(add_instructions=True),
+        YFinanceTools(stock_price=True, analyst_recommendations=True, company_info=True, company_news=True),
+    ],
+    instructions="Use tables to display data.",
+    markdown=True,
+)
+
+
+Multi Agent Systems
+
+Copy page
+
+Teams of Agents working together towards a common goal.
+
+​
+Level 4: Agent Teams that can reason and collaborate
+Agents are the atomic unit of work, and work best when they have a narrow scope and a small number of tools. When the number of tools grows beyond what the model can handle or you need to handle multiple concepts, use a team of agents to spread the load.
+Agno provides an industry leading multi-agent architecture that allows you to build Agent Teams that can reason, collaborate and coordinate. In this example, we’ll build a team of 2 agents to analyze the semiconductor market performance, reasoning step by step.
+level_4_team.py
+
+Copy
+
+Ask AI
+from agno.agent import Agent
+from agno.models.anthropic import Claude
+from agno.models.openai import OpenAIChat
+from agno.team.team import Team
+from agno.tools.duckduckgo import DuckDuckGoTools
+from agno.tools.reasoning import ReasoningTools
+from agno.tools.yfinance import YFinanceTools
+
+web_agent = Agent(
+    name="Web Search Agent",
+    role="Handle web search requests and general research",
+    model=OpenAIChat(id="gpt-4.1"),
+    tools=[DuckDuckGoTools()],
+    instructions="Always include sources",
+    add_datetime_to_instructions=True,
+)
+
+finance_agent = Agent(
+    name="Finance Agent",
+    role="Handle financial data requests and market analysis",
+    model=OpenAIChat(id="gpt-4.1"),
+    tools=[YFinanceTools(stock_price=True, stock_fundamentals=True,analyst_recommendations=True, company_info=True)],
+    instructions=[
+        "Use tables to display stock prices, fundamentals (P/E, Market Cap), and recommendations.",
+        "Clearly state the company name and ticker symbol.",
+        "Focus on delivering actionable financial insights.",
+    ],
+    add_datetime_to_instructions=True,
+)
+
+reasoning_finance_team = Team(
+    name="Reasoning Finance Team",
+    mode="coordinate",
+    model=Claude(id="claude-sonnet-4-20250514"),
+    members=[web_agent, finance_agent],
+    tools=[ReasoningTools(add_instructions=True)],
+    instructions=[
+        "Collaborate to provide comprehensive financial and investment insights",
+        "Consider both fundamental analysis and market sentiment",
+        "Use tables and charts to display data clearly and professionally",
+        "Present findings in a structured, easy-to-follow format",
+        "Only output the final consolidated analysis, not individual agent responses",
+    ],
+    markdown=True,
+    show_members_responses=True,
+    enable_agentic_context=True,
+    add_datetime_to_instructions=True,
+    success_criteria="The team has provided a complete financial analysis with data, visualizations, risk assessment, and actionable investment recommendations supported by quantitative analysis and market research.",
+)
+
+if __name__ == "__main__":
+    reasoning_finance_team.print_response("""Compare the tech sector giants (AAPL, GOOGL, MSFT) performance:
+        1. Get financial data for all three companies
+        2. Analyze recent news affecting the tech sector
+        3. Calculate comparative metrics and correlations
+        4. Recommend portfolio allocation weights""",
+        stream=True,
+        show_full_reasoning=True,
+        stream_intermediate_steps=True,
+    )
+
+
+
+Level 5: Agentic Workflows with state and determinism
+Workflows are deterministic, stateful, multi-agent programs built for production applications. We write the workflow in pure python, giving us extreme control over the execution flow.
+Having built 100s of agentic systems, no framework or step based approach will give you the flexibility and reliability of pure-python. Want loops - use while/for, want conditionals - use if/else, want exceptional handling - use try/except.
+Because the workflow logic is a python function, AI code editors can vibe code workflows for you.
+Add https://docs.agno.com as a document source and vibe away.
+Here’s a simple workflow that caches previous outputs, you control every step: what gets cached, what gets streamed, what gets logged and what gets returned.
+level_5_workflow.py
+
+Copy
+
+Ask AI
+from typing import Iterator
+from agno.agent import Agent, RunResponse
+from agno.models.openai import OpenAIChat
+from agno.utils.log import logger
+from agno.utils.pprint import pprint_run_response
+from agno.workflow import Workflow
+
+
+class CacheWorkflow(Workflow):
+    # Add agents or teams as attributes on the workflow
+    agent = Agent(model=OpenAIChat(id="gpt-4o-mini"))
+
+    # Write the logic in the `run()` method
+    def run(self, message: str) -> Iterator[RunResponse]:
+        logger.info(f"Checking cache for '{message}'")
+        # Check if the output is already cached
+        if self.session_state.get(message):
+            logger.info(f"Cache hit for '{message}'")
+            yield RunResponse(
+                run_id=self.run_id, content=self.session_state.get(message)
+            )
+            return
+
+        logger.info(f"Cache miss for '{message}'")
+        # Run the agent and yield the response
+        yield from self.agent.run(message, stream=True)
+
+        # Cache the output after response is yielded
+        self.session_state[message] = self.agent.run_response.content
+
+
+if __name__ == "__main__":
+    workflow = CacheWorkflow()
+    # Run workflow (this is takes ~1s)
+    response: Iterator[RunResponse] = workflow.run(message="Tell me a joke.")
+    # Print the response
+    pprint_run_response(response, markdown=True, show_time=True)
+    # Run workflow again (this is immediate because of caching)
+    response: Iterator[RunResponse] = workflow.run(message="Tell me a joke.")
+    # Print the response
+    pprint_run_response(response, markdown=True, show_time=True)
+Run the workflow
+
+Copy
+
+Ask AI
+python level_5_workflow.py
+
+Agent State
+
+Copy page
+
+State is any kind of data the Agent needs to maintain throughout runs.
+A simple yet common use case for Agents is to manage lists, items and other “information” for a user. For example, a shopping list, a todo list, a wishlist, etc.
+This can be easily managed using the session_state. The Agent updates the session_state in tool calls and exposes them to the Model in the description and instructions.
+Agno’s provides a powerful and elegant state management system, here’s how it works:
+The Agent has a session_state parameter.
+We add our state variables to this session_state dictionary.
+We update the session_state dictionary in tool calls or other functions.
+We share the current session_state with the Model in the description and instructions.
+The session_state is stored with Agent sessions and is persisted in a database. Meaning, it is available across execution cycles. This also means when switching sessions between calls to agent.run(), the state is loaded and available.
+You can also pass session_state to the agent on agent.run(), effectively overriding any state that was set on Agent initialization.
+Here’s an example of an Agent managing a shopping list:
+session_state.py
+
+Copy
+
+Ask AI
+from agno.agent import Agent
+from agno.models.openai import OpenAIChat
+
+# Define a tool that adds an item to the shopping list
+def add_item(agent: Agent, item: str) -> str:
+    """Add an item to the shopping list."""
+    agent.session_state["shopping_list"].append(item)
+    return f"The shopping list is now {agent.session_state['shopping_list']}"
+
+
+# Create an Agent that maintains state
+agent = Agent(
+    model=OpenAIChat(id="gpt-4o-mini"),
+    # Initialize the session state with a counter starting at 0
+    session_state={"shopping_list": []},
+    tools=[add_item],
+    # You can use variables from the session state in the instructions
+    instructions="Current state (shopping list) is: {shopping_list}",
+    # Important: Add the state to the messages
+    add_state_in_messages=True,
+    markdown=True,
+)
+
+# Example usage
+agent.print_response("Add milk, eggs, and bread to the shopping list", stream=True)
+print(f"Final session state: {agent.session_state}")
+This is as good and elegant as state management gets.
+​
+Maintaining state across multiple runs
+A big advantage of sessions is the ability to maintain state across multiple runs. For example, let’s say the agent is helping a user keep track of their shopping list.
+By setting add_state_in_messages=True, the keys of the session_state dictionary are available in the description and instructions as variables.
+Use this pattern to add the shopping_list to the instructions directly.
+shopping_list.py
+
+Copy
+
+Ask AI
+from textwrap import dedent
+
+from agno.agent import Agent
+from agno.models.openai import OpenAIChat
+
+
+# Define tools to manage our shopping list
+def add_item(agent: Agent, item: str) -> str:
+    """Add an item to the shopping list and return confirmation."""
+    # Add the item if it's not already in the list
+    if item.lower() not in [i.lower() for i in agent.session_state["shopping_list"]]:
+        agent.session_state["shopping_list"].append(item)
+        return f"Added '{item}' to the shopping list"
+    else:
+        return f"'{item}' is already in the shopping list"
+
+
+def remove_item(agent: Agent, item: str) -> str:
+    """Remove an item from the shopping list by name."""
+    # Case-insensitive search
+    for i, list_item in enumerate(agent.session_state["shopping_list"]):
+        if list_item.lower() == item.lower():
+            agent.session_state["shopping_list"].pop(i)
+            return f"Removed '{list_item}' from the shopping list"
+
+    return f"'{item}' was not found in the shopping list"
+
+
+def list_items(agent: Agent) -> str:
+    """List all items in the shopping list."""
+    shopping_list = agent.session_state["shopping_list"]
+
+    if not shopping_list:
+        return "The shopping list is empty."
+
+    items_text = "\n".join([f"- {item}" for item in shopping_list])
+    return f"Current shopping list:\n{items_text}"
+
+
+# Create a Shopping List Manager Agent that maintains state
+agent = Agent(
+    model=OpenAIChat(id="gpt-4o-mini"),
+    # Initialize the session state with an empty shopping list
+    session_state={"shopping_list": []},
+    tools=[add_item, remove_item, list_items],
+    # You can use variables from the session state in the instructions
+    instructions=dedent("""\
+        Your job is to manage a shopping list.
+
+        The shopping list starts empty. You can add items, remove items by name, and list all items.
+
+        Current shopping list: {shopping_list}
+    """),
+    show_tool_calls=True,
+    add_state_in_messages=True,
+    markdown=True,
+)
+
+# Example usage
+agent.print_response("Add milk, eggs, and bread to the shopping list", stream=True)
+print(f"Session state: {agent.session_state}")
+
+agent.print_response("I got bread", stream=True)
+print(f"Session state: {agent.session_state}")
+
+agent.print_response("I need apples and oranges", stream=True)
+print(f"Session state: {agent.session_state}")
+
+agent.print_response("whats on my list?", stream=True)
+print(f"Session state: {agent.session_state}")
+
+agent.print_response("Clear everything from my list and start over with just bananas and yogurt", stream=True)
+print(f"Session state: {agent.session_state}")
+State is a great way to control context across multiple runs.
+​
+Using state in instructions
+You can use variables from the session state in the instructions by setting add_state_in_messages=True.
+Don’t use the f-string syntax in the instructions. Directly use the {key} syntax, Agno substitutes the values for you.
+state_in_instructions.py
+
+Copy
+
+Ask AI
+from textwrap import dedent
+
+from agno.agent import Agent
+from agno.models.openai import OpenAIChat
+
+
+agent = Agent(
+    model=OpenAIChat(id="gpt-4o-mini"),
+    # Initialize the session state with a variable
+    session_state={"user_name": "John"},
+    # You can use variables from the session state in the instructions
+    instructions="Users name is {user_name}",
+    show_tool_calls=True,
+    add_state_in_messages=True,
+    markdown=True,
+)
+
+agent.print_response("What is my name?", stream=True)
+​
+Changing state on run
+When you pass session_id to the agent on agent.run(), it will switch to the session with the given session_id and load any state that was set on that session.
+This is useful when you want to continue a session for a specific user.
+changing_state_on_run.py
+
+Copy
+
+Ask AI
+from agno.agent import Agent
+from agno.models.openai import OpenAIChat
+
+agent = Agent(
+    model=OpenAIChat(id="gpt-4o-mini"),
+    add_state_in_messages=True,
+    instructions="Users name is {user_name} and age is {age}",
+)
+
+# Sets the session state for the session with the id "user_1_session_1"
+agent.print_response("What is my name?", session_id="user_1_session_1", user_id="user_1", session_state={"user_name": "John", "age": 30})
+
+# Will load the session state from the session with the id "user_1_session_1"
+agent.print_response("How old am I?", session_id="user_1_session_1", user_id="user_1")
+
+# Sets the session state for the session with the id "user_2_session_1"
+agent.print_response("What is my name?", session_id="user_2_session_1", user_id="user_2", session_state={"user_name": "Jane", "age": 25})
+
+# Will load the session state from the session with the id "user_2_session_1"
+agent.print_response("How old am I?", session_id="user_2_session_1", user_id="user_2")
+​
+Persisting state in database
+session_state is part of the Agent session and is saved to the database after each run if a storage driver is provided.
+Here’s an example of an Agent that maintains a shopping list and persists the state in a database. Run this script multiple times to see the state being persisted.
+session_state_storage.py
+
+Copy
+
+Ask AI
+"""Run `pip install agno openai sqlalchemy` to install dependencies."""
+
+from agno.agent import Agent
+from agno.models.openai import OpenAIChat
+from agno.storage.sqlite import SqliteStorage
+
+
+# Define a tool that adds an item to the shopping list
+def add_item(agent: Agent, item: str) -> str:
+    """Add an item to the shopping list."""
+    if item not in agent.session_state["shopping_list"]:
+        agent.session_state["shopping_list"].append(item)
+    return f"The shopping list is now {agent.session_state['shopping_list']}"
+
+
+agent = Agent(
+    model=OpenAIChat(id="gpt-4o-mini"),
+    # Fix the session id to continue the same session across execution cycles
+    session_id="fixed_id_for_demo",
+    # Initialize the session state with an empty shopping list
+    session_state={"shopping_list": []},
+    # Add a tool that adds an item to the shopping list
+    tools=[add_item],
+    # Store the session state in a SQLite database
+    storage=SqliteStorage(table_name="agent_sessions", db_file="tmp/data.db"),
+    # Add the current shopping list from the state in the instructions
+    instructions="Current shopping list is: {shopping_list}",
+    # Important: Set `add_state_in_messages=True`
+    # to make `{shopping_list}` available in the instructions
+    add_state_in_messages=True,
+    markdown=True,
+)
+
+# Example usage
+agent.print_response("What's on my shopping list?", stream=True)
+print(f"Session state: {agent.session_state}")
+agent.print_response("Add milk, eggs, and bread", stream=True)
+print(f"Session state: {agent.session_state}")
+
+Memory
+
+Copy page
+
+Memory gives an Agent the ability to recall relavant information. Memory is a part of the Agent’s context that helps it provide the best, most personalized response.
+If the user tells the Agent they like to ski, then future responses can reference this information to provide a more personalized experience.
+In Agno, Memory covers chat history, user preferences and any supplemental information about the task at hand. Agno supports 3 types of memory out of the box:
+Session Storage (chat history and session state): Session storage saves an Agent’s sessions in a database and enables Agents to have multi-turn conversations. Session storage also holds the session state, which is persisted across runs because it is saved to the database after each run. Session storage is a form of short-term memory called “Storage” in Agno.
+User Memories (user preferences): The Agent can store insights and facts about the user that it learns through conversation. This helps the agents personalize its response to the user it is interacting with. Think of this as adding “ChatGPT like memory” to your agent. This is called “Memory” in Agno.
+Session Summaries (chat summary): The Agent can store a condensed representations of the session, useful when chat histories gets too long. This is called “Summary” in Agno.
+It is relatively easy to use your own memory implementation using Agent.context.
+To become an expert in Agentic Memory, you need to learn about:
+Default, built-in Memory
+Session Storage
+User Memories
+Session Summaries
+​
+Show me the code: Memory & Storage in Action
+Here’s a simple but complete example of using Memory and Storage in an Agent.
+memory_demo.py
+
+Copy
+
+Ask AI
+from agno.agent import Agent
+from agno.memory.v2.db.sqlite import SqliteMemoryDb
+from agno.memory.v2.memory import Memory
+from agno.models.openai import OpenAIChat
+from agno.storage.sqlite import SqliteStorage
+from rich.pretty import pprint
+
+# UserId for the memories
+user_id = "ava"
+# Database file for memory and storage
+db_file = "tmp/agent.db"
+
+# Initialize memory.v2
+memory = Memory(
+    # Use any model for creating memories
+    model=OpenAIChat(id="gpt-4.1"),
+    db=SqliteMemoryDb(table_name="user_memories", db_file=db_file),
+)
+# Initialize storage
+storage = SqliteStorage(table_name="agent_sessions", db_file=db_file)
+
+# Initialize Agent
+memory_agent = Agent(
+    model=OpenAIChat(id="gpt-4.1"),
+    # Store memories in a database
+    memory=memory,
+    # Give the Agent the ability to update memories
+    enable_agentic_memory=True,
+    # OR - Run the MemoryManager after each response
+    enable_user_memories=True,
+    # Store the chat history in the database
+    storage=storage,
+    # Add the chat history to the messages
+    add_history_to_messages=True,
+    # Number of history runs
+    num_history_runs=3,
+    markdown=True,
+)
+
+memory.clear()
+memory_agent.print_response(
+    "My name is Ava and I like to ski.",
+    user_id=user_id,
+    stream=True,
+    stream_intermediate_steps=True,
+)
+print("Memories about Ava:")
+pprint(memory.get_user_memories(user_id=user_id))
+
+memory_agent.print_response(
+    "I live in san francisco, where should i move within a 4 hour drive?",
+    user_id=user_id,
+    stream=True,
+    stream_intermediate_steps=True,
+)
+print("Memories about Ava:")
+pprint(memory.get_user_memories(user_id=user_id))
+​
+Notes
+enable_agentic_memory=True gives the Agent a tool to manage memories of the user, this tool passes the task to the MemoryManager class. You may also set enable_user_memories=True which always runs the MemoryManager after each user message.
+add_history_to_messages=True adds the chat history to the messages sent to the Model, the num_history_runs determines how many runs to add.
+read_chat_history=True adds a tool to the Agent that allows it to read chat history, as it may be larger than what’s included in the num_history_runs.
+​
+Default Memory
+Every Agent comes with built-in memory which keeps track of the messages in the session i.e. the chat history.
+You can access these messages using agent.get_messages_for_session().
+We can give the Agent access to the chat history in the following ways:
+We can set add_history_to_messages=True and num_history_runs=5 to add the messages from the last 5 runs automatically to every message sent to the agent.
+We can set read_chat_history=True to provide a get_chat_history() tool to your agent allowing it to read any message in the entire chat history.
+We recommend setting all 3: add_history_to_messages=True, num_history_runs=3 and read_chat_history=True for the best experience.
+We can also set read_tool_call_history=True to provide a get_tool_call_history() tool to your agent allowing it to read tool calls in reverse chronological order.
+The default memory is not persisted across execution cycles. So after the script finishes running, or the request is over, the built-in default memory is lost.
+You can persist this memory in a database by adding a storage driver to the Agent.
+1
+Built-in memory example
+
+agent_memory.py
+
+Copy
+
+Ask AI
+from agno.agent import Agent
+from agno.models.google.gemini import Gemini
+from rich.pretty import pprint
+
+agent = Agent(
+    model=Gemini(id="gemini-2.0-flash-exp"),
+    # Set add_history_to_messages=true to add the previous chat history to the messages sent to the Model.
+    add_history_to_messages=True,
+    # Number of historical responses to add to the messages.
+    num_history_responses=3,
+    description="You are a helpful assistant that always responds in a polite, upbeat and positive manner.",
+)
+
+# -*- Create a run
+agent.print_response("Share a 2 sentence horror story", stream=True)
+# -*- Print the messages in the memory
+pprint([m.model_dump(include={"role", "content"}) for m in agent.get_messages_for_session()])
+
+# -*- Ask a follow up question that continues the conversation
+agent.print_response("What was my first message?", stream=True)
+# -*- Print the messages in the memory
+pprint([m.model_dump(include={"role", "content"}) for m in agent.get_messages_for_session()])
+2
+Run the example
+
+Install libraries
+
+Copy
+
+Ask AI
+pip install google-genai agno
+Export your key
+
+Copy
+
+Ask AI
+export GOOGLE_API_KEY=xxx
+Run the example
+
+Copy
+
+Ask AI
+python agent_memory.py
+​
+Session Storage
+The built-in memory is only available during the current execution cycle. Once the script ends, or the request is over, the built-in memory is lost.
+Storage help us save Agent sessions and state to a database or file.
+Adding storage to an Agent is as simple as providing a storage driver and Agno handles the rest. You can use Sqlite, Postgres, Mongo or any other database you want.
+Here’s a simple example that demonstrates persistence across execution cycles:
+storage.py
+
+Copy
+
+Ask AI
+from agno.agent import Agent
+from agno.models.openai import OpenAIChat
+from agno.storage.sqlite import SqliteStorage
+from rich.pretty import pprint
+
+agent = Agent(
+    model=OpenAIChat(id="gpt-4o-mini"),
+    # Fix the session id to continue the same session across execution cycles
+    session_id="fixed_id_for_demo",
+    storage=SqliteStorage(table_name="agent_sessions", db_file="tmp/data.db"),
+    add_history_to_messages=True,
+    num_history_runs=3,
+)
+agent.print_response("What was my last question?")
+agent.print_response("What is the capital of France?")
+agent.print_response("What was my last question?")
+pprint(agent.get_messages_for_session())
+The first time you run this, the answer to “What was my last question?” will not be available. But run it again and the Agent will able to answer properly. Because we have fixed the session id, the Agent will continue from the same session every time you run the script.
+Read more in the storage section.
+​
+User Memories
+Along with storing session history and state, Agents can also create user memories based on the conversation history.
+To enable user memories, give your Agent a Memory object and set enable_agentic_memory=True.
+Enabling agentic memory will also add all existing user memories to the agent’s system prompt.
+1
+User memory example
+
+user_memory.py
+
+Copy
+
+Ask AI
+from agno.agent import Agent
+from agno.memory.v2.db.sqlite import SqliteMemoryDb
+from agno.memory.v2.memory import Memory
+from agno.models.google.gemini import Gemini
+
+memory_db = SqliteMemoryDb(table_name="memory", db_file="tmp/memory.db")
+memory = Memory(db=memory_db)
+
+john_doe_id = "john_doe@example.com"
+
+agent = Agent(
+    model=Gemini(id="gemini-2.0-flash-exp"),
+    memory=memory,
+    enable_agentic_memory=True,
+)
+
+# The agent can add new memories to the user's memory
+agent.print_response(
+    "My name is John Doe and I like to hike in the mountains on weekends.",
+    stream=True,
+    user_id=john_doe_id,
+)
+
+agent.print_response("What are my hobbies?", stream=True, user_id=john_doe_id)
+
+# The agent can also remove all memories from the user's memory
+agent.print_response(
+    "Remove all existing memories of me. Completely clear the DB.",
+    stream=True,
+    user_id=john_doe_id,
+)
+
+agent.print_response(
+    "My name is John Doe and I like to paint.", stream=True, user_id=john_doe_id
+)
+
+# The agent can remove specific memories from the user's memory
+agent.print_response("Remove any memory of my name.", stream=True, user_id=john_doe_id)
+
+2
+Run the example
+
+Install libraries
+
+Copy
+
+Ask AI
+pip install google-genai agno
+Export your key
+
+Copy
+
+Ask AI
+export GOOGLE_API_KEY=xxx
+Run the example
+
+Copy
+
+Ask AI
+python user_memory.py
+User memories are stored in the Memory object and persisted in the SqliteMemoryDb to be used across multiple users and multiple sessions.
+​
+Session Summaries
+To enable session summaries, set enable_session_summaries=True on the Agent.
+1
+Session summary example
+
+session_summary.py
+
+Copy
+
+Ask AI
+    from agno.agent import Agent
+    from agno.memory.v2.db.sqlite import SqliteMemoryDb
+    from agno.memory.v2.memory import Memory
+    from agno.models.google.gemini import Gemini
+
+    memory_db = SqliteMemoryDb(table_name="memory", db_file="tmp/memory.db")
+    memory = Memory(db=memory_db)
+
+    user_id = "jon_hamm@example.com"
+    session_id = "1001"
+
+    agent = Agent(
+        model=Gemini(id="gemini-2.0-flash-exp"),
+        memory=memory,
+        enable_session_summaries=True,
+    )
+
+    agent.print_response(
+        "What can you tell me about quantum computing?",
+        stream=True,
+        user_id=user_id,
+        session_id=session_id,
+    )
+
+    agent.print_response(
+        "I would also like to know about LLMs?",
+        stream=True,
+        user_id=user_id,
+        session_id=session_id
+    )
+
+    session_summary = memory.get_session_summary(
+        user_id=user_id, session_id=session_id
+    )
+    print(f"Session summary: {session_summary.summary}\n")
+
+Structured Output
+
+Copy page
+
+One of our favorite features is using Agents to generate structured data (i.e. a pydantic model). Use this feature to extract features, classify data, produce fake data etc. The best part is that they work with function calls, knowledge bases and all other features.
+​
+Example
+Let’s create an Movie Agent to write a MovieScript for us.
+movie_agent.py
+
+Copy
+
+Ask AI
+from typing import List
+from rich.pretty import pprint
+from pydantic import BaseModel, Field
+from agno.agent import Agent, RunResponse
+from agno.models.openai import OpenAIChat
+
+class MovieScript(BaseModel):
+    setting: str = Field(..., description="Provide a nice setting for a blockbuster movie.")
+    ending: str = Field(..., description="Ending of the movie. If not available, provide a happy ending.")
+    genre: str = Field(
+        ..., description="Genre of the movie. If not available, select action, thriller or romantic comedy."
+    )
+    name: str = Field(..., description="Give a name to this movie")
+    characters: List[str] = Field(..., description="Name of characters for this movie.")
+    storyline: str = Field(..., description="3 sentence storyline for the movie. Make it exciting!")
+
+# Agent that uses JSON mode
+json_mode_agent = Agent(
+    model=OpenAIChat(id="gpt-4o"),
+    description="You write movie scripts.",
+    response_model=MovieScript,
+    use_json_mode=True,
+)
+json_mode_agent.print_response("New York")
+
+# Agent that uses structured outputs
+structured_output_agent = Agent(
+    model=OpenAIChat(id="gpt-4o"),
+    description="You write movie scripts.",
+    response_model=MovieScript,
+)
+
+structured_output_agent.print_response("New York")
+Run the script to see the output.
+
+Copy
+
+Ask AI
+pip install -U agno openai
+
+python movie_agent.py
+The output is an object of the MovieScript class, here’s how it looks:
+
+Copy
+
+Ask AI
+# Using JSON mode
+MovieScript(
+│   setting='The bustling streets of New York City, filled with skyscrapers, secret alleyways, and hidden underground passages.',
+│   ending='The protagonist manages to thwart an international conspiracy, clearing his name and winning the love of his life back.',
+│   genre='Thriller',
+│   name='Shadows in the City',
+│   characters=['Alex Monroe', 'Eva Parker', 'Detective Rodriguez', 'Mysterious Mr. Black'],
+│   storyline="When Alex Monroe, an ex-CIA operative, is framed for a crime he didn't commit, he must navigate the dangerous streets of New York to clear his name. As he uncovers a labyrinth of deceit involving the city's most notorious crime syndicate, he enlists the help of an old flame, Eva Parker. Together, they race against time to expose the true villain before it's too late."
+)
+
+# Use the structured output
+MovieScript(
+│   setting='In the bustling streets and iconic skyline of New York City.',
+│   ending='Isabella and Alex, having narrowly escaped the clutches of the Syndicate, find themselves standing at the top of the Empire State Building. As the glow of the setting sun bathes the city, they share a victorious kiss. Newly emboldened and as an unstoppable duo, they vow to keep NYC safe from any future threats.',
+│   genre='Action Thriller',
+│   name='The NYC Chronicles',
+│   characters=['Isabella Grant', 'Alex Chen', 'Marcus Kane', 'Detective Ellie Monroe', 'Victor Sinclair'],
+│   storyline='Isabella Grant, a fearless investigative journalist, uncovers a massive conspiracy involving a powerful syndicate plotting to control New York City. Teaming up with renegade cop Alex Chen, they must race against time to expose the culprits before the city descends into chaos. Dodging danger at every turn, they fight to protect the city they love from imminent destruction.'
+)
+​
+Using a Parser Model
+You can use an additional model to parse and structure the output from your primary model. This approach is particularly effective when the primary model is optimized for reasoning tasks, as such models may not consistently produce detailed structured responses.
+
+Copy
+
+Ask AI
+agent = Agent(
+    model=Claude(id="claude-sonnet-4-20250514"),
+    description="You write movie scripts.",
+    response_model=MovieScript,
+    parser_model=OpenAIChat(id="gpt-4o"),
+)
+You can also provide a custom parser_model_prompt to your Parser Model.
+​
+Streaming Structured Output
+Streaming can be used in combination with response_model. This returns the structured output as a single event in the stream of events.
+streaming_agent.py
+
+Copy
+
+Ask AI
+import asyncio
+from typing import Dict, List
+
+from agno.agent import Agent
+from agno.models.openai.chat import OpenAIChat
+from pydantic import BaseModel, Field
+
+
+class MovieScript(BaseModel):
+    setting: str = Field(
+        ..., description="Provide a nice setting for a blockbuster movie."
+    )
+    ending: str = Field(
+        ...,
+        description="Ending of the movie. If not available, provide a happy ending.",
+    )
+    genre: str = Field(
+        ...,
+        description="Genre of the movie. If not available, select action, thriller or romantic comedy.",
+    )
+    name: str = Field(..., description="Give a name to this movie")
+    characters: List[str] = Field(..., description="Name of characters for this movie.")
+    storyline: str = Field(
+        ..., description="3 sentence storyline for the movie. Make it exciting!"
+    )
+    rating: Dict[str, int] = Field(
+        ...,
+        description="Your own rating of the movie. 1-10. Return a dictionary with the keys 'story' and 'acting'.",
+    )
+
+
+# Agent that uses structured outputs with streaming
+structured_output_agent = Agent(
+    model=OpenAIChat(id="gpt-4o"),
+    description="You write movie scripts.",
+    response_model=MovieScript,
+)
+
+structured_output_agent.print_response(
+    "New York", stream=True, stream_intermediate_steps=True
+)
+
+User Control Flows
+
+Copy page
+
+Learn how to control the flow of an agent’s execution in Agno. This is also called “Human in the Loop”.
+
+User control flows in Agno enable you to implement “Human in the Loop” patterns, where human oversight and input are required during agent execution. This is crucial for:
+Validating sensitive operations
+Reviewing tool calls before execution
+Gathering user input for decision-making
+Managing external tool execution
+​
+Types of User Control Flows
+Agno supports four main types of user control flows:
+User Confirmation: Require explicit user approval before executing tool calls
+User Input: Gather specific information from users during execution
+Dynamic User Input: Have the agent collect user input as it needs it
+External Tool Execution: Execute tools outside of the agent’s control
+​
+Pausing Agent Execution
+User control flows interrupt the agent’s execution and require human oversight. The run can then be continued by calling the continue_run method.
+For example:
+
+Copy
+
+Ask AI
+agent.run("Perform sensitive operation")
+
+if agent.is_paused:
+    # The agent will pause while human input is provided
+    # ... perform other tasks
+
+    # The user can then continue the run
+    response = agent.continue_run()
+    # or response = await agent.acontinue_run()
+The continue_run method continues with the state of the agent at the time of the pause. You can also pass the run_response of a specific run to the continue_run method, or the run_id.
+​
+User Confirmation
+User confirmation allows you to pause execution and require explicit user approval before proceeding with tool calls. This is useful for:
+Sensitive operations
+API calls that modify data
+Actions with significant consequences
+The following example shows how to implement user confirmation.
+
+Copy
+
+Ask AI
+from agno.tools import tool
+from agno.agent import Agent
+from agno.models.openai import OpenAIChat
+
+@tool(requires_confirmation=True)
+def sensitive_operation(data: str) -> str:
+    """Perform a sensitive operation that requires confirmation."""
+    # Implementation here
+    return "Operation completed"
+
+agent = Agent(
+    model=OpenAIChat(id="gpt-4o"),
+    tools=[sensitive_operation],
+)
+
+# Run the agent
+agent.run("Perform sensitive operation")
+
+# Handle confirmation
+if agent.is_paused:
+    for tool in agent.run_response.tools_requiring_confirmation:
+        # Get user confirmation
+        print(f"Tool {tool.tool_name}({tool.tool_args}) requires confirmation")
+        confirmed = input(f"Confirm? (y/n): ").lower() == "y"
+        tool.confirmed = confirmed
+
+  # Continue execution
+  response = agent.continue_run()
+You can also specify which tools in a toolkit require confirmation.
+
+Copy
+
+Ask AI
+from agno.agent import Agent
+from agno.models.openai import OpenAIChat
+from agno.tools import tool
+from agno.tools.yfinance import YFinanceTools
+from agno.utils import pprint
+
+agent = Agent(
+    model=OpenAIChat(id="gpt-4o-mini"),
+    tools=[YFinanceTools(requires_confirmation_tools=["get_current_stock_price"])],
+)
+
+agent.run("What is the current stock price of Apple?")
+if agent.is_paused:
+    for tool in agent.run_response.tools_requiring_confirmation:
+        print(f"Tool {tool.tool_name}({tool.tool_args}) requires confirmation")
+        confirmed = input(f"Confirm? (y/n): ").lower() == "y"
+
+        if message == "n":
+            tool.confirmed = False
+        else:
+            # We update the tools in place
+            tool.confirmed = True
+
+    run_response = agent.continue_run()
+    pprint.pprint_run_response(run_response)
+​
+User Input
+User input flows allow you to gather specific information from users during execution. This is useful for:
+Collecting required parameters
+Getting user preferences
+Gathering missing information
+In the example below, we require all the input for the send_email tool from the user.
+
+Copy
+
+Ask AI
+from typing import List
+from agno.agent import Agent
+from agno.models.openai import OpenAIChat
+from agno.tools.function import UserInputField
+
+# We still provide a docstring to the tool; This will be used to populate the `user_input_schema`
+@tool(requires_user_input=True)
+def send_email(to: str, subject: str, body: str) -> dict:
+    """Send an email to the user.
+
+    Args:
+        to (str): The address to send the email to.
+        subject (str): The subject of the email.
+        body (str): The body of the email.
+    """
+    # Implementation here
+    return f"Email sent to {to} with subject {subject} and body {body}"
+
+agent = Agent(
+    model=OpenAIChat(id="gpt-4o"),
+    tools=[send_email],
+)
+
+agent.run("Send an email please")
+if agent.is_paused:
+    for tool in agent.run_response.tools_requiring_user_input:
+        input_schema: List[UserInputField] = tool.user_input_schema
+
+        for field in input_schema:
+            # Display field information to the user
+            print(f"\nField: {field.name} ({field.field_type.__name__}) -> {field.description}")
+
+            # Get user input
+            user_value = input(f"Please enter a value for {field.name}: ")
+
+            # Update the field value
+            field.value = user_value
+
+    run_response = (
+        agent.continue_run()
+    )
+The RunResponse object has a list of tools and in the case of requires_user_input, the tools that require input will have user_input_schema populated. This is a list of UserInputField objects.
+
+Copy
+
+Ask AI
+class UserInputField:
+    name: str  # The name of the field
+    field_type: Type  # The required type of the field
+    description: Optional[str] = None  # The description of the field
+    value: Optional[Any] = None  # The value of the field. Populated by the agent or the user.
+You can also specify which fields should be filled by the user while the agent will provide the rest of the fields.
+
+Copy
+
+Ask AI
+
+# You can either specify the user_input_fields leave empty for all fields to be provided by the user
+@tool(requires_user_input=True, user_input_fields=["to_address"])
+def send_email(subject: str, body: str, to_address: str) -> str:
+    """
+    Send an email.
+
+    Args:
+        subject (str): The subject of the email.
+        body (str): The body of the email.
+        to_address (str): The address to send the email to.
+    """
+    return f"Sent email to {to_address} with subject {subject} and body {body}"
+
+agent = Agent(
+    model=OpenAIChat(id="gpt-4o"),
+    tools=[send_email],
+)
+
+agent.run("Send an email with the subject 'Hello' and the body 'Hello, world!'")
+if agent.is_paused:
+    for tool in agent.run_response.tools_requiring_user_input:
+        input_schema: List[UserInputField] = tool.user_input_schema
+
+        for field in input_schema:
+            # Display field information to the user
+            print(f"\nField: {field.name} ({field.field_type.__name__}) -> {field.description}")
+
+            # Get user input (if the value is not set, it means the user needs to provide the value)
+            if field.value is None:
+                user_value = input(f"Please enter a value for {field.name}: ")
+                field.value = user_value
+            else:
+                print(f"Value provided by the agent: {field.value}")
+
+    run_response = (
+        agent.continue_run()
+    )
+​
+Dynamic User Input
+This pattern provides the agent with tools to indicate when it needs user input. It’s ideal for:
+Cases where it is unknown how the user will interact with the agent
+When you want a form-like interaction with the user
+In the following example, we use a specialized tool to allow the agent to collect user feedback when it needs it.
+
+Copy
+
+Ask AI
+from typing import Any, Dict
+
+from agno.agent import Agent
+from agno.models.openai import OpenAIChat
+from agno.tools import tool
+from agno.tools.toolkit import Toolkit
+from agno.tools.user_control_flow import UserControlFlowTools
+from agno.utils import pprint
+
+# Example toolkit for handling emails
+class EmailTools(Toolkit):
+    def __init__(self, *args, **kwargs):
+        super().__init__(
+            name="EmailTools", tools=[self.send_email, self.get_emails], *args, **kwargs
+        )
+
+    def send_email(self, subject: str, body: str, to_address: str) -> str:
+        """Send an email to the given address with the given subject and body.
+
+        Args:
+            subject (str): The subject of the email.
+            body (str): The body of the email.
+            to_address (str): The address to send the email to.
+        """
+        return f"Sent email to {to_address} with subject {subject} and body {body}"
+
+    def get_emails(self, date_from: str, date_to: str) -> str:
+        """Get all emails between the given dates.
+
+        Args:
+            date_from (str): The start date.
+            date_to (str): The end date.
+        """
+        return [
+            {
+                "subject": "Hello",
+                "body": "Hello, world!",
+                "to_address": "test@test.com",
+                "date": date_from,
+            },
+            {
+                "subject": "Random other email",
+                "body": "This is a random other email",
+                "to_address": "john@doe.com",
+                "date": date_to,
+            },
+        ]
+
+
+agent = Agent(
+    model=OpenAIChat(id="gpt-4o-mini"),
+    tools=[EmailTools(), UserControlFlowTools()],
+    markdown=True,
+    debug_mode=True,
+)
+
+run_response = agent.run("Send an email with the body 'How is it going in Tokyo?'")
+
+# We use a while loop to continue the running until the agent is satisfied with the user input
+while run_response.is_paused:
+    for tool in run_response.tools_requiring_user_input:
+        input_schema: List[UserInputField] = tool.user_input_schema
+
+        for field in input_schema:
+            # Display field information to the user
+            print(f"\nField: {field.name} ({field.field_type.__name__}) -> {field.description}")
+
+            # Get user input (if the value is not set, it means the user needs to provide the value)
+            if field.value is None:
+                user_value = input(f"Please enter a value for {field.name}: ")
+                field.value = user_value
+            else:
+                print(f"Value provided by the agent: {field.value}")
+
+    run_response = agent.continue_run(run_response=run_response)
+
+    # If the agent is not paused for input, we are done
+    if not run_response.is_paused:
+        pprint.pprint_run_response(run_response)
+        break
+​
+External Tool Execution
+External tool execution allows you to execute tools outside of the agent’s control. This is useful for:
+External service calls
+Database operations
+
+Copy
+
+Ask AI
+import subprocess
+
+from agno.agent import Agent
+from agno.models.openai import OpenAIChat
+from agno.tools import tool
+from agno.utils import pprint
+
+
+# We have to create a tool with the correct name, arguments and docstring for the agent to know what to call.
+@tool(external_execution=True)
+def execute_shell_command(command: str) -> str:
+    """Execute a shell command.
+
+    Args:
+        command (str): The shell command to execute
+
+    Returns:
+        str: The output of the shell command
+    """
+    return subprocess.check_output(command, shell=True).decode("utf-8")
+
+
+agent = Agent(
+    model=OpenAIChat(id="gpt-4o-mini"),
+    tools=[execute_shell_command],
+    markdown=True,
+)
+
+run_response = agent.run("What files do I have in my current directory?")
+if run_response.is_paused:
+    for tool in run_response.tools_awaiting_external_execution:
+        if tool.tool_name == execute_shell_command.name:
+            print(f"Executing {tool.tool_name} with args {tool.tool_args} externally")
+
+            # We execute the tool ourselves. You can execute any function or process here and use the tool_args as input.
+            result = execute_shell_command.entrypoint(**tool.tool_args)
+            # We have to set the result on the tool execution object so that the agent can continue
+            tool.result = result
+
+    run_response = agent.continue_run()
+    pprint.pprint_run_response(run_response)

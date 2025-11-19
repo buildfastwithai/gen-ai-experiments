@@ -1,0 +1,114 @@
+Gemini 3 Pro uses dynamic thinking by default to reason through prompts. For faster, lower-latency responses when complex reasoning isn't required, you can constrain the model's thinking level to low.
+
+from google import genai
+from google.genai import types
+
+client = genai.Client()
+
+response = client.models.generate_content(
+    model="gemini-3-pro-preview",
+    contents="Find the race condition in this multi-threaded C++ snippet: [code here]",
+)
+
+print(response.text)
+
+Media resolution
+Gemini 3 introduces granular control over multimodal vision processing via the media_resolution parameter. Higher resolutions improve the model's ability to read fine text or identify small details, but increase token usage and latency. The media_resolution parameter determines the maximum number of tokens allocated per input image or video frame.
+
+You can now set the resolution to media_resolution_low, media_resolution_medium, or media_resolution_high per individual media part or globally (via generation_config). If unspecified, the model uses optimal defaults based on the media type.
+
+Recommended settings
+
+Media Type	Recommended Setting	Max Tokens	Usage Guidance
+Images	media_resolution_high	1120	Recommended for most image analysis tasks to ensure maximum quality.
+PDFs	media_resolution_medium	560	Optimal for document understanding; quality typically saturates at medium. Increasing to high rarely improves OCR results for standard documents.
+Video (General)	media_resolution_low (or media_resolution_medium)	70 (per frame)	Note: For video, low and medium settings are treated identically (70 tokens) to optimize context usage. This is sufficient for most action recognition and description tasks.
+Video (Text-heavy)	media_resolution_high	280 (per frame)	Required only when the use case involves reading dense text (OCR) or small details within video frames.
+Note: The media_resolution parameter maps to different token counts depending on the input type. While images scale linearly (media_resolution_low: 280, media_resolution_medium: 560, media_resolution_high: 1120), Video is compressed more aggressively. For Video, both media_resolution_low and media_resolution_medium are capped at 70 tokens per frame, and media_resolution_high is capped at 280 tokens. See full details here
+Python
+JavaScript
+REST
+
+from google import genai
+from google.genai import types
+import base64
+
+# The media_resolution parameter is currently only available in the v1alpha API version.
+client = genai.Client(http_options={'api_version': 'v1alpha'})
+
+response = client.models.generate_content(
+    model="gemini-3-pro-preview",
+    contents=[
+        types.Content(
+            parts=[
+                types.Part(text="What is in this image?"),
+                types.Part(
+                    inline_data=types.Blob(
+                        mime_type="image/jpeg",
+                        data=base64.b64decode("..."),
+                    ),
+                    media_resolution={"level": "media_resolution_high"}
+                )
+            ]
+        )
+    ]
+)
+
+print(response.text)
+Temperature
+For Gemini 3, we strongly recommend keeping the temperature parameter at its default value of 1.0.
+
+While previous models often benefited from tuning temperature to control creativity versus determinism, Gemini 3's reasoning capabilities are optimized for the default setting. Changing the temperature (setting it below 1.0) may lead to unexpected behavior, such as looping or degraded performance, particularly in complex mathematical or reasoning tasks.
+
+Thought signatures
+Gemini 3 uses Thought signatures to maintain reasoning context across API calls. These signatures are encrypted representations of the model's internal thought process. To ensure the model maintains its reasoning capabilities you must return these signatures back to the model in your request exactly as they were received:
+
+Function Calling (Strict): The API enforces strict validation on the "Current Turn". Missing signatures will result in a 400 error.
+Text/Chat: Validation is not strictly enforced, but omitting signatures will degrade the model's reasoning and answer quality.
+Success: If you use the official SDKs (Python, Node, Java) and standard chat history, Thought Signatures are handled automatically. You do not need to manually manage these fields.
+Function calling (strict validation)
+When Gemini generates a functionCall, it relies on the thoughtSignature to process the tool's output correctly in the next turn. The "Current Turn" includes all Model (functionCall) and User (functionResponse) steps that occurred since the last standard User text message.
+
+Single Function Call: The functionCall part contains a signature. You must return it.
+Parallel Function Calls: Only the first functionCall part in the list will contain the signature. You must return the parts in the exact order received.
+Multi-Step (Sequential): If the model calls a tool, receives a result, and calls another tool (within the same turn), both function calls have signatures. You must return all accumulated signatures in the history.
+Text and streaming
+For standard chat or text generation, the presence of a signature is not guaranteed.
+
+Non-Streaming: The final content part of the response may contain a thoughtSignature, though it is not always present. If one is returned, you should send it back to maintain best performance.
+Streaming: If a signature is generated, it may arrive in a final chunk that contains an empty text part. Ensure your stream parser checks for signatures even if the text field is empty.
+
+Structured Outputs with tools
+Gemini 3 allows you to combine Structured Outputs with built-in tools, including Grounding with Google Search, URL Context, and Code Execution.
+
+Python
+JavaScript
+REST
+
+from google import genai
+from google.genai import types
+from pydantic import BaseModel, Field
+from typing import List
+
+class MatchResult(BaseModel):
+    winner: str = Field(description="The name of the winner.")
+    final_match_score: str = Field(description="The final match score.")
+    scorers: List[str] = Field(description="The name of the scorer.")
+
+client = genai.Client()
+
+response = client.models.generate_content(
+    model="gemini-3-pro-preview",
+    contents="Search for all details for the latest Euro.",
+    config={
+        "tools": [
+            {"google_search": {}},
+            {"url_context": {}}
+        ],
+        "response_mime_type": "application/json",
+        "response_json_schema": MatchResult.model_json_schema(),
+    },  
+)
+
+result = MatchResult.model_validate_json(response.text)
+print(result)
