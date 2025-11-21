@@ -1,288 +1,436 @@
-from __future__ import annotations
-
-from typing import Dict, List
-
-import pandas as pd
 import streamlit as st
+import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
+import os
+from datetime import datetime
+from agno.agent import Agent
+from agno.models.google.gemini import Gemini
+from agno.team.team import Team
+from agno.tools.reasoning import ReasoningTools
+from typing import Optional
 
-from agents import IntakeAgent, KidsAgent, PlannerAgent, RetirementAgent, TaxAgent
-from llm import GeminiClient
-from viz import (
-    allocation_stack_chart,
-    expense_donut_chart,
-    kids_goal_chart,
-    retirement_projection_chart,
+# Page configuration
+st.set_page_config(
+    page_title="Personal Financial Planner",
+    page_icon="💰",
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
+# Initialize session state
+if "api_key" not in st.session_state:
+    st.session_state.api_key = None
+if "plans_generated" not in st.session_state:
+    st.session_state.plans_generated = False
 
-st.set_page_config(page_title="Personal Finance Planner", layout="wide")
+# Sidebar
+with st.sidebar:
+    st.title("💰 Financial Planner")
+    st.markdown("---")
+    
+    # API Key Input
+    st.subheader("Configuration")
+    api_key = st.text_input(
+        "Gemini API Key",
+        type="password",
+        help="Enter your Google Gemini API key",
+        value=st.session_state.api_key if st.session_state.api_key else ""
+    )
+    
+    if api_key:
+        # Strip leading/trailing whitespace (including tabs, newlines, etc.) to avoid URL encoding issues
+        cleaned_key = api_key.strip()
+        # Remove any non-printable ASCII characters (tabs, etc. that might have been pasted)
+        cleaned_key = ''.join(char for char in cleaned_key if char.isprintable() and ord(char) < 128)
+        # Remove any remaining whitespace characters (spaces, tabs) that might be in the middle
+        cleaned_key = cleaned_key.replace('\t', '').replace('\n', '').replace('\r', '').replace(' ', '')
+        st.session_state.api_key = cleaned_key
+        if cleaned_key:
+            st.success("✅ API Key configured")
+        else:
+            st.warning("⚠️ Please enter a valid Gemini API key")
+    else:
+        st.warning("⚠️ Please enter your Gemini API key")
+    
+    st.markdown("---")
+    
+    # Instructions
+    st.subheader("📖 How to Use")
+    st.markdown("""
+    1. **Enter API Key**: Add your Gemini API key above
+    2. **Fill Details**: Complete the form on the main page
+    3. **Generate Plan**: Click the button to create your financial plan
+    4. **Review Results**: Explore your personalized recommendations
+    
+    The app uses AGNO agents with Gemini LLM to create:
+    - Tax-saving strategies
+    - Retirement planning
+    - Children's education costs
+    - Additional goal planning
+    """)
+    
+    st.markdown("---")
+    st.markdown("**Built with AGNO & Gemini**")
 
+# Main Content
+st.title("🎯 Personalized Financial Planning")
+st.markdown("Get a comprehensive financial roadmap powered by AI agents")
 
-def sidebar_configuration() -> Dict[str, object]:
-    with st.sidebar:
-        st.header("API Keys")
-        gemini_key = st.text_input("Gemini API Key", type="password")
-        agno_key = st.text_input("AGNO API Key / Config", type="password")
-        st.markdown("### About this app")
-        st.markdown(
-            "Generates a personalized, intelligent financial plan covering tax steps, "
-            "retirement readiness, education funding, and savings guidance."
-        )
-        st.markdown("Keys stay on your device and are discarded after the session.")
-        st.markdown("Version 1.0.0")
-        with st.expander("Assumptions"):
-            default_inflation = st.number_input("Inflation (%)", 2.0, 12.0, 5.0, 0.25)
-            default_return = st.number_input("Expected return (%)", 6.0, 18.0, 12.0, 0.25)
-            default_retirement_age = st.number_input("Default retirement age", 40, 80, 60, 1)
-        return {
-            "gemini_key": gemini_key,
-            "agno_key": agno_key,
-            "default_inflation": default_inflation,
-            "default_return": default_return,
-            "default_retirement_age": default_retirement_age,
+# Check if API key is set
+if not st.session_state.api_key:
+    st.info("👈 Please enter your Gemini API key in the sidebar to continue")
+    st.stop()
+
+# User Input Form
+with st.form("financial_info_form"):
+    st.header("📋 Your Financial Information")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        age = st.number_input("Age", min_value=18, max_value=100, value=30)
+        annual_income = st.number_input("Annual Income (₹)", min_value=0, value=1000000, step=50000)
+        monthly_expenses = st.number_input("Monthly Expenses (₹)", min_value=0, value=50000, step=5000)
+    
+    with col2:
+        designation = st.text_input("Designation/Job Title", value="Software Engineer")
+        num_kids = st.number_input("Number of Kids (Optional)", min_value=0, max_value=5, value=0)
+    
+    # Kids ages
+    kids_ages = []
+    if num_kids > 0:
+        st.subheader("👶 Children's Information")
+        kid_cols = st.columns(min(num_kids, 3))
+        for i in range(num_kids):
+            with kid_cols[i % 3]:
+                age_input = st.number_input(
+                    f"Kid {i+1} Age",
+                    min_value=0,
+                    max_value=25,
+                    value=5,
+                    key=f"kid_{i}"
+                )
+                kids_ages.append(age_input)
+    
+    # Optional goals
+    st.subheader("🎯 Additional Goals (Optional)")
+    gym_expense = st.number_input("Monthly Gym/Health Expenses (₹)", min_value=0, value=0, step=1000)
+    lifestyle_goals = st.text_area("Other Lifestyle Goals", placeholder="e.g., Buy a house in 5 years, Travel to Europe next year")
+    
+    submit_button = st.form_submit_button("🚀 Generate Financial Plan", use_container_width=True)
+
+# Generate Financial Plan
+if submit_button:
+    with st.spinner("🤖 AI agents are analyzing your financial situation and creating your personalized plan..."):
+        try:
+            # Clean API key: strip whitespace and remove any non-printable characters
+            if not st.session_state.api_key:
+                st.error("❌ API key is required. Please enter your Gemini API key in the sidebar.")
+                st.stop()
+            
+            # The key should already be cleaned from sidebar, but clean again to be safe
+            api_key_clean = st.session_state.api_key.strip()
+            # Remove any non-printable ASCII characters (tabs, etc.)
+            api_key_clean = ''.join(char for char in api_key_clean if char.isprintable() and ord(char) < 128)
+            # Remove any remaining whitespace characters
+            api_key_clean = api_key_clean.replace('\t', '').replace('\n', '').replace('\r', '').replace(' ', '')
+            
+            if not api_key_clean:
+                st.error("❌ Invalid API key. Please check your Gemini API key.")
+                st.stop()
+            
+            # Set API key as environment variable (AGNO expects this)
+            os.environ["GOOGLE_API_KEY"] = api_key_clean
+            
+            # Initialize Gemini model
+            model = Gemini(id="gemini-2.5-flash")
+            
+            # Create specialized agents
+            tax_agent = Agent(
+                name="Tax Planning Agent",
+                role="Analyze tax-saving opportunities and create tax optimization strategies",
+                model=model,
+                tools=[ReasoningTools(add_instructions=True)],
+                instructions=[
+                    "Focus on Indian tax-saving instruments (Section 80C, 80D, HRA, etc.)",
+                    "Provide specific recommendations with calculations",
+                    "Consider the user's income bracket and designation",
+                    "Use tables to present tax-saving options clearly",
+                ],
+                markdown=True,
+            )
+            
+            retirement_agent = Agent(
+                name="Retirement Planning Agent",
+                role="Calculate retirement corpus needs and create savings plan",
+                model=model,
+                tools=[ReasoningTools(add_instructions=True)],
+                instructions=[
+                    "Assume retirement age of 60 years",
+                    "Calculate future expenses with inflation (7-8% annually)",
+                    "Consider different investment vehicles (EPF, PPF, Mutual Funds, etc.)",
+                    "Provide year-by-year projections",
+                    "Calculate required monthly SIP for retirement goals",
+                ],
+                markdown=True,
+            )
+            
+            kids_expense_agent = Agent(
+                name="Children's Education Agent",
+                role="Calculate future education costs for children",
+                model=model,
+                tools=[ReasoningTools(add_instructions=True)],
+                instructions=[
+                    "Assume 10-12% annual inflation for education costs",
+                    "Consider undergraduate and graduate education costs",
+                    "Calculate required monthly savings (SIP) for each child",
+                    "Include both domestic and international education scenarios",
+                    "Provide year-by-year projections until each child turns 22",
+                ],
+                markdown=True,
+            )
+            
+            goals_agent = Agent(
+                name="Goals Planning Agent",
+                role="Plan for additional lifestyle and financial goals",
+                model=model,
+                tools=[ReasoningTools(add_instructions=True)],
+                instructions=[
+                    "Analyze gym expenses and suggest optimization",
+                    "Create plans for lifestyle goals mentioned by user",
+                    "Provide actionable recommendations",
+                ],
+                markdown=True,
+            )
+            
+            # Create team
+            financial_team = Team(
+                name="Financial Planning Team",
+                model=model,
+                members=[tax_agent, retirement_agent, kids_expense_agent, goals_agent],
+                tools=[ReasoningTools(add_instructions=True)],
+                instructions=[
+                    "Work together to create a comprehensive financial plan",
+                    "Ensure all recommendations are consistent and feasible",
+                    "Present findings in a structured, easy-to-follow format",
+                    "Use tables, bullet points, and clear sections",
+                    "Provide actionable next steps",
+                ],
+                markdown=True,
+                show_members_responses=False,
+            )
+            
+            # Prepare user data
+            user_context = f"""
+            User Profile:
+            - Age: {age} years
+            - Annual Income: ₹{annual_income:,}
+            - Monthly Expenses: ₹{monthly_expenses:,}
+            - Designation: {designation}
+            - Number of Kids: {num_kids}
+            """
+            
+            if kids_ages:
+                user_context += "\n- Kids Ages: " + ", ".join([f"Kid {i+1}: {age} years" for i, age in enumerate(kids_ages)])
+            
+            if gym_expense > 0:
+                user_context += f"\n- Monthly Gym/Health Expenses: ₹{gym_expense:,}"
+            
+            if lifestyle_goals:
+                user_context += f"\n- Additional Goals: {lifestyle_goals}"
+            
+            # Create comprehensive prompt
+            prompt = f"""
+            Create a comprehensive, personalized financial plan for this user:
+            
+            {user_context}
+            
+            Please provide:
+            
+            1. **Tax-Saving Plan**: 
+               - Analyze current tax liability
+               - Recommend tax-saving investments (Section 80C, 80D, HRA, etc.)
+               - Calculate potential tax savings
+               - Provide specific investment amounts and instruments
+            
+            2. **Retirement Planning**:
+               - Calculate required retirement corpus (considering 60 years retirement age)
+               - Assume monthly expenses of ₹{monthly_expenses:,} adjusted for inflation (7-8% annually)
+               - Calculate required monthly SIP/investment amount
+               - Show year-by-year projections until retirement
+               - Recommend investment mix (Equity, Debt, EPF, PPF, etc.)
+            
+            3. **Children's Education Planning** (if applicable):
+               - Calculate future education costs for each child with 10-12% inflation
+               - Show year-by-year projections
+               - Calculate required monthly SIP for each child's education fund
+               - Consider both domestic (₹20-40 lakhs) and international (₹50-100 lakhs) education costs
+            
+            4. **Additional Goals Planning**:
+               - Analyze gym/health expenses and provide optimization suggestions
+               - Create actionable plans for lifestyle goals mentioned
+            
+            5. **Summary & Recommendations**:
+               - Overall financial health assessment
+               - Priority actions
+               - Emergency fund recommendations
+               - Investment strategy summary
+            
+            Format the response with:
+            - Clear sections and headers
+            - Tables for calculations and projections
+            - Specific numbers and percentages
+            - Actionable recommendations
+            - Beautiful, readable explanations
+            """
+            
+            # Run the team
+            response = financial_team.run(prompt, stream=False)
+            
+            # Display the response
+            st.session_state.plans_generated = True
+            st.session_state.plan_response = response.content
+            
+            st.success("✅ Financial plan generated successfully!")
+            
+        except Exception as e:
+            st.error(f"❌ Error generating plan: {str(e)}")
+            st.info("Please check your API key and try again.")
+
+# Display the generated plan
+if st.session_state.get("plans_generated", False):
+    st.markdown("---")
+    st.header("📊 Your Personalized Financial Plan")
+    
+    # Display the full response
+    st.markdown(st.session_state.plan_response)
+    
+    # Generate visualizations from the response
+    st.markdown("---")
+    st.header("📈 Visual Breakdown")
+    
+    # Create sample charts (you can enhance this by parsing the response for actual numbers)
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        # Expense breakdown
+        st.subheader("💸 Expense Distribution")
+        expense_data = {
+            "Category": ["Monthly Expenses", "Gym/Health", "Tax Savings", "Investments"],
+            "Amount (₹)": [monthly_expenses, gym_expense, annual_income * 0.1, annual_income * 0.2]
         }
-
-
-def capture_user_inputs(defaults: Dict[str, float]) -> Dict[str, object]:
-    with st.form("planner-form", clear_on_submit=False):
-        st.subheader("Tell us about yourself")
-        col1, col2, col3 = st.columns(3)
-        age = col1.number_input("Age", 21, 65, 32, 1)
-        monthly_expenses = col2.number_input("Monthly expenses (₹)", 10000, 1000000, 80000, 1000)
-        annual_income = col3.number_input("Annual income (₹)", 300000, 10000000, 2400000, 50000)
-        designation = st.selectbox(
-            "Designation",
-            ["Junior Dev", "Senior Dev", "Manager", "Director", "Self-employed"],
+        df_expenses = pd.DataFrame(expense_data)
+        fig_pie = px.pie(
+            df_expenses,
+            values="Amount (₹)",
+            names="Category",
+            title="Monthly Financial Distribution",
+            color_discrete_sequence=px.colors.qualitative.Set3
         )
-        kids_count = st.slider("Number of kids", 0, 5, 1, 1)
-        assumptions_note = st.text_area("Key assumptions or goals", placeholder="Boost emergency fund, buy a second home, etc.")
-        with st.expander("Optional overrides"):
-            inflation_override = st.number_input(
-                "Inflation override (%)",
-                0.0,
-                20.0,
-                defaults["default_inflation"],
-                0.25,
-            )
-            return_override = st.number_input(
-                "Expected return override (%)",
-                0.0,
-                25.0,
-                defaults["default_return"],
-                0.25,
-            )
-            retirement_age_override = st.number_input(
-                "Planned retirement age",
-                40,
-                80,
-                defaults["default_retirement_age"],
-                1,
-            )
-        children_inputs: List[Dict[str, str]] = []
-        for idx in range(kids_count):
-            with st.expander(f"Child {idx + 1} plan"):
-                child_age = st.number_input(f"Current age (Child {idx + 1})", 0, 21, 5, 1, key=f"child_age_{idx}")
-                goal = st.selectbox(
-                    f"Goal focus (Child {idx + 1})",
-                    ["college", "sports", "other"],
-                    key=f"goal_{idx}",
-                )
-                start_year = st.number_input(
-                    f"Goal start age (Child {idx + 1})",
-                    child_age + 1,
-                    30,
-                    child_age + 10,
-                    1,
-                    key=f"start_year_{idx}",
-                )
-                risk_profile = st.selectbox(
-                    f"Risk profile (Child {idx + 1})",
-                    ["Conservative", "Moderate", "Aggressive"],
-                    key=f"risk_{idx}",
-                )
-                children_inputs.append(
-                    {
-                        "current_age": str(child_age),
-                        "goal": goal,
-                        "start_year": str(start_year),
-                        "risk_profile": risk_profile,
-                    }
-                )
-        submitted = st.form_submit_button("Generate financial plan")
-        return {
-            "submitted": submitted,
-            "age": age,
-            "monthly_expenses": monthly_expenses,
-            "annual_income": annual_income,
-            "designation": designation,
-            "kids_count": kids_count,
-            "children": children_inputs,
-            "inflation_rate": inflation_override,
-            "expected_return": return_override,
-            "retirement_age": retirement_age_override,
-            "assumptions_note": assumptions_note,
-        }
-
-
-@st.cache_data(show_spinner=False)
-def build_cached_plan(
-    gemini_key: str,
-    agno_key: str,
-    intake_payload: Dict[str, float],
-    retirement_plan: Dict[str, float],
-    kids_plan: List[Dict[str, object]],
-    tax_plan: Dict[str, List[str]],
-) -> Dict[str, object]:
-    client = GeminiClient(api_key=gemini_key)
-    planner = PlannerAgent(gemini_client=client, agno_api_key=agno_key)
-    return planner.build_plan(intake_payload, retirement_plan, kids_plan, tax_plan)
-
-
-def render_summary_card(summary: Dict[str, object]):
-    st.markdown("### Summary")
-    with st.container():
-        st.markdown(f"**Narrative:** {summary.get('narrative', '')}")
-        actions = summary.get("priority_actions", [])
-        if actions:
-            st.markdown("**Priority Actions**")
-            for action in actions:
-                st.markdown(f"- {action}")
-        notes = summary.get("notes", [])
-        if notes:
-            st.markdown("**Notes**")
-            for note in notes:
-                st.markdown(f"- {note}")
-
-
-def render_charts(plan: Dict[str, object], expected_return: float):
-    columns = st.columns(2)
-    retirement = plan["retirement"]
-    columns[0].plotly_chart(
-        retirement_projection_chart(
-            retirement["suggested_monthly_investment"],
-            expected_return,
-            int(retirement["years_to_retirement"]),
-            retirement["target_corpus"],
-        ),
-        use_container_width=True,
-    )
-    columns[1].plotly_chart(
-        expense_donut_chart(plan["savings_allocation"]),
-        use_container_width=True,
-    )
-    st.plotly_chart(allocation_stack_chart(plan["savings_allocation"]), use_container_width=True)
-    if plan["kids"]:
-        st.plotly_chart(kids_goal_chart(plan["kids"]), use_container_width=True)
-
-
-def render_tables(plan: Dict[str, object]):
-    retirement_df = pd.DataFrame([plan["retirement"]])
-    st.dataframe(retirement_df, use_container_width=True)
-    st.download_button(
-        "Download retirement plan",
-        data=retirement_df.to_csv(index=False),
-        file_name="retirement_plan.csv",
-        mime="text/csv",
-    )
-    kids = plan["kids"]
-    if kids:
-        kids_df = pd.DataFrame(kids)
-        st.dataframe(kids_df, use_container_width=True)
-        st.download_button(
-            "Download child plans",
-            data=kids_df.to_csv(index=False),
-            file_name="child_plans.csv",
-            mime="text/csv",
+        st.plotly_chart(fig_pie, use_container_width=True)
+    
+    with col2:
+        # Retirement projection
+        st.subheader("🏖️ Retirement Savings Projection")
+        years_to_retirement = 60 - age
+        years = list(range(0, years_to_retirement + 1, 5))
+        corpus_values = []
+        current_value = 0
+        monthly_sip = (annual_income * 0.2) / 12
+        
+        for year in years:
+            if year > 0:
+                # Simple projection: FV = PV * (1+r)^n + PMT * (((1+r)^n - 1) / r)
+                current_value = current_value * (1.12) ** min(5, year) + (monthly_sip * 12 * 5) * ((1.12) ** 5 - 1) / 0.12
+            corpus_values.append(current_value)
+        
+        df_retirement = pd.DataFrame({
+            "Year": years,
+            "Projected Corpus (₹ Lakhs)": [v / 100000 for v in corpus_values]
+        })
+        fig_retirement = px.line(
+            df_retirement,
+            x="Year",
+            y="Projected Corpus (₹ Lakhs)",
+            title="Retirement Corpus Growth",
+            markers=True
         )
-    tax_rows = []
-    for action in plan["tax"]["priority"]:
-        tax_rows.append({"Type": "Priority", "Recommendation": action})
-    for action in plan["tax"]["additional"] or []:
-        tax_rows.append({"Type": "Additional", "Recommendation": action})
-    if not tax_rows:
-        tax_rows.append({"Type": "Info", "Recommendation": "No tax actions detected"})
-    tax_df = pd.DataFrame(tax_rows)
-    st.dataframe(tax_df, use_container_width=True)
-    st.download_button(
-        "Download tax ideas",
-        data=tax_df.to_csv(index=False),
-        file_name="tax_ideas.csv",
-        mime="text/csv",
-    )
+        fig_retirement.update_traces(line_color="#1f77b4", line_width=3)
+        st.plotly_chart(fig_retirement, use_container_width=True)
+    
+    # Kids education projection
+    if num_kids > 0 and kids_ages:
+        st.subheader("🎓 Children's Education Cost Projection")
+        fig_kids = go.Figure()
+        
+        for i, kid_age in enumerate(kids_ages):
+            years_to_college = 18 - kid_age
+            years = list(range(0, years_to_college + 1))
+            costs = []
+            current_cost_domestic = 3000000  # 30 lakhs
+            current_cost_international = 8000000  # 80 lakhs
+            
+            for year in years:
+                if year > 0:
+                    current_cost_domestic *= 1.11
+                    current_cost_international *= 1.11
+                costs.append((current_cost_domestic, current_cost_international))
+            
+            df_kid = pd.DataFrame({
+                "Year": years,
+                "Domestic (₹ Lakhs)": [c[0] / 100000 for c in costs],
+                "International (₹ Lakhs)": [c[1] / 100000 for c in costs]
+            })
+            
+            fig_kids.add_trace(go.Scatter(
+                x=df_kid["Year"],
+                y=df_kid["Domestic (₹ Lakhs)"],
+                mode="lines+markers",
+                name=f"Kid {i+1} - Domestic",
+                line=dict(width=2)
+            ))
+            fig_kids.add_trace(go.Scatter(
+                x=df_kid["Year"],
+                y=df_kid["International (₹ Lakhs)"],
+                mode="lines+markers",
+                name=f"Kid {i+1} - International",
+                line=dict(width=2, dash="dash")
+            ))
+        
+        fig_kids.update_layout(
+            title="Education Cost Projection (with 11% inflation)",
+            xaxis_title="Years from Now",
+            yaxis_title="Cost (₹ Lakhs)",
+            hovermode="x unified"
+        )
+        st.plotly_chart(fig_kids, use_container_width=True)
+    
+    # Summary cards
+    st.markdown("---")
+    st.header("📋 Quick Summary")
+    
+    summary_cols = st.columns(4)
+    
+    with summary_cols[0]:
+        st.metric("Annual Income", f"₹{annual_income/100000:.1f}L")
+    
+    with summary_cols[1]:
+        monthly_investment = (annual_income * 0.2) / 12
+        st.metric("Recommended Monthly Investment", f"₹{monthly_investment/1000:.1f}K")
+    
+    with summary_cols[2]:
+        years_to_retire = 60 - age
+        st.metric("Years to Retirement", f"{years_to_retire}")
+    
+    with summary_cols[3]:
+        savings_rate = ((annual_income - (monthly_expenses * 12)) / annual_income) * 100
+        st.metric("Current Savings Rate", f"{savings_rate:.1f}%")
 
-
-sidebar_state = sidebar_configuration()
-
-if not sidebar_state["gemini_key"] or not sidebar_state["agno_key"]:
-    st.title("Streamlined Financial Planning")
-    st.info("Enter both API keys in the sidebar to activate the planner.")
-    st.stop()
-
-intake_state = capture_user_inputs(sidebar_state)
-
-if not intake_state["submitted"]:
-    st.warning("Provide your details and hit Generate to see recommendations.")
-    st.stop()
-
-intake_agent = IntakeAgent()
-normalized_payload, intake_errors = intake_agent.run(
-    {
-        "age": str(intake_state["age"]),
-        "monthly_expenses": str(intake_state["monthly_expenses"]),
-        "annual_income": str(intake_state["annual_income"]),
-        "retirement_age": str(intake_state["retirement_age"]),
-        "number_of_kids": str(intake_state["kids_count"]),
-    }
+# Footer
+st.markdown("---")
+st.markdown(
+    "<div style='text-align: center; color: gray;'>Built with ❤️ using AGNO Agents & Gemini LLM</div>",
+    unsafe_allow_html=True
 )
-
-if intake_errors:
-    for issue in intake_errors:
-        st.error(issue)
-    st.stop()
-
-tax_agent = TaxAgent(
-    designation=intake_state["designation"],
-    annual_income=normalized_payload["annual_income"],
-)
-tax_plan = tax_agent.run()
-
-kids_agent = KidsAgent(
-    children=intake_state["children"],
-    inflation_rate=intake_state["inflation_rate"],
-    expected_return=intake_state["expected_return"],
-)
-kids_plan = kids_agent.run()
-
-retirement_agent = RetirementAgent(
-    age=int(normalized_payload["age"]),
-    retirement_age=int(intake_state["retirement_age"]),
-    monthly_expenses=normalized_payload["monthly_expenses"],
-    inflation_rate=intake_state["inflation_rate"],
-    expected_return=intake_state["expected_return"],
-)
-retirement_plan = retirement_agent.run()
-
-try:
-    structured_plan = build_cached_plan(
-        gemini_key=sidebar_state["gemini_key"],
-        agno_key=sidebar_state["agno_key"],
-        intake_payload={
-            "age": normalized_payload["age"],
-            "monthly_expenses": normalized_payload["monthly_expenses"],
-            "annual_income": normalized_payload["annual_income"],
-            "designation": intake_state["designation"],
-            "assumptions_note": intake_state["assumptions_note"],
-        },
-        retirement_plan=retirement_plan,
-        kids_plan=[kid.__dict__ for kid in kids_plan],
-        tax_plan=tax_plan,
-    )
-except Exception as exc:
-    st.error(f"Unable to generate Gemini summary: {exc}")
-    st.stop()
-
-st.title("Intelligent Personal Finance Plan")
-render_summary_card(structured_plan["llm_summary"])
-render_charts(structured_plan, intake_state["expected_return"])
-render_tables(structured_plan)
 

@@ -1,62 +1,47 @@
-# Gemini Personal Finance Planner
+# Personal Financial Planner
 
-Production-ready Streamlit app that combines deterministic financial calculations with AGNO modular agents and Gemini narratives to deliver personalized tax, retirement, and education planning guidance.
+A Streamlit app that creates personalized financial plans using AGNO agents and the Gemini LLM.
 
 ## Features
-- Sidebar gated by Gemini and AGNO API keys with privacy notice and deterministic assumptions
-- Intake agent validating demographics, cashflow, and family goals
-- Tax, kids, and retirement agents producing structured insights via deterministic math
-- Planner agent leveraging Gemini for human-friendly narratives and structured action lists
-- Interactive Plotly visuals (retirement projection, savings mix, child goal costs)
-- Downloadable CSV tables for key plan sections
-- Streamlit caching around Gemini summaries for faster iterations
 
-## Project Structure
-```
-app.py
-agents/
-  intake.py
-  tax_agent.py
-  kids_agent.py
-  retirement_agent.py
-  planner_agent.py
-llm/
-  gemini_client.py
-utils/
-  finance.py
-viz/
-  charts.py
-tests/
-requirements.txt
-.env.example
-README.md
+- **Tax-Saving Plan**: Personalized tax optimization strategies
+- **Retirement Planning**: Calculate required corpus and monthly savings
+- **Children's Education Planning**: Project future education costs with inflation
+- **Additional Goals**: Plan for gym expenses and lifestyle goals
+- **Visualizations**: Interactive charts and graphs
+- **Multi-Agent System**: Powered by AGNO framework with specialized agents
+
+## Installation
+
+1. Install dependencies:
+```bash
+pip install -r requirements.txt
 ```
 
-## Setup
-1. Clone the repository and enter the project directory.
-2. Create and activate a virtual environment.
-3. Install dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
-4. Copy `.env.example` to `.env` and populate:
-   - `GEMINI_API_KEY`
-   - `AGNO_API_KEY`
+2. Get your Gemini API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
 
-## Running the App
-```
+## Usage
+
+1. Run the Streamlit app:
+```bash
 streamlit run app.py
 ```
-Open the provided URL, enter both API keys in the sidebar, adjust assumptions, and generate the plan.
 
-## Tests
-Run unit tests for financial utilities and agents:
-```
-pytest
-```
+2. Enter your Gemini API key in the sidebar
+3. Fill in your financial information
+4. Click "Generate Financial Plan" to get your personalized plan
 
-## Notes
-- All numeric forecasts rely on deterministic Python logic.
-- Gemini is only invoked for the narrative JSON summary via the planner agent.
-- Keys remain client-side; the app never stores or logs them.
+## Requirements
+
+- Python 3.8+
+- Gemini API key
+- Internet connection
+
+## Built With
+
+- Streamlit - Web framework
+- AGNO - Multi-agent framework
+- Gemini LLM - Language model
+- Plotly - Visualizations
+- Pandas - Data handling
 

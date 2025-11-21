@@ -1,8 +1,6 @@
-streamlit==1.39.0
-pandas==2.2.3
-plotly==5.24.1
-google-generativeai==0.8.2
-agno==2.2.13
-python-dotenv==1.0.1
-pytest==8.3.3
+streamlit>=1.28.0
+agno>=0.1.0
+google-genai>=0.2.0
+pandas>=2.0.0
+plotly>=5.17.0
 
