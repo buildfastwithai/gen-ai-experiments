@@ -1,6 +1,6 @@
-streamlit>=1.28.0
-agno>=0.1.0
-google-genai>=0.2.0
-pandas>=2.0.0
-plotly>=5.17.0
+streamlit
+agno
+google-genai
+pandas
+plotly
 
