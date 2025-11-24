@@ -1,0 +1,6 @@
+streamlit
+agno
+google-genai
+pandas
+plotly
+
