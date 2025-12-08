@@ -11,12 +11,6 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/buildfastwithai/gen-ai-experiments/stargazers">
-    <img src="https://img.shields.io/github/stars/buildfastwithai/gen-ai-experiments?style=social" alt="GitHub stars">
-  </a>
-  <a href="https://github.com/buildfastwithai/gen-ai-experiments/network/members">
-    <img src="https://img.shields.io/github/forks/buildfastwithai/gen-ai-experiments?style=social" alt="GitHub forks">
-  </a>
   <a href="https://www.linkedin.com/company/build-fast-with-ai">
     <img src="https://img.shields.io/badge/-Follow%20on%20LinkedIn-0077B5?logo=linkedin&style=flat-square" alt="LinkedIn">
   </a>
@@ -43,27 +37,6 @@
 - 🌍 **Multi-Language Support** - Projects supporting English, Hindi, and other Indian languages
 - 📚 **100+ Libraries Covered** - Comprehensive tutorials on LangChain, LlamaIndex, CrewAI, Weaviate, and 90+ more AI/ML libraries
 - 🚀 **Production-Ready Code** - Well-documented projects ready to deploy and integrate into your applications
-
----
-
-## 📊 Repository Stats
-
-<table>
-  <tr>
-    <td align="center"><strong>📂 Categories</strong></td>
-    <td align="center"><strong>📱 Applications</strong></td>
-    <td align="center"><strong>📚 Notebooks</strong></td>
-    <td align="center"><strong>🤖 AI Agents</strong></td>
-    <td align="center"><strong>🔬 Libraries</strong></td>
-  </tr>
-  <tr>
-    <td align="center">7+</td>
-    <td align="center">40+</td>
-    <td align="center">100+</td>
-    <td align="center">20+</td>
-    <td align="center">90+</td>
-  </tr>
-</table>
 
 ---
 
