@@ -46,6 +46,7 @@
 Perfect for beginners getting started with Gen AI:
 
 - **[LangChain Basics](100-os-libraries/LangChain_Basics_Building_Intelligent_Workflows.ipynb)** - Build intelligent workflows with LangChain
+- **[Fine-Tuning with Nebius Token Factory](100-os-libraries/Fine_Tuning_LLMs_with_Nebius_TokenFactory.ipynb)** - LoRA fine-tuning for custom LLMs
 - **[Getting Started with Pydantic AI](100-os-libraries/Getting_Started_with_Pydantic_AI.ipynb)** - Type-safe AI development
 - **[CrewAI Essentials](100-os-libraries/CrewAI_Essentials_Quick_Start_Guide.ipynb)** - Quick start guide for multi-agent systems
 - **[TextBlob NLP](100-os-libraries/Exploring_TextBlob_Simplified_NLP_for_Everyone.ipynb)** - Simplified natural language processing
