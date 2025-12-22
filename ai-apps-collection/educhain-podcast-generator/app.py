@@ -6,6 +6,8 @@ import streamlit as st
 from educhain import Educhain
 from streamlit_advanced_audio import audix, WaveSurferOptions
 
+st.write(sys.version)
+
 
 def init_client(openai_key: str | None, google_key: str | None) -> Educhain:
     """
