@@ -5,9 +5,9 @@ from datetime import datetime
 import streamlit as st
 from educhain import Educhain
 from streamlit_advanced_audio import audix, WaveSurferOptions
+
 import sys
 st.write(sys.version)
-
 
 def init_client(openai_key: str | None, google_key: str | None) -> Educhain:
     """
