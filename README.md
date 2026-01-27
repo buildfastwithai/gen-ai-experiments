@@ -1,42 +1,81 @@
 <p align="center">
   <a href="https://www.buildfastwithai.com/">
-    <img src=".resorces/Banner2.png" width="900px" alt="BuildFastWithAI: Master Generative AI">
+    <img src=".resorces/Banner2.png" width="900px" alt="Gen AI Experiments - 150+ Production-Ready AI Apps, Agents, RAG Systems, LangChain Tutorials">
   </a>
 </p>
 
 <h1 align="center">🚀 Gen-AI-Experiments</h1>
 
+<h3 align="center">The Ultimate Open-Source Collection of Generative AI Projects</h3>
+
 <p align="center">
-  <strong>A curated collection of 130+ production-ready Gen AI apps, agents, and experiments. Built with LangChain, RAG, AI Agents, Multi-Agent Teams, and more.</strong>
+  <strong>150+ Production-Ready AI Apps • LangChain • RAG Systems • Multi-Agent AI • OpenAI • Gemini • LlamaIndex • CrewAI</strong>
+</p>
+
+<p align="center">
+  <a href="https://github.com/buildfastwithai/gen-ai-experiments/stargazers">
+    <img src="https://img.shields.io/github/stars/buildfastwithai/gen-ai-experiments?style=for-the-badge&logo=github&color=yellow" alt="GitHub Stars">
+  </a>
+  <a href="https://github.com/buildfastwithai/gen-ai-experiments/network/members">
+    <img src="https://img.shields.io/github/forks/buildfastwithai/gen-ai-experiments?style=for-the-badge&logo=github&color=blue" alt="GitHub Forks">
+  </a>
+  <a href="https://github.com/buildfastwithai/gen-ai-experiments/issues">
+    <img src="https://img.shields.io/github/issues/buildfastwithai/gen-ai-experiments?style=for-the-badge&logo=github&color=red" alt="GitHub Issues">
+  </a>
+  <a href="https://github.com/buildfastwithai/gen-ai-experiments/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/buildfastwithai/gen-ai-experiments?style=for-the-badge" alt="License">
+  </a>
 </p>
 
 <p align="center">
   <a href="https://www.linkedin.com/company/build-fast-with-ai">
-    <img src="https://img.shields.io/badge/-Follow%20on%20LinkedIn-0077B5?logo=linkedin&style=flat-square" alt="LinkedIn">
+    <img src="https://img.shields.io/badge/-Follow%20on%20LinkedIn-0077B5?logo=linkedin&style=flat-square" alt="Follow BuildFastWithAI on LinkedIn">
   </a>
   <a href="https://twitter.com/BuildFastWithAI">
-    <img src="https://img.shields.io/twitter/follow/BuildFastWithAI?style=social" alt="Twitter">
+    <img src="https://img.shields.io/twitter/follow/BuildFastWithAI?style=social" alt="Follow BuildFastWithAI on Twitter">
   </a>
+  <img src="https://img.shields.io/github/last-commit/buildfastwithai/gen-ai-experiments?style=flat-square&color=green" alt="Last Commit">
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python">
-  <img src="https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white" alt="OpenAI">
-  <img src="https://img.shields.io/badge/Google_Gemini-8E75B2?style=for-the-badge&logo=google&logoColor=white" alt="Gemini">
-  <img src="https://img.shields.io/badge/LangChain-121212?style=for-the-badge&logo=chainlink&logoColor=white" alt="LangChain">
-  <img src="https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" alt="Streamlit">
+  <img src="https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white" alt="OpenAI GPT-4">
+  <img src="https://img.shields.io/badge/Google_Gemini-8E75B2?style=for-the-badge&logo=google&logoColor=white" alt="Google Gemini AI">
+  <img src="https://img.shields.io/badge/LangChain-121212?style=for-the-badge&logo=chainlink&logoColor=white" alt="LangChain Framework">
+  <img src="https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" alt="Streamlit Apps">
+  <img src="https://img.shields.io/badge/CrewAI-00ADD8?style=for-the-badge&logo=robot&logoColor=white" alt="CrewAI Multi-Agent">
 </p>
+
+<p align="center">
+  <b>🌟 If you find this helpful, please star this repo — it helps others discover these resources!</b>
+</p>
+
+---
+
+## 📚 Table of Contents
+
+- [🤔 Why Gen-AI-Experiments?](#-why-gen-ai-experiments)
+- [� Featured AI Projects](#-featured-ai-projects)
+- [🎯 45+ Production-Ready Applications](#-45-production-ready-applications)
+- [🚀 Getting Started](#-getting-started)
+- [🤝 Contributing](#-contributing)
+- [🌟 Star History](#-star-history)
+- [📬 Connect With Us](#-connect-with-us)
 
 ---
 
 ## 🤔 Why Gen-AI-Experiments?
 
-- 💡 **Learn by Building** - 130+ production-ready applications and experiments you can run, modify, and learn from
-- 🔥 **Latest Tech Stack** - Explore apps built with OpenAI, Anthropic, Gemini, QWEN, and open-source models
-- 🎓 **From Beginner to Advanced** - Structured learning path with starter, intermediate, and advanced projects
-- 🌍 **Multi-Language Support** - Projects supporting English, Hindi, and other Indian languages
-- 📚 **100+ Libraries Covered** - Comprehensive tutorials on LangChain, LlamaIndex, CrewAI, Weaviate, and 90+ more AI/ML libraries
-- 🚀 **Production-Ready Code** - Well-documented projects ready to deploy and integrate into your applications
+> **The most comprehensive open-source collection of Generative AI tutorials, applications, and experiments on GitHub.**
+
+| Feature | Description |
+|---------|-------------|
+| 💡 **Learn by Building** | 150+ production-ready applications covering LLMs, RAG, AI Agents, and more |
+| 🔥 **Latest Tech Stack** | OpenAI GPT-4, Claude, Gemini, QWEN, Llama, Mistral, and open-source models |
+| 🎓 **Beginner to Advanced** | Structured learning path with starter, intermediate, and advanced projects |
+| 🌍 **Multi-Language Support** | Projects supporting English, Hindi, and other Indian languages |
+| 📚 **100+ Libraries** | LangChain, LlamaIndex, CrewAI, AutoGen, Weaviate, ChromaDB, Pinecone & more |
+| 🚀 **Production-Ready** | Well-documented, tested code ready to deploy and integrate |
 
 ---
 
@@ -73,10 +112,11 @@ Production-grade implementations and cutting-edge research:
 - **[Production LLM Testing](llm-testing/)** - Comprehensive model evaluation
 - **[Enterprise AI Agents](ai-agents/)** - Production-grade agent systems
 - **[Advanced RAG Architectures](rag/)** - Sophisticated retrieval systems
+- **[Fine-Tuning LLMs](fine-tuning/)** - Custom model fine-tuning with LoRA
 
 ---
 
-## 🎯 40+ Production-Ready Applications
+## 🎯 45+ Production-Ready Applications
 
 ### 🤖 **Chat & Communication**
 - **[Chat with QWEN3 Coder](ai-apps-collection/%20chat-with-qwen3-coder)** - Advanced coding assistant powered by QWEN
@@ -84,6 +124,8 @@ Production-grade implementations and cutting-edge research:
 - **[Chat with GPT-OSS](ai-apps-collection/chat-with-gpt-oss)** - Open-source GPT interface
 - **[Sutra V2 Multilingual Chatbot](ai-apps-collection/sutra-v2-multilingual-chatbot)** - Support for Hindi and Indian languages
 - **[Vibe Voice TTS](ai-apps-collection/vibe-voice-tts)** - Text-to-speech application
+- **[Gemini Personal CA](ai-apps-collection/Gemini-personal-CA)** - Personal coding assistant with Gemini
+- **[Gemini Chat Image Editor](ai-apps-collection/gemini-chat-image-editor)** - AI-powered image editing with chat
 
 ### 🎮 **Games & Entertainment**
 - **[Chess Playing Agents](ai-apps-collection/chess_playing_agents_GLM-model)** - AI chess opponents with GLM model
@@ -94,6 +136,7 @@ Production-grade implementations and cutting-edge research:
 ### 📚 **Education & Learning**
 - **[Multilingual Quiz Generator](ai-apps-collection/Educhain_MultiLanguge_Quiz_Generator)** - Create quizzes in multiple languages
 - **[QnA Generator](ai-apps-collection/Educhain-Qna-Generator)** - Automated question generation
+- **[Podcast Generator](ai-apps-collection/educhain-podcast-generator)** - AI-powered podcast creation
 - **[Origami Tutorial Generator](ai-apps-collection/Educhain_Origami_Tutorial_Generator)** - Creative step-by-step tutorials
 - **[Indian Language Quiz](ai-apps-collection/indian_language_quiz_Using_Sutra)** - Regional language support
 - **[Language Learner](ai-apps-collection/language-learner)** - Interactive language learning platform
@@ -126,6 +169,8 @@ Production-grade implementations and cutting-edge research:
 - **[Gadget Comparator](ai-apps-collection/Gadget_comparator_using_gemini_url_context)** - Product analysis with Gemini
 - **[Chroma Cloud RAG](ai-apps-collection/chroma-cloud-rag)** - Cloud-based retrieval system
 - **[MCP Implementation](ai-apps-collection/mcp-use)** - Model Context Protocol
+- **[Agno Traceloop Observability](ai-apps-collection/Agno-Traceloop-Observability)** - AI observability and tracing
+- **[Function Gemma Tool Calling](ai-apps-collection/Function-Gemma-Tool-calling)** - Tool calling with Gemma model
 - **[TypeSafe Agno](ai-apps-collection/typesafe-agno)** - Type-safe AI development
 - **[NextJS Image Workflow](ai-apps-collection/nano-banana-image-workflow-nextjs)** - Advanced image processing
 
@@ -239,7 +284,24 @@ Show your support by starring this repository!
 
 ---
 
+## 🏷️ Topics & Keywords
+
+`generative-ai` `langchain` `llm` `openai` `gpt-4` `gemini` `claude` `rag` `retrieval-augmented-generation` `ai-agents` `multi-agent` `crewai` `autogen` `llamaindex` `vector-database` `chromadb` `pinecone` `weaviate` `streamlit` `python` `machine-learning` `deep-learning` `nlp` `chatbot` `ai-applications` `tutorials` `examples` `production-ready`
+
+---
+
+<div align="center">
+  <h3>🚀 Ready to build amazing AI applications?</h3>
+  <p><b>Star ⭐ this repo</b> to bookmark it and help others discover these resources!</p>
+  <br>
+  <a href="https://github.com/buildfastwithai/gen-ai-experiments/stargazers">
+    <img src="https://img.shields.io/github/stars/buildfastwithai/gen-ai-experiments?style=for-the-badge&logo=github&color=yellow" alt="Star this repo">
+  </a>
+</div>
+
+<br>
+
 <div align="center">
   <p>Made with ❤️ by <a href="https://buildfastwithai.com">BuildFastWithAI</a></p>
-  <p>⭐ Star this repo if you find it helpful!</p>
+  <sub>Learn Generative AI • Build AI Apps • Deploy to Production</sub>
 </div>
