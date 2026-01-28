@@ -1,0 +1,22 @@
+[project]
+name = "chat-pdf-web"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.13"
+dependencies = [
+    "beautifulsoup4>=4.13.4",
+    "chroma>=0.2.0",
+    "chromadb>=1.0.15",
+    "firecrawl-py>=2.16.2",
+    "langchain>=0.3.27",
+    "langchain-chroma>=0.2.5",
+    "langchain-community>=0.3.27",
+    "langchain-google-genai>=2.1.8",
+    "nest-asyncio>=1.6.0",
+    "pypdf>=5.9.0",
+    "pypdf2>=3.0.1",
+    "requests>=2.32.4",
+    "streamlit>=1.47.1",
+    "streamlit-extras>=0.7.5",
+    "tiktoken>=0.9.0",
+]

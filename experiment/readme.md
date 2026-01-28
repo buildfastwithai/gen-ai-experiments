@@ -1,56 +1,48 @@
-# Experiment Notebooks
+# 🧪 Experiment Notebooks
 
-This directory contains a curated collection of Jupyter notebooks and experiments exploring a wide range of GenAI, LLM, and agentic workflows, including question generation, web scraping, vision models, safety guardrails, and more. Each subfolder focuses on a specific tool, framework, or use case, providing hands-on examples and integration recipes.
+<p align="center">
+  <strong>Cutting-Edge AI Research & Experimental Implementations</strong><br>
+  <em>Advanced experiments exploring the latest in GenAI, LLM workflows, and innovative AI applications</em>
+</p>
 
 ---
 
-## 📁 Directory Overview
+## 🎯 Overview
 
-### 1. `educhain-experiments/`
-- **Purpose:** Automated question generation and management using the Educhain library.
-- **Key Notebook:** `Question_generation_using_educhain.ipynb` – Shows how to generate, display, and manage MCQs with custom schemas and Supabase integration.
-- **Features:** Custom Pydantic models, prompt templates, MCQ generation, option shuffling, database push.
-- **See:** `README`
+This directory contains experimental implementations and research projects that push the boundaries of AI applications. Each notebook explores cutting-edge techniques, novel integrations, and advanced use cases that may become tomorrow's production standards.
 
-### 2. `Guardrails/`
-- **Purpose:** Experiments with LLM safety, policy enforcement, and discriminator guardrails using NemoGuardrails and LangChain.
-- **Key Notebooks:**
-  - `Introduction_to_Guardrails.ipynb` – Intro to NemoGuardrails for LLM safety.
-  - `Using_discriminator_guardrails_v2.ipynb` – Advanced guardrails and discriminator flows.
-- **Features:** YAML/colang config, self-check flows, OpenAI integration.
-- **See:** `README`
+## 🔬 Featured Experiments
 
-### 3. `web-based/`
-- **Purpose:** Web automation, scraping, and search using LLMs and agentic tools.
-- **Key Notebooks:**
-  - `ScrapeGraphAI_demo.ipynb` – Demo of ScrapeGraphAI for structured web scraping with LLMs.
-  - `browser-use.ipynb` – Using the browser-use agent for web navigation and automation.
-  - `google_search_results_Demo.ipynb` – Integrating Google Search with LangChain agents.
-  - `WebScraping_with_GenAI.ipynb` – Comparing traditional and AI-powered web scraping.
-- **Features:** LLM-driven scraping, agentic browsing, search result integration.
+### 🎮 **Game Development & Entertainment**
+- **[GameQuest Generator (RAG + CrewAI)](GameQuest_Generator_(RAG_+_CrewAI)%20(1).ipynb)** - Advanced game quest generation using RAG and multi-agent systems
+- **[Podcast Summarization with Mistral Voxtral](podcast_summarization_mistral_voxtral.ipynb)** - Audio processing and summarization using advanced models
 
-### 4. `image_processing/`
-- **Purpose:** Experiments with vision models and image processing using LLMs.
-- **Key Notebook:** `Image_processing_using_Vision-Models.ipynb` – Compares GPT-4o, Claude-3-Opus, and Gemini-Pro on image-based tasks.
+### 🎓 **Educational AI Systems**
+- **[Grok 4 Fast X Educhain](Grok_4_Fast_X_Educhain.ipynb)** - Integration of Grok models with educational content generation
+- **[HorizonBeta X Educhain](HorizonBeta_X_Educhain.ipynb)** - Advanced educational AI using HorizonBeta models
 
-### 5. `instructor/`
-- **Purpose:** Structured output from LLMs using the Instructor library.
-- **Key Notebook:** `instructor.ipynb` – Shows structured MCQ creation, resume parsing, and integration with Educhain.
+### 🔍 **Web Intelligence & Search**
+- **[Perplexity Clone with Cerebras](perplexity_clone_cerebras.ipynb)** - Building a high-performance search engine clone
+- **[WebScraping with GenAI](WebScraping_with_GenAI.ipynb)** - AI-powered intelligent web scraping
+- **[Getting Started with ScrapeGraphAI](getting_started_with_scrapegraphai.ipynb)** - Graph-based web scraping with AI
+- **[WebScrape using AnyCrawl](webscrape_using_AnyCrwal.ipynb)** - Advanced crawling techniques
+- **[Gemini URL Context](gemini_url_context.ipynb)** - Context-aware URL processing with Gemini
 
-### 6. `medical-bot/`
-- **Purpose:** Building a medical chatbot using Mistral7 and LlamaIndex.
-- **Key Notebook:** `Medical_Bot_using_Mistral7_and_llamaindex.ipynb` – End-to-end example of a medical Q&A bot.
+### 🛡️ **AI Safety & Guardrails**
+- **[Introduction to Guardrails](Introduction_to_Guardrails.ipynb)** - Implementing safety measures in AI systems
+- **[LangChain Human in Loop](Langchain_human_in_loop.ipynb)** - Human oversight in AI workflows
 
-### 7. `sutra/`
-- **Purpose:** Getting started with SUTRA, a multilingual LLM.
-- **Key Notebook:** `Getting_Started_with_Sutra.ipynb` – Demos SUTRA’s multilingual capabilities and API usage.
+### 🧠 **Advanced AI Frameworks**
+- **[Instructor](instructor.ipynb)** - Structured output generation from language models
+- **[Mem0 with Tavily Starter](mem0_with_tavily_starter.ipynb)** - Memory-enhanced AI with search integration
+- **[GPT-OSS CrewAI Price Comparator](gpt_oss_crewai_price_comparator.ipynb)** - Multi-agent price comparison system
 
-### 8. `ollama-chat/`
-- **Purpose:** Chatbot experiments using Ollama.
-- **Key File:** `ollama_chat.py` – Python script for running a chat interface with Ollama.
+### 🖼️ **Computer Vision & Multimodal**
+- **[Image Processing using Vision Models](Image_processing_using_Vision-Models.ipynb)** - Comparative analysis of vision models
 
-### 9. `gardio/`
-- A folder for experiments and demos using Gradio and Ollama for chat-based AI interfaces.
+### ☁️ **Cloud & Infrastructure**
+- **[Baseten Inference](Baseten_Inference.ipynb)** - Cloud-based model inference optimization
+- **[ChromaCloud](chromaCloud.ipynb)** - Cloud vector database implementations
 
 
 ---

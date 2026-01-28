@@ -1,0 +1,14 @@
+streamlit
+langchain
+langchain-google-genai
+langchain-community
+pypdf2
+chromadb
+firecrawl-py
+beautifulsoup4
+requests
+langchain-chroma
+nest_asyncio
+tiktoken
+pypdf
+streamlit-extras

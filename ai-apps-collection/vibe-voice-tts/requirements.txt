@@ -1,0 +1,14 @@
+torch
+accelerate==1.6.0
+transformers==4.51.3
+diffusers
+tqdm
+numpy
+scipy
+ml-collections
+absl-py
+gradio
+av
+aiortc
+soundfile
+librosa

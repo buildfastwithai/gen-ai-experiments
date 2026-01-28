@@ -177,17 +177,17 @@ def main() -> None:
             "Cerebras model",
             options=[
                 "llama-4-scout-17b-16e-instruct",
-                "llama-3.3-70b-instruct",
-                "llama-3.1-8b-instruct",
+                "gpt-oss-120b",
+                "qwen-3-coder-480b",
             ],
             index=0,
         )
         openai_model = st.selectbox(
             "OpenAI model",
             options=[
-                "gpt-4o-mini",
+                "gpt-5",
                 "gpt-4o",
-                "gpt-4o-mini-translate",
+                "gpt-4.5",
             ],
             index=0,
         )

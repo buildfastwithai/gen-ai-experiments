@@ -1,0 +1,5 @@
+streamlit
+agno
+openai
+traceloop-sdk
+python-dotenv
