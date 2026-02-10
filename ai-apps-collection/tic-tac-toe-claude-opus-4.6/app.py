@@ -21,27 +21,25 @@ with st.sidebar:
     st.markdown("---")
 
     # 2. Model Selection
-    st.subheader("Model Selection")
+    st.subheader("Choose Your Fighter")
     
-    # Player X: Previous Claude Models
-    player_x_model = st.selectbox(
+    # Model Map
+    MODEL_MAP = {
+        "Claude Opus 4.6": "anthropic/claude-opus-4.6",
+        "Kimi 2.5": "moonshotai/kimi-k2-thinking",
+    }
+    
+    # Player X Selection
+    selected_name = st.selectbox(
         "Select Player X (Challenger)",
-        options=[
-            "anthropic/claude-3.5-sonnet",
-            "anthropic/claude-3.5-haiku",
-            "anthropic/claude-3-opus",
-            "anthropic/claude-3-sonnet",
-            "anthropic/claude-3-haiku",
-            "anthropic/claude-2.1",
-            "anthropic/claude-2.0",
-            "anthropic/claude-instant-1.2"
-        ],
+        options=list(MODEL_MAP.keys()),
         index=0
     )
+    player_x_model = MODEL_MAP[selected_name]
 
-    # Player O: New Claude Opus Model
-    st.info("Player O (Champion): anthropic/claude-opus-4.6")
-    player_o_model = "anthropic/claude-opus-4.6"
+    # Player O: Kimi 2.5
+    st.info("Player O (Champion): Kimi 2.5")
+    player_o_model = "moonshotai/kimi-k2.5"  # Fixed as Champion
     
     st.markdown("---")
     
@@ -61,6 +59,40 @@ with st.sidebar:
         "</div>",
         unsafe_allow_html=True
     )
+
+# --- BATTLE VIBES STYLING ---
+st.markdown("""
+<style>
+    .battle-title {
+        font-family: 'Verdana', sans-serif;
+        background: -webkit-linear-gradient(45deg, #FF0000, #FFD700);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 3em;
+        font-weight: 900;
+        text-align: center;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        margin-bottom: 0px;
+    }
+    .vs-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.5em;
+        font-weight: bold;
+        margin: 20px 0;
+    }
+    .player-x { color: #0099CC; font-size: 1.2em; text-shadow: 0 0 10px #0099CC; }
+    .vs-text { 
+        margin: 0 20px; 
+        color: #FF00FF; 
+        font-style: italic; 
+        text-shadow: 0 0 10px #FF00FF;
+    }
+    .player-o { color: #FF8800; font-size: 1.2em; text-shadow: 0 0 10px #FF8800; }
+</style>
+""", unsafe_allow_html=True)
+
 
 # --- GAME LOGIC ---
 
@@ -108,10 +140,10 @@ class PlayerAgent:
             st.error(f"Failed to initialize agent for {symbol}: {e}")
             self.agent = None
 
-    def get_move(self, board_repr, feedback=None):
-        prompt = f"Current board: {board_repr}. Pick a valid empty cell (0-8)."
+    def get_move(self, context, feedback=None):
+        prompt = f"{context}\n\nCRITICAL: Return ONLY the JSON for the move. Do not explain."
         if feedback:
-            prompt += f"\nPREVIOUS ERROR: {feedback}. Please fix this."
+            prompt += f"\n\nPREVIOUS ERROR: {feedback}\nYou MUST pick a different move from the Available Moves list."
         
         try:
             response = self.agent.run(prompt)
@@ -154,7 +186,30 @@ def get_team_move(board, api_key, model_id, player_symbol):
         return None
 
     # Supervisor prepares the board state for the agent
-    board_repr = {i: ("Empty" if cell is None else cell) for i, cell in enumerate(board)}
+    # Visual Grid Board
+    grid_lines = []
+    for i in range(0, 9, 3):
+        row_cells = []
+        for j in range(3):
+            idx = i + j
+            # Show index if empty, else show symbol
+            val = str(idx) if board[idx] is None else board[idx]
+            row_cells.append(val)
+        grid_lines.append(" | ".join(row_cells))
+    
+    board_visual = "\n---------\n".join(grid_lines)
+    
+    available_moves = [i for i, x in enumerate(board) if x is None]
+    
+    # Context string passed to agent
+    board_context = f"""
+You are playing Tic-Tac-Toe.
+Symbol: {player_symbol}
+Current Board (numbers are indices):
+{board_visual}
+
+Available Moves: {available_moves}
+"""
     
     # Initialize the specific player agent
     player = PlayerAgent(
@@ -172,7 +227,7 @@ def get_team_move(board, api_key, model_id, player_symbol):
     feedback = None
     
     for attempt in range(max_retries):
-        move = player.get_move(str(board_repr), feedback)
+        move = player.get_move(board_context, feedback)
         
         # Validate logic
         is_valid, error = GameSupervisor(board).validate_move(move)
@@ -198,22 +253,41 @@ if "game_active" not in st.session_state:
     st.session_state.game_active = True
 
 # --- MAIN APP UI ---
-st.title("🤖 AI vs AI Tic-Tac-Toe")
-st.subheader(f"{player_x_model} (X) vs {player_o_model} (O)")
+st.markdown('<div class="battle-title">🤖 AI TIC-TAC-TOE 🤖</div>', unsafe_allow_html=True)
+
+# Helper to get display name from ID
+def get_display_name(model_id):
+    inv_map = {v: k for k, v in MODEL_MAP.items()}
+    return inv_map.get(model_id, model_id)
+
+display_x = selected_name
+display_o = "Kimi 2.5"
+
+st.markdown(
+    f"""
+    <div class="vs-container">
+        <span class="player-x">{display_x} (X)</span>
+        <span class="vs-text">VS</span>
+        <span class="player-o">{display_o} (O)</span>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 st.caption("Powered by Agno Agents & OpenRouter")
 
+# Status Message
 # Status Message
 if st.session_state.winner:
     if st.session_state.winner == "Draw":
         st.info("Game Over! It's a Draw!")
     else:
-        winner_model = player_x_model if st.session_state.winner == "X" else player_o_model
-        st.success(f"Game Over! Winner: {st.session_state.winner} ({winner_model})")
+        winner_model_id = player_x_model if st.session_state.winner == "X" else player_o_model
+        st.success(f"Game Over! Winner: {st.session_state.winner} ({get_display_name(winner_model_id)})")
     # Stop game if over
     st.session_state.game_active = False
 else:
-    current_model = player_x_model if st.session_state.turn == "X" else player_o_model
-    st.markdown(f"### Turn: **{st.session_state.turn}** ({current_model})")
+    current_model_id = player_x_model if st.session_state.turn == "X" else player_o_model
+    st.markdown(f"### Turn: **{st.session_state.turn}** ")
 
 # Auto-Play Logic State
 if "auto_play" not in st.session_state:

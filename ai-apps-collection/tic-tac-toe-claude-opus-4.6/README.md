@@ -1,38 +1,46 @@
-# AI vs AI Tic-Tac-Toe: Battle of the Claudes
+# 🤖 AI Battle: Tic-Tac-Toe Arena
 
-This application is an **AI vs AI Game Simulation** where different versions of **Anthropic's Claude** models compete against the powerful **Claude Opus 4.6** champion. The system is orchestrated by a **Team of Agents** using the **Agno** framework.
+**Claude Opus 4.6 vs. Kimi 2.5**
 
-## Features
+Welcome to the ultimate AI showdown! This application simulates a Tic-Tac-Toe battle between two advanced Large Language Models (LLMs), orchestrated by a robust multi-agent system using the **Agno** framework.
 
-- **AI vs AI Gameplay**: Watch two LLMs play Tic-Tac-Toe against each other.
-- **Team of Agents Architecture**:
-  - **Player Agents**: Dedicated Agno agents for Player X (Challenger) and Player O (Champion).
-  - **Game Supervisor**: A central controller that validates moves using **Pydantic** and provides feedback to agents to correct invalid moves.
-- **Model Selection**: Choose from a variety of previous Claude models (Sonnet, Haiku, Instant, etc.) to challenge the Opus 4.6 champion.
-- **Continuous Play**: "Start Match" button initiates an auto-play loop with a 1-second delay between moves.
-- **Theme-Aware UI**: Custom-styled board with vibrant colors (Blue for X, Orange for O) that look great in both Light and Dark modes.
+## 🌟 Features
 
-## Setup Instructions
+*   **Battle of Giants**: Watch **Claude Opus 4.6** take on the thinking powerhouse **Kimi 2.5**.
+*   **"Battle Vibes" UI**: Experience a custom-styled interface with neon gradients, bold typography, and a dynamic "Verified" vs. "Challenger" aesthetic.
+*   **Intelligent Agent Team**:
+    *   **Player Agents**: Distinct agents for Player X and Player O, each with specific instructions and personas.
+    *   **Visual Board Perception**: Agents "see" the board as a 3x3 visual grid, ensuring accurate move selection.
+    *   **Game Supervisor**: A strict referee that validates every move, providing specific feedback to agents if they attempt invalid plays (e.g., picking an occupied cell).
+*   **Auto-Play Mode**: Sit back and watch the AI logic unfold turn-by-turn with a cinematic delay.
 
-1. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-   *Dependencies include `streamlit`, `agno`, and `openai`.*
+## 🚀 Setup & Installation
 
-2. **Run the app**:
-   ```bash
-   streamlit run app.py
-   ```
+1.  **Clone dependencies**:
+    ```bash
+    pip install -r requirements.txt
+    ```
+    *(Requires `streamlit`, `agno`, `pydantic`, etc.)*
 
-## Usage
+2.  **Launch the Arena**:
+    ```bash
+    streamlit run app.py
+    ```
 
-1. **Enter API Key**: Input your **OpenRouter API Key** in the sidebar.
-2. **Select Challenger**: Choose a model for **Player X** from the dropdown list.
-   - **Player O** is fixed as `anthropic/claude-opus-4.6`.
-3. **Start Match**: Click "Start Match" to begin the automated battle.
-4. **Watch**: The agents will play turn-by-turn. The **Game Supervisor** ensures fair play and valid moves.
-5. **Continuous Action**: The game runs automatically until a win or draw. You can stop it at any time with "Stop Match".
+## 🎮 How to Play
+
+1.  **Enter API Key**: Provide your **OpenRouter API Key** in the sidebar to unlock the models.
+2.  **Choose Your Fighter**: Select **Player X** (e.g., *Claude Opus 4.6*).
+    *   **Player O** awaits as the defending champion (*Kimi 2.5*).
+3.  **Start Match**: Click the button to ignite the battle.
+4.  **Spectate**: Watch the board update in real-time as the agents reason and react.
+
+## 🛠️ Tech Stack
+
+*   **Frontend**: Streamlit with custom HTML/CSS injection.
+*   **Agent Framework**: Agno (formerly Phidata).
+*   **Model Provider**: OpenRouter.
+*   **Logic**: Python + Pydantic for structured data validation.
 
 ---
-*Powered by Agno Agents, OpenRouter, and Streamlit.*
+*Built with ❤️ for the GenAI community.*
