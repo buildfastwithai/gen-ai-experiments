@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nano Banana 2 — Developer Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #09090b;
+            --bg-2: #18181b;
+            --bg-3: #27272a;
+            --border: #3f3f46;
+            --text: #fafafa;
+            --text-2: #a1a1aa;
+            --yellow: #facc15;
+            --yellow-dim: #ca8a04;
+            --green: #22c55e;
+            --blue: #3b82f6;
+            --purple: #a855f7;
+            --red: #ef4444;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(9, 9, 11, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+
+        .logo {
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo span { color: var(--yellow); }
+
+        .api-input {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .api-input input {
+            background: var(--bg-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: var(--text);
+            font-size: 13px;
+            width: 280px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .api-input input:focus { outline: none; border-color: var(--yellow); }
+        .api-input input::placeholder { color: var(--text-2); }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--text-2);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--red);
+            transition: background 0.2s;
+        }
+
+        .status-dot.on { background: var(--green); }
+
+        /* Hero */
+        .hero {
+            padding: 140px 0 80px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .eyebrow {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--yellow);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 16px;
+        }
+
+        .hero h1 {
+            font-size: 64px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, var(--text) 0%, var(--yellow) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: var(--text-2);
+            max-width: 600px;
+            margin: 0 auto 32px;
+        }
+
+        .model-id {
+            display: inline-block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            background: var(--bg-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 20px;
+            color: var(--green);
+        }
+
+        .caps {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            margin-top: 48px;
+            flex-wrap: wrap;
+        }
+
+        .cap {
+            text-align: center;
+        }
+
+        .cap-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .cap-label {
+            font-size: 13px;
+            color: var(--text-2);
+        }
+
+        /* Nav */
+        nav {
+            position: sticky;
+            top: 64px;
+            background: rgba(9, 9, 11, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            z-index: 50;
+            overflow-x: auto;
+        }
+
+        .nav-inner {
+            display: flex;
+            gap: 4px;
+            padding: 12px 0;
+        }
+
+        .nav-inner a {
+            color: var(--text-2);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 8px 14px;
+            border-radius: 6px;
+            white-space: nowrap;
+            transition: all 0.15s;
+        }
+
+        .nav-inner a:hover { color: var(--text); background: var(--bg-2); }
+        .nav-inner a.active { color: var(--bg); background: var(--yellow); }
+
+        /* Main */
+        main { padding: 60px 0; }
+
+        section {
+            margin-bottom: 80px;
+            scroll-margin-top: 140px;
+        }
+
+        .section-head {
+            display: flex;
+            align-items: baseline;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+
+        .section-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: var(--yellow);
+        }
+
+        .section-head h2 {
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        .section-desc {
+            color: var(--text-2);
+            font-size: 15px;
+            margin-bottom: 24px;
+        }
+
+        /* Demo Box */
+        .demo {
+            background: var(--bg-2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .demo-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .demo-tab {
+            padding: 14px 20px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-2);
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: color 0.15s;
+        }
+
+        .demo-tab:hover { color: var(--text); }
+        .demo-tab.active { color: var(--yellow); box-shadow: inset 0 -2px 0 var(--yellow); }
+
+        .demo-panel { display: none; padding: 24px; }
+        .demo-panel.active { display: block; }
+
+        /* Form */
+        .field { margin-bottom: 16px; }
+        .field label { display: block; font-size: 13px; color: var(--text-2); margin-bottom: 6px; }
+
+        .field textarea,
+        .field input,
+        .field select {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            color: var(--text);
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        .field textarea { min-height: 80px; }
+        .field textarea:focus, .field input:focus, .field select:focus { outline: none; border-color: var(--yellow); }
+
+        .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; }
+
+        .btn {
+            background: var(--yellow);
+            color: var(--bg);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover { opacity: 0.9; }
+        .btn:active { transform: scale(0.98); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .btn .spin {
+            display: none;
+            width: 14px;
+            height: 14px;
+            border: 2px solid var(--bg);
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .btn.loading .spin { display: block; }
+        .btn.loading .label { display: none; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Output */
+        .output {
+            margin-top: 20px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            min-height: 180px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .output.left { align-items: flex-start; justify-content: flex-start; }
+
+        .output-empty {
+            color: var(--text-2);
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .output-empty span { font-size: 32px; display: block; margin-bottom: 8px; opacity: 0.5; }
+
+        .output img {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+
+        .output-text {
+            font-size: 14px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+        }
+
+        .output-err {
+            color: var(--red);
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--red);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            width: 100%;
+        }
+
+        .thought-box {
+            background: rgba(168, 85, 247, 0.1);
+            border: 1px solid var(--purple);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            width: 100%;
+        }
+
+        .thought-box h5 {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--purple);
+            margin-bottom: 8px;
+        }
+
+        .thought-box p { font-size: 13px; color: var(--text-2); }
+
+        /* Code */
+        .code-wrap {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .code-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            background: var(--bg-3);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .code-lang { font-size: 11px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.05em; }
+
+        .copy-btn {
+            background: var(--bg-2);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 4px 10px;
+            color: var(--text-2);
+            font-size: 11px;
+            cursor: pointer;
+        }
+
+        .copy-btn:hover { color: var(--text); background: var(--bg-3); }
+
+        pre {
+            padding: 16px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .kw { color: var(--purple); }
+        .str { color: var(--green); }
+        .num { color: var(--yellow); }
+        .cmt { color: var(--text-2); }
+        .fn { color: var(--blue); }
+
+        /* Upload */
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.15s;
+        }
+
+        .upload-zone:hover { border-color: var(--yellow); }
+        .upload-zone.has-img { border-style: solid; padding: 12px; }
+        .upload-zone img { max-width: 150px; max-height: 150px; border-radius: 6px; }
+        .upload-zone p { color: var(--text-2); font-size: 13px; }
+
+        /* Quick Start */
+        .quickstart {
+            background: linear-gradient(135deg, var(--bg-2) 0%, var(--bg) 100%);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 60px;
+        }
+
+        .quickstart h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .steps { display: flex; flex-direction: column; gap: 20px; }
+
+        .step {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .step-num {
+            width: 28px;
+            height: 28px;
+            background: var(--yellow);
+            color: var(--bg);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .step-text h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+        .step-text p { font-size: 13px; color: var(--text-2); }
+        .step-text a { color: var(--blue); }
+        .step-text code { background: var(--bg-3); padding: 3px 8px; border-radius: 4px; font-size: 12px; }
+
+        /* Table */
+        .tbl {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .tbl th, .tbl td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tbl th { color: var(--text-2); font-weight: 500; background: var(--bg-3); }
+        .tbl td { color: var(--text); }
+        .tbl .hl { color: var(--yellow); }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 40px 0;
+            text-align: center;
+            color: var(--text-2);
+            font-size: 13px;
+        }
+
+        footer a { color: var(--blue); text-decoration: none; }
+
+        /* Chat */
+        .chat-history {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .chat-msg {
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .chat-msg.user { background: var(--bg-3); }
+        .chat-msg.bot { background: var(--bg-2); border: 1px solid var(--border); }
+        .chat-msg strong { font-size: 12px; color: var(--text-2); display: block; margin-bottom: 6px; }
+        .chat-msg img { max-width: 250px; border-radius: 6px; margin-top: 8px; }
+
+        .btn-row { display: flex; gap: 12px; }
+        .btn-secondary {
+            background: var(--bg-3);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        @media (max-width: 768px) {
+            .header-inner { flex-wrap: wrap; gap: 12px; height: auto; padding: 12px 0; }
+            .api-input input { width: 100%; }
+            .hero h1 { font-size: 40px; }
+            .eyebrow { font-size: 12px; }
+            .caps { gap: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-inner">
+            <div class="logo">🍌 Nano <span>Banana 2</span></div>
+            <div class="api-input">
+                <input type="password" id="apiKey" placeholder="Paste your Google API key">
+                <div class="status">
+                    <div class="status-dot" id="statusDot"></div>
+                    <span id="statusText">Not connected</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <p class="eyebrow">🍌 Nano Banana 2</p>
+            <h1>Interactive Cookbook</h1>
+            <p>Experiment, explore, and code with Google's latest image model.</p>
+            <div class="model-id">gemini-3.1-flash-image-preview</div>
+            <div class="caps">
+                <div class="cap"><div class="cap-icon">⚡</div><div class="cap-label">512px fast mode</div></div>
+                <div class="cap"><div class="cap-icon">🔍</div><div class="cap-label">Search grounding</div></div>
+                <div class="cap"><div class="cap-icon">🖼️</div><div class="cap-label">Image grounding</div></div>
+                <div class="cap"><div class="cap-icon">🧠</div><div class="cap-label">Thinking</div></div>
+                <div class="cap"><div class="cap-icon">📐</div><div class="cap-label">Up to 4K</div></div>
+            </div>
+        </div>
+    </section>
+
+    <nav>
+        <div class="container nav-inner">
+            <a href="#start" class="active">Start</a>
+            <a href="#generate">Generate</a>
+            <a href="#edit">Edit</a>
+            <a href="#aspect">Aspect Ratio</a>
+            <a href="#resolution">Resolution</a>
+            <a href="#chat">Chat</a>
+            <a href="#thinking">Thinking</a>
+            <a href="#grounding">Search</a>
+            <a href="#img-grounding">Image Search</a>
+            <a href="#mix">Mix Images</a>
+            <a href="#story">Stories</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- Quick Start -->
+        <section id="start" class="quickstart">
+            <h3>⚡ Get Started in 2 Minutes</h3>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-num">1</div>
+                    <div class="step-text">
+                        <h4>Get your API key</h4>
+                        <p><a href="https://aistudio.google.com/apikey" target="_blank">AI Studio</a> → Create API key. Enable billing.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">2</div>
+                    <div class="step-text">
+                        <h4>Install</h4>
+                        <p><code>pip install google-genai>=1.65.0</code></p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">3</div>
+                    <div class="step-text">
+                        <h4>Try it</h4>
+                        <p>Paste your key above and run the demos below.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 1. Generate -->
+        <section id="generate">
+            <div class="section-head">
+                <span class="section-num">01</span>
+                <h2>Generate Images</h2>
+            </div>
+            <p class="section-desc">Text to image. Returns both text and image parts.</p>
+            <div class="demo">
+                <div class="demo-tabs">
+                    <button class="demo-tab active" data-tab="try">Try it</button>
+                    <button class="demo-tab" data-tab="code">Code</button>
+                </div>
+                <div class="demo-panel active" data-panel="try">
+                    <div class="field">
+                        <label>Prompt</label>
+                        <textarea id="genPrompt">A golden retriever wearing sunglasses on a beach at sunset, photorealistic</textarea>
+                    </div>
+                    <button class="btn" onclick="runGenerate()"><span class="spin"></span><span class="label">Generate</span></button>
+                    <div class="output" id="genOut"><div class="output-empty"><span>🖼️</span>Output appears here</div></div>
+                </div>
+                <div class="demo-panel" data-panel="code">
+                    <div class="code-wrap">
+                        <div class="code-head"><span class="code-lang">Python</span><button class="copy-btn" onclick="copy(this)">Copy</button></div>
+<pre><code><span class="kw">from</span> google <span class="kw">import</span> genai
+<span class="kw">from</span> google.genai <span class="kw">import</span> types
+
+client = genai.Client(api_key=<span class="str">"YOUR_API_KEY"</span>)
+
+response = client.models.generate_content(
+    model=<span class="str">"gemini-3.1-flash-image-preview"</span>,
+    contents=<span class="str">"A golden retriever on a beach..."</span>,
+    config=types.GenerateContentConfig(
+        response_modalities=[<span class="str">'Text'</span>, <span class="str">'Image'</span>]
+    )
+)
+
+<span class="kw">for</span> part <span class="kw">in</span> response.parts:
+    <span class="kw">if</span> img := part.as_image():
+        img.save(<span class="str">"out.png"</span>)</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Edit -->
+        <section id="edit">
+            <div class="section-head">
+                <span class="section-num">02</span>
+                <h2>Edit Images</h2>
+            </div>
+            <p class="section-desc">Pass an image + prompt. Maintains character consistency.</p>
+            <div class="demo">
+                <div class="demo-tabs">
+                    <button class="demo-tab active" data-tab="try">Try it</button>
+                    <button class="demo-tab" data-tab="code">Code</button>
+                </div>
+                <div class="demo-panel active" data-panel="try">
+                    <div class="row">
+                        <div class="field">
+                            <label>Image</label>
+                            <div class="upload-zone" id="editZone" onclick="document.getElementById('editFile').click()">
+                                <input type="file" id="editFile" accept="image/*" style="display:none" onchange="handleUpload(this,'editZone','editData')">
+                                <p>📁 Click to upload</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Edit prompt</label>
+                        <textarea id="editPrompt">Place this in a magical forest with glowing mushrooms</textarea>
+                    </div>
+                    <button class="btn" onclick="runEdit()"><span class="spin"></span><span class="label">Edit</span></button>
+                    <div class="output" id="editOut"><div class="output-empty"><span>✏️</span>Output appears here</div></div>
+                </div>
+                <div class="demo-panel" data-panel="code">
+                    <div class="code-wrap">
+                        <div class="code-head"><span class="code-lang">Python</span><button class="copy-btn" onclick="copy(this)">Copy</button></div>
+<pre><code><span class="kw">import</span> PIL
+
+response = client.models.generate_content(
+    model=<span class="str">"gemini-3.1-flash-image-preview"</span>,
+    contents=[
+        <span class="str">"Place this in a magical forest..."</span>,
+        PIL.Image.open(<span class="str">'input.png'</span>)
+    ]
+)</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Aspect Ratio -->
+        <section id="aspect">
+            <div class="section-head">
+                <span class="section-num">03</span>
+                <h2>Aspect Ratio</h2>
+            </div>
+            <p class="section-desc">Control output dimensions. NB2 adds extreme ratios: 1:4, 4:1, 1:8, 8:1.</p>
+            <div class="demo">
+                <div class="demo-tabs">
+                    <button class="demo-tab active" data-tab="try">Try it</button>
+                    <button class="demo-tab" data-tab="code">Code</button>
+                    <button class="demo-tab" data-tab="table">All Ratios</button>
+                </div>
+                <div class="demo-panel active" data-panel="try">
+                    <div class="field">
+                        <label>Prompt</label>
+                        <textarea id="aspectPrompt">Panoramic cyberpunk cityscape at night with neon lights</textarea>
+                    </div>
+                    <div class="field">
+                        <label>Ratio</label>
+                        <select id="aspectRatio">
+                            <option value="1:1">1:1</option>
+                            <option value="16:9" selected>16:9</option>
+                            <option value="9:16">9:16</option>
+                            <option value="21:9">21:9</option>
+                            <option value="4:1">4:1 (NB2)</option>
+                            <option value="1:4">1:4 (NB2)</option>
+                            <option value="8:1">8:1 (NB2)</option>
+                            <option value="1:8">1:8 (NB2)</option>
+                        </select>
+                    </div>
+                    <button class="btn" onclick="runAspect()"><span class="spin"></span><span class="label">Generate</span></button>
+                    <div class="output" id="aspectOut"><div class="output-empty"><span>📐</span>Output appears here</div></div>
+                </div>
+                <div class="demo-panel" data-panel="code">
+                    <div class="code-wrap">
+                        <div class="code-head"><span class="code-lang">Python</span><button class="copy-btn" onclick="copy(this)">Copy</button></div>
+<pre><code>response = client.models.generate_content(
+    model=<span class="str">"gemini-3.1-flash-image-preview"</span>,
+    contents=<span class="str">"Panoramic cyberpunk cityscape..."</span>,
+    config=types.GenerateContentConfig(
+        response_modalities=[<span class="str">"IMAGE"</span>],
+        image_config=types.ImageConfig(
+            aspect_ratio=<span class="str">"16:9"</span>
+        )
+    )
+)</code></pre>
+                    </div>
+                </div>
+                <div class="demo-panel" data-panel="table">
+                    <table class="tbl">
+                        <thead><tr><th>Ratio</th><th>1K</th><th>2K</th><th>4K</th></tr></thead>
+                        <tbody>
+                            <tr><td>1:1</td><td>1024×1024</td><td>2048×2048</td><td>4096×4096</td></tr>
+                            <tr><td>16:9</td><td>1376×768</td><td>2752×1536</td><td>5504×3072</td></tr>
+                            <tr><td>9:16</td><td>768×1376</td><td>1536×2752</td><td>3072×5504</td></tr>
+                            <tr><td>21:9</td><td>1584×672</td><td>3168×1344</td><td>6336×2688</td></tr>
+                            <tr><td class="hl">4:1</td><td>2048×512</td><td>4096×1024</td><td>8192×2048</td></tr>
+                            <tr><td class="hl">8:1</td><td>3072×384</td><td>6144×768</td><td>12288×1536</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Resolution -->
+        <section id="resolution">
+            <div class="section-head">
+                <span class="section-num">04</span>
+                <h2>Resolution</h2>
+            </div>
+            <p class="section-desc">512px (fast) → 1K → 2K → 4K. 512px is NB2-exclusive, optimized for low latency.</p>
+            <div class="demo">
+                <div class="demo-tabs">
+                    <button class="demo-tab active" data-tab="try">Try it</button>
+                    <button class="demo-tab" data-tab="code">Code</button>
+                </div>
+                <div class="demo-panel active" data-panel="try">
+                    <div class="field">
+                        <label>Prompt</label>
+                        <textarea id="resPrompt">Cute pixel art robot with glowing eyes</textarea>
+                    </div>
+                    <div class="field">
+                        <label>Resolution</label>
+                        <select id="resSize">
+                            <option value="512px">512px (fast)</option>
+                            <option value="1K" selected>1K</option>
+                            <option value="2K">2K</option>
+                            <option value="4K">4K</option>
+                        </select>
+                    </div>
+                    <button class="btn" onclick="runRes()"><span class="spin"></span><span class="label">Generate</span></button>
+                    <div class="output" id="resOut"><div class="output-empty"><span>🔍</span>Output appears here</div></div>
+                </div>
+                <div class="demo-panel" data-panel="code">
+                    <div class="code-wrap">
+                        <div class="code-head"><span class="code-lang">Python</span><button class="copy-btn" onclick="copy(this)">Copy</button></div>
+<pre><code>response = client.models.generate_content(
+    model=<span class="str">"gemini-3.1-flash-image-preview"</span>,
+    contents=<span class="str">"Cute pixel art robot..."</span>,
+    config=types.GenerateContentConfig(
+        response_modalities=[<span class="str">"IMAGE"</span>],
+        image_config=types.ImageConfig(
+            image_size=<span class="str">"512px"</span>  <span class="cmt"># "512px" | "1K" | "2K" | "4K"</span>
+        )
+    )
+)</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Chat -->
+        <section id="chat">
+            <div class="section-head">
+                <span class="section-num">05</span>
+                <h2>Chat Mode</h2>
+            </div>
+            <p class="section-desc">Multi-turn conversation. Model remembers context and maintains character consistency.</p>
+            <div class="demo">
+                <div class="demo-tabs">
+                    <button class="demo-tab active" data-tab="try">Try it</button>
+                    <button class="demo-tab" data-tab="code">Code</button>
+                </div>
+                <div class="demo-panel active" data-panel="try">
+                    <div class="field">
+                        <label>Message</label>
+                        <textarea id="chatMsg">Create a plastic toy fox figurine in a bedroom</textarea>
+                    </div>
+                    <div class="btn-row">
+                        <button class="btn" onclick="runChat()"><span class="spin"></span><span class="label">Send</span></button>
+                        <button class="btn btn-secondary" onclick="resetChat()">Reset</button>
+                    </div>
+                    <div class="output left" id="chatOut"><div class="output-empty"><span>💬</span>Chat history appears here</div></div>
+                </div>
+                <div class="demo-panel" data-panel="code">
+                    <div class="code-wrap">
+                        <div class="code-head"><span class="code-lang">Python</span><button class="copy-btn" onclick="copy(this)">Copy</button></div>
+<pre><code>chat = client.chats.create(
+    model=<span class="str">"gemini-3.1-flash-image-preview"</span>
+)
+
+<span class="cmt"># First turn</span>
+response = chat.send_message(<span class="str">"Create a toy fox figurine..."</span>)
+
+<span class="cmt"># Follow-up - model remembers the fox</span>
+response = chat.send_message(<span class="str">"Add a helmet with a blue planet"</span>)
+
+<span class="cmt"># Keep iterating</span>
+response = chat.send_message(<span class="str">"Move it to a beach"</span>)</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Thinking -->
+        <section id="thinking">
+            <div class="section-head">
+                <span class="section-num">06</span>
+                <h2>Thinking</h2>
+            </div>
+            <p class="section-desc">Model reasons before generating. Use for complex prompts. Levels: Minimal, High.</p>
+            <div class="demo">
+                <div class="demo-tabs">
+                    <button class="demo-tab active" data-tab="try">Try it</button>
+                    <button class="demo-tab" data-tab="code">Code</button>
+                </div>
+                <div class="demo-panel active" data-panel="try">
+                    <div class="field">
+                        <label>Prompt</label>
+                        <textarea id="thinkPrompt">Create an unusual but realistic image that might go viral</textarea>
+                    </div>
+                    <div class="field">
+                        <label>Thinking Level</label>
+                        <select id="thinkLevel">
+                            <option value="Minimal">Minimal</option>
+                            <option value="High" selected>High</option>
+                        </select>
+                    </div>
+                    <button class="btn" onclick="runThink()"><span class="spin"></span><span class="label">Generate</span></button>
+                    <div class="output left" id="thinkOut"><div class="output-empty"><span>🧠</span>Thoughts + image appear here</div></div>
+                </div>
+                <div class="demo-panel" data-panel="code">
+                    <div class="code-wrap">
+                        <div class="code-head"><span class="code-lang">Python</span><button class="copy-btn" onclick="copy(this)">Copy</button></div>
+<pre><code>response = client.models.generate_content(
+    model=<span class="str">"gemini-3.1-flash-image-preview"</span>,
+    contents=<span class="str">"Create an unusual viral image..."</span>,
+    config=types.GenerateContentConfig(
+        response_modalities=[<span class="str">'Text'</span>, <span class="str">'Image'</span>],
+        thinking_config=types.ThinkingConfig(
+            thinking_level=<span class="str">"High"</span>,  <span class="cmt"># "Minimal" | "High"</span>
+            include_thoughts=<span class="kw">True</span>
+        )
+    )
+)
+
+<span class="cmt"># Access thoughts</span>
+<span class="kw">for</span> part <span class="kw">in</span> response.parts:
+    <span class="kw">if</span> part.thought:
+        print(part.text)</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. Search Grounding -->
+        <section id="grounding">
+            <div class="section-head">
+                <span class="section-num">07</span>
+                <h2>Search Grounding</h2>
+            </div>
+            <p class="section-desc">Access real-time data via Google Search. Great for current events, weather, facts.</p>
+            <div class="demo">
+                <div class="demo-tabs">
+                    <button class="demo-tab active" data-tab="try">Try it</button>
+                    <button class="demo-tab" data-tab="code">Code</button>
+                </div>
+                <div class="demo-panel active" data-panel="try">
+                    <div class="field">
+                        <label>Prompt</label>
+                        <textarea id="groundPrompt">Weather forecast for Tokyo next 5 days as a modern chart with outfit suggestions</textarea>
+                    </div>
+                    <button class="btn" onclick="runGround()"><span class="spin"></span><span class="label">Generate with Search</span></button>
+                    <div class="output left" id="groundOut"><div class="output-empty"><span>🔍</span>Grounded image appears here</div></div>
+                </div>
+                <div class="demo-panel" data-panel="code">
+                    <div class="code-wrap">
+                        <div class="code-head"><span class="code-lang">Python</span><button class="copy-btn" onclick="copy(this)">Copy</button></div>
+<pre><code>response = client.models.generate_content(
+    model=<span class="str">"gemini-3.1-flash-image-preview"</span>,
+    contents=<span class="str">"Weather forecast for Tokyo..."</span>,
+    config=types.GenerateContentConfig(
+        response_modalities=[<span class="str">'Text'</span>, <span class="str">'Image'</span>],
+        tools=[{<span class="str">"google_search"</span>: {}}]
+    )
+)
+
+<span class="cmt"># Get sources</span>
+sources = response.candidates[<span class="num">0</span>].grounding_metadata</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8. Image Grounding -->
+        <section id="img-grounding">
+            <div class="section-head">
+                <span class="section-num">08</span>
+                <h2>Image Grounding</h2>
+            </div>
+            <p class="section-desc">Search for reference images on Google. NB2 exclusive. Perfect for landmarks, species, specific visuals.</p>
+            <div class="demo">
+                <div class="demo-tabs">
+                    <button class="demo-tab active" data-tab="try">Try it</button>
+                    <button class="demo-tab" data-tab="code">Code</button>
+                </div>
+                <div class="demo-panel active" data-panel="try">
+                    <div class="field">
+                        <label>Prompt</label>
+                        <textarea id="imgGroundPrompt">A detailed painting of a Timareta Thelxione butterfly on a flower</textarea>
+                    </div>
+                    <button class="btn" onclick="runImgGround()"><span class="spin"></span><span class="label">Generate with Image Search</span></button>
+                    <div class="output" id="imgGroundOut"><div class="output-empty"><span>🖼️</span>Grounded image appears here</div></div>
+                </div>
+                <div class="demo-panel" data-panel="code">
+                    <div class="code-wrap">
+                        <div class="code-head"><span class="code-lang">Python</span><button class="copy-btn" onclick="copy(this)">Copy</button></div>
+<pre><code>response = client.models.generate_content(
+    model=<span class="str">"gemini-3.1-flash-image-preview"</span>,
+    contents=<span class="str">"A Timareta Thelxione butterfly..."</span>,
+    config=types.GenerateContentConfig(
+        response_modalities=[<span class="str">"IMAGE"</span>],
+        tools=[
+            types.Tool(google_search=types.GoogleSearch(
+                search_types=types.SearchTypes(
+                    web_search=types.WebSearch(),
+                    image_search=types.ImageSearch()  <span class="cmt"># NB2 only</span>
+                )
+            ))
+        ]
+    )
+)</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 9. Mix Images -->
+        <section id="mix">
+            <div class="section-head">
+                <span class="section-num">09</span>
+                <h2>Mix Multiple Images</h2>
+            </div>
+            <p class="section-desc">Combine up to 6 images in high fidelity. Great for composites, product shots, character mixes.</p>
+            <div class="demo">
+                <div class="demo-tabs">
+                    <button class="demo-tab active" data-tab="try">Try it</button>
+                    <button class="demo-tab" data-tab="code">Code</button>
+                </div>
+                <div class="demo-panel active" data-panel="try">
+                    <div class="row">
+                        <div class="field">
+                            <label>Image 1</label>
+                            <div class="upload-zone" onclick="document.getElementById('mix1').click()">
+                                <input type="file" id="mix1" accept="image/*" style="display:none" onchange="handleUpload(this,null,'mixData1')">
+                                <p id="mix1Label">📁 Upload</p>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label>Image 2</label>
+                            <div class="upload-zone" onclick="document.getElementById('mix2').click()">
+                                <input type="file" id="mix2" accept="image/*" style="display:none" onchange="handleUpload(this,null,'mixData2')">
+                                <p id="mix2Label">📁 Upload</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Prompt</label>
+                        <textarea id="mixPrompt">Combine these two subjects in a fantasy world</textarea>
+                    </div>
+                    <button class="btn" onclick="runMix()"><span class="spin"></span><span class="label">Generate</span></button>
+                    <div class="output" id="mixOut"><div class="output-empty"><span>🎨</span>Combined image appears here</div></div>
+                </div>
+                <div class="demo-panel" data-panel="code">
+                    <div class="code-wrap">
+                        <div class="code-head"><span class="code-lang">Python</span><button class="copy-btn" onclick="copy(this)">Copy</button></div>
+<pre><code>response = client.models.generate_content(
+    model=<span class="str">"gemini-3.1-flash-image-preview"</span>,
+    contents=[
+        <span class="str">"Combine these subjects in a fantasy world"</span>,
+        PIL.Image.open(<span class="str">'img1.png'</span>),
+        PIL.Image.open(<span class="str">'img2.png'</span>),
+        <span class="cmt"># up to 6 in high fidelity</span>
+    ]
+)</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 10. Stories -->
+        <section id="story">
+            <div class="section-head">
+                <span class="section-num">10</span>
+                <h2>Generate Stories</h2>
+            </div>
+            <p class="section-desc">Multiple images in one request. Use for step-by-step guides, comics, visual narratives.</p>
+            <div class="demo">
+                <div class="demo-tabs">
+                    <button class="demo-tab active" data-tab="try">Try it</button>
+                    <button class="demo-tab" data-tab="code">Code</button>
+                </div>
+                <div class="demo-panel active" data-panel="try">
+                    <div class="field">
+                        <label>Prompt</label>
+                        <select id="storyPrompt">
+                            <option value="Show me how to bake macarons with images">How to bake macarons (step-by-step)</option>
+                            <option value="Create a 4-panel comic about a robot learning to dance">4-panel comic: Robot learns to dance</option>
+                            <option value="Show caterpillar to butterfly transformation in 4 stages with images">Caterpillar → Butterfly (4 stages)</option>
+                        </select>
+                    </div>
+                    <button class="btn" onclick="runStory()"><span class="spin"></span><span class="label">Generate Story</span></button>
+                    <div class="output left" id="storyOut" style="min-height:300px"><div class="output-empty"><span>📖</span>Story appears here</div></div>
+                </div>
+                <div class="demo-panel" data-panel="code">
+                    <div class="code-wrap">
+                        <div class="code-head"><span class="code-lang">Python</span><button class="copy-btn" onclick="copy(this)">Copy</button></div>
+<pre><code>response = client.models.generate_content(
+    model=<span class="str">"gemini-3.1-flash-image-preview"</span>,
+    contents=<span class="str">"Show me how to bake macarons with images"</span>
+)
+
+<span class="cmt"># Response contains multiple text + image parts</span>
+<span class="kw">for</span> part <span class="kw">in</span> response.parts:
+    <span class="kw">if</span> part.text:
+        print(part.text)
+    <span class="kw">elif</span> img := part.as_image():
+        img.show()</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <a href="https://ai.google.dev/gemini-api/docs/image-generation" target="_blank">Docs</a> · <a href="https://aistudio.google.com" target="_blank">AI Studio</a> · <a href="https://ai.google.dev/pricing" target="_blank">Pricing</a>
+        </div>
+    </footer>
+
+    <script>
+        let apiKey = null;
+        let chatHistory = [];
+        window.editData = null;
+        window.mixData1 = null;
+        window.mixData2 = null;
+
+        // API key
+        const keyInput = document.getElementById('apiKey');
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+
+        keyInput.addEventListener('input', e => {
+            apiKey = e.target.value.trim();
+            if (apiKey) {
+                statusDot.classList.add('on');
+                statusText.textContent = 'Ready';
+            } else {
+                statusDot.classList.remove('on');
+                statusText.textContent = 'Not connected';
+            }
+        });
+
+        // Tabs
+        document.querySelectorAll('.demo-tabs').forEach(tabs => {
+            tabs.querySelectorAll('.demo-tab').forEach(tab => {
+                tab.onclick = () => {
+                    const box = tab.closest('.demo');
+                    box.querySelectorAll('.demo-tab').forEach(t => t.classList.remove('active'));
+                    box.querySelectorAll('.demo-panel').forEach(p => p.classList.remove('active'));
+                    tab.classList.add('active');
+                    box.querySelector(`[data-panel="${tab.dataset.tab}"]`).classList.add('active');
+                };
+            });
+        });
+
+        // Nav active
+        const navLinks = document.querySelectorAll('.nav-inner a');
+        window.addEventListener('scroll', () => {
+            let current = 'start';
+            document.querySelectorAll('section').forEach(s => {
+                if (scrollY >= s.offsetTop - 200) current = s.id;
+            });
+            navLinks.forEach(l => {
+                l.classList.toggle('active', l.getAttribute('href').slice(1) === current);
+            });
+        });
+
+        // Copy
+        function copy(btn) {
+            const code = btn.closest('.code-wrap').querySelector('code').textContent;
+            navigator.clipboard.writeText(code);
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = 'Copy', 1500);
+        }
+
+        // Upload
+        function handleUpload(input, zoneId, dataKey) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    window[dataKey] = e.target.result;
+                    if (zoneId) {
+                        const zone = document.getElementById(zoneId);
+                        zone.classList.add('has-img');
+                        zone.innerHTML = `<img src="${e.target.result}">`;
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // API call
+        async function callAPI(body) {
+            if (!apiKey) throw new Error('Enter your API key first');
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image-preview:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.error?.message || 'API error');
+            }
+            return res.json();
+        }
+
+        // Parse response
+        function parse(response) {
+            const parts = [];
+            response.candidates?.[0]?.content?.parts?.forEach(p => {
+                if (p.text) parts.push({ type: 'text', content: p.text, thought: p.thought });
+                else if (p.inlineData) parts.push({ type: 'img', content: `data:${p.inlineData.mimeType};base64,${p.inlineData.data}` });
+            });
+            return parts;
+        }
+
+        function render(parts, showThoughts = false) {
+            let html = '';
+            parts.forEach(p => {
+                if (p.type === 'text') {
+                    if (p.thought && showThoughts) html += `<div class="thought-box"><h5>💭 Thinking</h5><p>${p.content}</p></div>`;
+                    else if (!p.thought) html += `<div class="output-text">${p.content}</div>`;
+                } else html += `<img src="${p.content}">`;
+            });
+            return html || '<div class="output-empty">No output</div>';
+        }
+
+        function setLoading(btn, on) {
+            btn.classList.toggle('loading', on);
+            btn.disabled = on;
+        }
+
+        function showError(id, msg) {
+            document.getElementById(id).innerHTML = `<div class="output-err">❌ ${msg}</div>`;
+        }
+
+        // Demos
+        async function runGenerate() {
+            const btn = document.querySelector('#generate .btn');
+            setLoading(btn, true);
+            try {
+                const res = await callAPI({
+                    contents: [{ parts: [{ text: document.getElementById('genPrompt').value }] }],
+                    generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
+                });
+                document.getElementById('genOut').innerHTML = render(parse(res));
+            } catch (e) { showError('genOut', e.message); }
+            setLoading(btn, false);
+        }
+
+        async function runEdit() {
+            const btn = document.querySelector('#edit .btn');
+            if (!window.editData) return showError('editOut', 'Upload an image first');
+            setLoading(btn, true);
+            try {
+                const [meta, data] = [window.editData.split(';')[0].split(':')[1], window.editData.split(',')[1]];
+                const res = await callAPI({
+                    contents: [{ parts: [{ text: document.getElementById('editPrompt').value }, { inlineData: { mimeType: meta, data } }] }],
+                    generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
+                });
+                document.getElementById('editOut').innerHTML = render(parse(res));
+            } catch (e) { showError('editOut', e.message); }
+            setLoading(btn, false);
+        }
+
+        async function runAspect() {
+            const btn = document.querySelector('#aspect .btn');
+            setLoading(btn, true);
+            try {
+                const res = await callAPI({
+                    contents: [{ parts: [{ text: document.getElementById('aspectPrompt').value }] }],
+                    generationConfig: { responseModalities: ['IMAGE'], imageGenerationConfig: { aspectRatio: document.getElementById('aspectRatio').value } }
+                });
+                document.getElementById('aspectOut').innerHTML = render(parse(res));
+            } catch (e) { showError('aspectOut', e.message); }
+            setLoading(btn, false);
+        }
+
+        async function runRes() {
+            const btn = document.querySelector('#resolution .btn');
+            setLoading(btn, true);
+            try {
+                const res = await callAPI({
+                    contents: [{ parts: [{ text: document.getElementById('resPrompt').value }] }],
+                    generationConfig: { responseModalities: ['IMAGE'], imageGenerationConfig: { imageSize: document.getElementById('resSize').value } }
+                });
+                document.getElementById('resOut').innerHTML = render(parse(res));
+            } catch (e) { showError('resOut', e.message); }
+            setLoading(btn, false);
+        }
+
+        async function runChat() {
+            const btn = document.querySelector('#chat .btn');
+            const msg = document.getElementById('chatMsg').value;
+            setLoading(btn, true);
+            try {
+                chatHistory.push({ role: 'user', parts: [{ text: msg }] });
+                const res = await callAPI({
+                    contents: chatHistory,
+                    generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
+                });
+                if (res.candidates?.[0]?.content) chatHistory.push(res.candidates[0].content);
+
+                let html = '<div class="chat-history">';
+                chatHistory.forEach(m => {
+                    const isUser = m.role === 'user';
+                    html += `<div class="chat-msg ${isUser ? 'user' : 'bot'}"><strong>${isUser ? 'You' : 'NB2'}</strong>`;
+                    m.parts.forEach(p => {
+                        if (p.text) html += `<p>${p.text}</p>`;
+                        else if (p.inlineData) html += `<img src="data:${p.inlineData.mimeType};base64,${p.inlineData.data}">`;
+                    });
+                    html += '</div>';
+                });
+                html += '</div>';
+                document.getElementById('chatOut').innerHTML = html;
+                document.getElementById('chatMsg').value = '';
+            } catch (e) { showError('chatOut', e.message); }
+            setLoading(btn, false);
+        }
+
+        function resetChat() {
+            chatHistory = [];
+            document.getElementById('chatOut').innerHTML = '<div class="output-empty"><span>💬</span>Chat history appears here</div>';
+        }
+
+        async function runThink() {
+            const btn = document.querySelector('#thinking .btn');
+            setLoading(btn, true);
+            try {
+                const res = await callAPI({
+                    contents: [{ parts: [{ text: document.getElementById('thinkPrompt').value }] }],
+                    generationConfig: {
+                        responseModalities: ['TEXT', 'IMAGE'],
+                        thinkingConfig: { thinkingLevel: document.getElementById('thinkLevel').value.toUpperCase(), includeThoughts: true }
+                    }
+                });
+                document.getElementById('thinkOut').innerHTML = render(parse(res), true);
+            } catch (e) { showError('thinkOut', e.message); }
+            setLoading(btn, false);
+        }
+
+        async function runGround() {
+            const btn = document.querySelector('#grounding .btn');
+            setLoading(btn, true);
+            try {
+                const res = await callAPI({
+                    contents: [{ parts: [{ text: document.getElementById('groundPrompt').value }] }],
+                    generationConfig: { responseModalities: ['TEXT', 'IMAGE'] },
+                    tools: [{ googleSearch: {} }]
+                });
+                document.getElementById('groundOut').innerHTML = render(parse(res));
+            } catch (e) { showError('groundOut', e.message); }
+            setLoading(btn, false);
+        }
+
+        async function runImgGround() {
+            const btn = document.querySelector('#img-grounding .btn');
+            setLoading(btn, true);
+            try {
+                const res = await callAPI({
+                    contents: [{ parts: [{ text: document.getElementById('imgGroundPrompt').value }] }],
+                    generationConfig: { responseModalities: ['IMAGE'] },
+                    tools: [{ googleSearch: { searchTypes: { webSearch: {}, imageSearch: {} } } }]
+                });
+                document.getElementById('imgGroundOut').innerHTML = render(parse(res));
+            } catch (e) { showError('imgGroundOut', e.message); }
+            setLoading(btn, false);
+        }
+
+        async function runMix() {
+            const btn = document.querySelector('#mix .btn');
+            if (!window.mixData1 || !window.mixData2) return showError('mixOut', 'Upload both images');
+            setLoading(btn, true);
+            try {
+                const [m1, d1] = [window.mixData1.split(';')[0].split(':')[1], window.mixData1.split(',')[1]];
+                const [m2, d2] = [window.mixData2.split(';')[0].split(':')[1], window.mixData2.split(',')[1]];
+                const res = await callAPI({
+                    contents: [{ parts: [
+                        { text: document.getElementById('mixPrompt').value },
+                        { inlineData: { mimeType: m1, data: d1 } },
+                        { inlineData: { mimeType: m2, data: d2 } }
+                    ] }],
+                    generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
+                });
+                document.getElementById('mixOut').innerHTML = render(parse(res));
+            } catch (e) { showError('mixOut', e.message); }
+            setLoading(btn, false);
+        }
+
+        async function runStory() {
+            const btn = document.querySelector('#story .btn');
+            setLoading(btn, true);
+            try {
+                const res = await callAPI({
+                    contents: [{ parts: [{ text: document.getElementById('storyPrompt').value }] }],
+                    generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
+                });
+                document.getElementById('storyOut').innerHTML = render(parse(res));
+            } catch (e) { showError('storyOut', e.message); }
+            setLoading(btn, false);
+        }
+    </script>
+</body>
+</html>
