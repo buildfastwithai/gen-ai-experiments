@@ -1,0 +1,25 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# Presentation Generator – Python Dependencies
+# Install with:  pip install -r requirements.txt
+# ──────────────────────────────────────────────────────────────────────────────
+
+# Google Gemini API client (slide prompt generation)
+google-genai>=1.0.0
+
+# fal.ai client (Qwen-Image-2 Pro text-to-image)
+fal-client>=0.5.0
+
+# HTTP requests (image download)
+requests>=2.31.0
+
+# Image processing (PDF assembly)
+Pillow>=10.0.0
+
+# PDF generation
+fpdf2>=2.7.0
+
+# Optional: auto-load .env files
+python-dotenv>=1.0.0
+
+# Web Interface (The "Simulated App" part)
+streamlit>=1.31.0
