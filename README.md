@@ -35,7 +35,7 @@
 - 🔥 **Latest Tech Stack** - Explore apps built with OpenAI, Anthropic, Gemini, QWEN, and open-source models
 - 🎓 **From Beginner to Advanced** - Structured learning path with starter, intermediate, and advanced projects
 - 🌍 **Multi-Language Support** - Projects supporting English, Hindi, and other Indian languages
-- 📚 **100+ Libraries Covered** - Comprehensive tutorials on LangChain, LlamaIndex, CrewAI, Weaviate, and 90+ more AI/ML libraries
+- 📚 **100+ Libraries Covered** - Comprehensive tutorials on LangChain, LlamaIndex, CrewAI, AG2, Weaviate, and 90+ more AI/ML libraries
 - 🚀 **Production-Ready Code** - Well-documented projects ready to deploy and integrate into your applications
 
 ---
