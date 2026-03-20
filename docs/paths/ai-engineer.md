@@ -22,7 +22,7 @@ Best for learners who want robust systems, RAG pipelines, and agent orchestratio
 - `ai-agents/LangGraph_Supervisor.ipynb`
 - `ai-agents/openai_swarm_.ipynb`
 - `ai-apps-collection/chroma-cloud-rag`
-- `ai-apps-collection/Agno-Traceloop-Observability`
+- `ai-apps-collection/agno-traceloop-observability`
 
 ## Capstone Ideas
 

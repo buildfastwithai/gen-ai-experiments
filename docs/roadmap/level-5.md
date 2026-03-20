@@ -28,13 +28,14 @@
 
 ## Which Projects To Open In Repo
 
-- `ai-apps-collection/Gemini-2.0-Multimodal`
+- `ai-apps-collection/gemini-2-0-multimodal`
 - `ai-apps-collection/mcp-use`
 - `ai-apps-collection/nano-banana-image-workflow-nextjs`
-- `ai-apps-collection/cerebras_inferance_comparision`
+- `ai-apps-collection/cerebras-inference-comparison`
 - `fine-tuning/README.md`
 - `experiment/nano_banana_2_cookbook.ipynb`
 
 ## What To Do Next
 
 Go to [Level 6 - Specialization Paths](level-6.md).
+

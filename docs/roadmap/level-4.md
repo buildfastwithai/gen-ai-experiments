@@ -28,7 +28,7 @@
 ## Which Projects To Open In Repo
 
 - `llm-testing/README.md`
-- `ai-apps-collection/Agno-Traceloop-Observability`
+- `ai-apps-collection/agno-traceloop-observability`
 - `ai-apps-collection/chroma-cloud-rag`
 - `ai-apps-collection/deep-agent-stock-research`
 - `workshop/AI_Customer_Support_Agent_.ipynb`

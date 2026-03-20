@@ -28,12 +28,13 @@
 ## Which Projects To Open In Repo
 
 - `ai-apps-collection/chat-with-gpt-oss`
-- `ai-apps-collection/Github-Readme-File-Generator`
-- `ai-apps-collection/Educhain-Qna-Generator`
-- `ai-apps-collection/Educhain_MultiLanguge_Quiz_Generator`
-- `ai-apps-collection/AI-Ad-Generator`
+- `ai-apps-collection/github-readme-file-generator`
+- `ai-apps-collection/educhain-qna-generator`
+- `ai-apps-collection/educhain-multilanguage-quiz-generator`
+- `ai-apps-collection/ai-ad-generator`
 - `workshop/ChatGPT_Replica_Workshop.ipynb`
 
 ## What To Do Next
 
 Go to [Level 3 - RAG + Agents](level-3.md).
+

@@ -14,53 +14,53 @@ This collection features 40+ complete AI applications built with modern framewor
 ## 📱 Featured Applications
 
 ### 🤖 **Chat & Communication**
-- **[Chat with QWEN3 Coder](%20chat-with-qwen3-coder/)** - Advanced coding assistant powered by QWEN3
-- **[Chat with PDF or Webpage](Chat_with_pdf_or_webpage/)** - Interactive document and web content analysis
+- **[Chat with QWEN3 Coder](chat-with-qwen3-coder/)** - Advanced coding assistant powered by QWEN3
+- **[Chat with PDF or Webpage](chat-with-pdf-or-webpage/)** - Interactive document and web content analysis
 - **[Chat with GPT-OSS](chat-with-gpt-oss/)** - Open-source GPT interface with custom features
 - **[Sutra V2 Multilingual Chatbot](sutra-v2-multilingual-chatbot/)** - Multi-language conversational AI
 - **[Vibe Voice TTS](vibe-voice-tts/)** - Advanced text-to-speech application
 
 ### 🎮 **Games & Entertainment**
 - **[Chess Playing Agents (GLM-model)](chess_playing_agents_GLM-model/)** - AI-powered chess opponents
-- **[OpenAI Gemini Chess](openai_gemini_chess/)** - Multi-model chess gaming platform
+- **[OpenAI Gemini Chess](openai-gemini-chess/)** - Multi-model chess gaming platform
 - **[QWEN Game Generator](qwen-game-generator/)** - Automated game creation system
 - **[World Fastest Game Generator](world-fastest-game-gen-qwen3coder/)** - Rapid game development tool
 
 ### 📚 **Education & Learning**
-- **[Educhain Multilingual Quiz Generator](Educhain_MultiLanguge_Quiz_Generator/)** - Multi-language quiz creation
-- **[Educhain QnA Generator](Educhain-Qna-Generator/)** - Intelligent question generation
-- **[Educhain Origami Tutorial Generator](Educhain_Origami_Tutorial_Generator/)** - Creative learning tutorials
-- **[Indian Language Quiz Using Sutra](indian_language_quiz_Using_Sutra/)** - Regional language support
+- **[Educhain Multilingual Quiz Generator](educhain-multilanguage-quiz-generator/)** - Multi-language quiz creation
+- **[Educhain QnA Generator](educhain-qna-generator/)** - Intelligent question generation
+- **[Educhain Origami Tutorial Generator](educhain-origami-tutorial-generator/)** - Creative learning tutorials
+- **[Indian Language Quiz Using Sutra](indian-language-quiz-using-sutra/)** - Regional language support
 - **[Language Learner](language-learner/)** - Interactive language learning platform
-- **[Visual Question Generator](Visual-Question-Generator/)** - Image-based question creation
+- **[Visual Question Generator](visual-question-generator/)** - Image-based question creation
 
 ### 💼 **Business & Finance**
-- **[AI Business Consultant](AI_Business_Consultant/)** - Strategic business advisory system
-- **[AI Ad Generator](AI-Ad-Generator/)** - Automated marketing content creation
-- **[Finance Agno AgentOS](Finance%20Agno%20AgentOS%20/)** - Comprehensive financial analysis
-- **[Stock Market Agent](Stock_Market_Agent/)** - Real-time market analysis tool
+- **[AI Business Consultant](ai-business-consultant/)** - Strategic business advisory system
+- **[AI Ad Generator](ai-ad-generator/)** - Automated marketing content creation
+- **[Finance Agno AgentOS](finance-agno-agentos/)** - Comprehensive financial analysis
+- **[Stock Market Agent](stock-market-agent/)** - Real-time market analysis tool
 - **[Deep Agent Stock Research](deep-agent-stock-research/)** - Advanced investment research
-- **[Basten Marketing App](Basten_marketing_app/)** - Marketing automation platform
+- **[Basten Marketing App](basten-marketing-app/)** - Marketing automation platform
 
 ### 🔍 **Research & Analysis**
 - **[Perplexity AI Research Assistant](perplexity-ai-research-assistant/)** - Automated research workflows
 - **[Cerebras Search](cerebras-search/)** - High-performance search engine
-- **[Search Engine Cerebras](serach_engine_cerebras/)** - Advanced search capabilities
-- **[Personalized Search Agent](personalized_search_agent/)** - Customized search experiences
-- **[Similarity Venn GLM4.6](similarity_venn_GLM4.6/)** - Content comparison and analysis
-- **[Cerebras Inference Comparison](cerebras_inferance_comparision/)** - Model performance benchmarking
+- **[Search Engine Cerebras](search-engine-cerebras/)** - Advanced search capabilities
+- **[Personalized Search Agent](personalized-search-agent/)** - Customized search experiences
+- **[Similarity Venn GLM4.6](similarity-venn-glm4-6/)** - Content comparison and analysis
+- **[Cerebras Inference Comparison](cerebras-inference-comparison/)** - Model performance benchmarking
 
 ### 🛠️ **Development Tools**
-- **[GitHub Readme File Generator](Github-Readme-File-Generator/)** - Automated documentation creation
-- **[Browser Use Streamlit](Browser-use-streamlit/)** - Web automation interface
+- **[GitHub Readme File Generator](github-readme-file-generator/)** - Automated documentation creation
+- **[Browser Use Streamlit](browser-use-streamlit/)** - Web automation interface
 - **[World Fastest Website Generator](world-fastest-website-generator/)** - Rapid web development
 - **[Book Writer](book-writer/)** - AI-powered content creation
-- **[LLM-friendly Scraping AnyCrawl](LLm-friendly-Scarapping-Anycrawl/)** - Intelligent web scraping
+- **[LLM-friendly Scraping AnyCrawl](llm-friendly-scraping-anycrawl/)** - Intelligent web scraping
 
 ### 🌐 **Web & Integration**
-- **[Gemini 2.0 Multimodal](Gemini-2.0-Multimodal/)** - Latest Google AI integration
-- **[News to Blog Automator](News-to-blog-automator/)** - Content transformation pipeline
-- **[Gadget Comparator using Gemini](Gadget_comparator_using_gemini_url_context/)** - Product analysis tool
+- **[Gemini 2.0 Multimodal](gemini-2-0-multimodal/)** - Latest Google AI integration
+- **[News to Blog Automator](news-to-blog-automator/)** - Content transformation pipeline
+- **[Gadget Comparator using Gemini](gadget-comparator-using-gemini-url-context/)** - Product analysis tool
 - **[Chroma Cloud RAG](chroma-cloud-rag/)** - Cloud-based retrieval system
 - **[MCP Use](mcp-use/)** - Model Context Protocol implementation
 - **[TypeSafe Agno](typesafe-agno/)** - Type-safe AI development framework

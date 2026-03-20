@@ -16,9 +16,9 @@ Best for learners who want to design and ship AI features with product outcomes.
 
 ## Suggested Projects
 
-- `ai-apps-collection/AI_Business_Consultant`
-- `ai-apps-collection/AI-Ad-Generator`
-- `ai-apps-collection/Stock_Market_Agent`
+- `ai-apps-collection/ai-business-consultant`
+- `ai-apps-collection/ai-ad-generator`
+- `ai-apps-collection/stock-market-agent`
 - `workshop/AI_Customer_Support_Agent_.ipynb`
 - `workshop/Travel_Agent.ipynb`
 
@@ -31,3 +31,4 @@ Best for learners who want to design and ship AI features with product outcomes.
 ## Exit Criteria
 
 - You can define success metrics, ship MVPs, and improve product quality with structured feedback.
+

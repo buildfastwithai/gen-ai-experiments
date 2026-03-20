@@ -17,8 +17,8 @@ Best for learners who want to ship user-facing GenAI apps quickly.
 ## Suggested Projects
 
 - `ai-apps-collection/chat-with-gpt-oss`
-- `ai-apps-collection/Chat_with_pdf_or_webpage`
-- `ai-apps-collection/Github-Readme-File-Generator`
+- `ai-apps-collection/chat-with-pdf-or-webpage`
+- `ai-apps-collection/github-readme-file-generator`
 - `ai-apps-collection/world-fastest-website-generator`
 - `workshop/ChatGPT_Replica_Workshop.ipynb`
 
@@ -32,3 +32,4 @@ Best for learners who want to ship user-facing GenAI apps quickly.
 
 - You can build and deploy small GenAI apps end-to-end.
 - You can track failures and improve prompts with evidence.
+

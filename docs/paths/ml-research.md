@@ -17,7 +17,7 @@ Best for learners who want model behavior analysis, experimentation, and tuning.
 
 - `llm-testing/README.md`
 - `llm-testing/promptfoo`
-- `ai-apps-collection/cerebras_inferance_comparision`
+- `ai-apps-collection/cerebras-inference-comparison`
 - `fine-tuning/README.md`
 - `experiment/claude_opus_langsmith_eval.ipynb`
 - `experiment/beginners_guide_to_understanding_LLM_pricing.ipynb`
@@ -31,3 +31,4 @@ Best for learners who want model behavior analysis, experimentation, and tuning.
 ## Exit Criteria
 
 - You can produce clear experiment reports with reproducible setup and findings.
+
