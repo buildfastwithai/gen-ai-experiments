@@ -27,13 +27,13 @@
 
 ## Which Projects To Open In Repo
 
-- `rag/RAG_Interactive.ipynb`
-- `rag/How_to_build_Claude_powered_RAG_from_Scratch.ipynb`
-- `rag/MultiModal_RAG_.ipynb`
-- `ai-agents/day1_langchain_agent.ipynb`
-- `ai-agents/CSV_Agents_with_LangChain_&_LlamaIndex.ipynb`
-- `ai-agents/LangGraph_Supervisor.ipynb`
-- `workshop/Research_Assistant_Workshop.ipynb`
+- [rag/RAG_Interactive.ipynb](../../rag/RAG_Interactive.ipynb)
+- [rag/How_to_build_Claude_powered_RAG_from_Scratch.ipynb](../../rag/How_to_build_Claude_powered_RAG_from_Scratch.ipynb)
+- [rag/MultiModal_RAG_.ipynb](../../rag/MultiModal_RAG_.ipynb)
+- [ai-agents/day1_langchain_agent.ipynb](../../ai-agents/day1_langchain_agent.ipynb)
+- [ai-agents/CSV_Agents_with_LangChain_&_LlamaIndex.ipynb](../../ai-agents/CSV_Agents_with_LangChain_&_LlamaIndex.ipynb)
+- [ai-agents/LangGraph_Supervisor.ipynb](../../ai-agents/LangGraph_Supervisor.ipynb)
+- [workshop/Research_Assistant_Workshop.ipynb](../../workshop/Research_Assistant_Workshop.ipynb)
 
 ## What To Do Next
 

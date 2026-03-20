@@ -27,11 +27,11 @@
 
 ## Which Projects To Open In Repo
 
-- `100-os-libraries/Prompt_Engineering_with_Promptify.ipynb`
-- `100-os-libraries/Getting_Started_with_Pydantic_AI.ipynb`
-- `100-os-libraries/Hugging_Face_Transformers_A_Powerful_Foundation_for_Generative_AI_and_NLP.ipynb`
-- `100-os-libraries/LiteLLM_Simplified_LLM_Integration.ipynb`
-- `100-os-libraries/Tiktoken_High_Performance_Tokenizer_for_OpenAI_Models.ipynb`
+- [100-os-libraries/Prompt_Engineering_with_Promptify.ipynb](../../100-os-libraries/Prompt_Engineering_with_Promptify.ipynb)
+- [100-os-libraries/Getting_Started_with_Pydantic_AI.ipynb](../../100-os-libraries/Getting_Started_with_Pydantic_AI.ipynb)
+- [100-os-libraries/Hugging_Face_Transformers_A_Powerful_Foundation_for_Generative_AI_and_NLP.ipynb](../../100-os-libraries/Hugging_Face_Transformers_A_Powerful_Foundation_for_Generative_AI_and_NLP.ipynb)
+- [100-os-libraries/LiteLLM_Simplified_LLM_Integration.ipynb](../../100-os-libraries/LiteLLM_Simplified_LLM_Integration.ipynb)
+- [100-os-libraries/Tiktoken_High_Performance_Tokenizer_for_OpenAI_Models.ipynb](../../100-os-libraries/Tiktoken_High_Performance_Tokenizer_for_OpenAI_Models.ipynb)
 
 ## What To Do Next
 

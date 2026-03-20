@@ -28,6 +28,18 @@ Level files:
 - [Level 5 - Advanced GenAI](docs/roadmap/level-5.md)
 - [Level 6 - Specialization Paths](docs/roadmap/level-6.md)
 
+## Interactive Website
+
+An interactive roadmap-style website is available in:
+
+- [genai-roadmap-site](genai-roadmap-site)
+
+Run it locally:
+
+1. `cd genai-roadmap-site`
+2. `npm install`
+3. `npm run dev`
+
 ## Level Overview
 
 - Level 0: Environment setup, Python basics, APIs, notebooks

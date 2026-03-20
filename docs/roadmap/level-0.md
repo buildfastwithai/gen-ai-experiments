@@ -29,10 +29,10 @@
 
 ## Which Projects To Open In Repo
 
-- `100-os-libraries/README.md`
-- `workshop/README.md`
-- `100-os-libraries/LangChain_Basics_Building_Intelligent_Workflows.ipynb`
-- `workshop/json_prompting.ipynb`
+- [100-os-libraries/README.md](../../100-os-libraries/README.md)
+- [workshop/README.md](../../workshop/README.md)
+- [100-os-libraries/LangChain_Basics_Building_Intelligent_Workflows.ipynb](../../100-os-libraries/LangChain_Basics_Building_Intelligent_Workflows.ipynb)
+- [workshop/json_prompting.ipynb](../../workshop/json_prompting.ipynb)
 
 ## What To Do Next
 

@@ -28,12 +28,12 @@
 
 ## Which Projects To Open In Repo
 
-- `ai-apps-collection/gemini-2-0-multimodal`
-- `ai-apps-collection/mcp-use`
-- `ai-apps-collection/nano-banana-image-workflow-nextjs`
-- `ai-apps-collection/cerebras-inference-comparison`
-- `fine-tuning/README.md`
-- `experiment/nano_banana_2_cookbook.ipynb`
+- [ai-apps-collection/gemini-2-0-multimodal](../../ai-apps-collection/gemini-2-0-multimodal)
+- [ai-apps-collection/mcp-use](../../ai-apps-collection/mcp-use)
+- [ai-apps-collection/nano-banana-image-workflow-nextjs](../../ai-apps-collection/nano-banana-image-workflow-nextjs)
+- [ai-apps-collection/cerebras-inference-comparison](../../ai-apps-collection/cerebras-inference-comparison)
+- [fine-tuning/README.md](../../fine-tuning/README.md)
+- [experiment/nano_banana_2_cookbook.ipynb](../../experiment/nano_banana_2_cookbook.ipynb)
 
 ## What To Do Next
 

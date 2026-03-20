@@ -27,11 +27,11 @@
 
 ## Which Projects To Open In Repo
 
-- `experiment/readme.md`
-- `ai-apps-collection/typesafe-agno`
-- `ai-apps-collection/perplexity-ai-research-assistant`
-- `ai-apps-collection/world-fastest-website-generator`
-- `llm-testing/promptfoo`
+- [experiment/readme.md](../../experiment/readme.md)
+- [ai-apps-collection/typesafe-agno](../../ai-apps-collection/typesafe-agno)
+- [ai-apps-collection/perplexity-ai-research-assistant](../../ai-apps-collection/perplexity-ai-research-assistant)
+- [ai-apps-collection/world-fastest-website-generator](../../ai-apps-collection/world-fastest-website-generator)
+- [llm-testing/promptfoo](../../llm-testing/promptfoo)
 
 Then follow one path document:
 

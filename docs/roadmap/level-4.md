@@ -27,12 +27,12 @@
 
 ## Which Projects To Open In Repo
 
-- `llm-testing/README.md`
-- `ai-apps-collection/agno-traceloop-observability`
-- `ai-apps-collection/chroma-cloud-rag`
-- `ai-apps-collection/deep-agent-stock-research`
-- `workshop/AI_Customer_Support_Agent_.ipynb`
-- `workshop/MCP_Workshop.ipynb`
+- [llm-testing/README.md](../../llm-testing/README.md)
+- [ai-apps-collection/agno-traceloop-observability](../../ai-apps-collection/agno-traceloop-observability)
+- [ai-apps-collection/chroma-cloud-rag](../../ai-apps-collection/chroma-cloud-rag)
+- [ai-apps-collection/deep-agent-stock-research](../../ai-apps-collection/deep-agent-stock-research)
+- [workshop/AI_Customer_Support_Agent_.ipynb](../../workshop/AI_Customer_Support_Agent_.ipynb)
+- [workshop/MCP_Workshop.ipynb](../../workshop/MCP_Workshop.ipynb)
 
 ## What To Do Next
 

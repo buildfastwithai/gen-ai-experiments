@@ -27,12 +27,12 @@
 
 ## Which Projects To Open In Repo
 
-- `ai-apps-collection/chat-with-gpt-oss`
-- `ai-apps-collection/github-readme-file-generator`
-- `ai-apps-collection/educhain-qna-generator`
-- `ai-apps-collection/educhain-multilanguage-quiz-generator`
-- `ai-apps-collection/ai-ad-generator`
-- `workshop/ChatGPT_Replica_Workshop.ipynb`
+- [ai-apps-collection/chat-with-gpt-oss](../../ai-apps-collection/chat-with-gpt-oss)
+- [ai-apps-collection/github-readme-file-generator](../../ai-apps-collection/github-readme-file-generator)
+- [ai-apps-collection/educhain-qna-generator](../../ai-apps-collection/educhain-qna-generator)
+- [ai-apps-collection/educhain-multilanguage-quiz-generator](../../ai-apps-collection/educhain-multilanguage-quiz-generator)
+- [ai-apps-collection/ai-ad-generator](../../ai-apps-collection/ai-ad-generator)
+- [workshop/ChatGPT_Replica_Workshop.ipynb](../../workshop/ChatGPT_Replica_Workshop.ipynb)
 
 ## What To Do Next
 
