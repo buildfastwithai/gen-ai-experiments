@@ -16,7 +16,7 @@ This is a hands-on roadmap for students, developers, and builders who want to le
 
 Start here:
 
-- [Full Roadmap](docs/roadmap/ROADMAP.md)
+- [Full Roadmap](docs/roadmap/roadmap.md)
 
 Level files:
 
@@ -58,7 +58,7 @@ Run it locally:
    cd gen-ai-experiments
    ```
 2. Open the roadmap and begin at Level 0
-   - docs/roadmap/ROADMAP.md
+   - docs/roadmap/roadmap.md
 3. Choose one project from your current level
 4. Create a local `.env` file for API keys needed by that project
 5. Install dependencies inside the selected project folder
