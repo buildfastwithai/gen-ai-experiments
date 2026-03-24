@@ -131,6 +131,93 @@ Production-grade implementations and cutting-edge research:
 
 ---
 
+## 🗂️ Folder Definitions + Top Cookbooks
+
+Quick directory map to help contributors and learners navigate faster.
+
+### `100-os-libraries/`
+- **Definition:** Library-focused notebook cookbooks and quick-start guides across the GenAI ecosystem.
+- **Top Cookbooks:**
+  - [LangChain Basics](100-os-libraries/LangChain_Basics_Building_Intelligent_Workflows.ipynb)
+  - [AutoGen: Collaborative AI Agents](100-os-libraries/AutoGen_Building_Collaborative_AI_Agents_in_Python.ipynb)
+  - [LlamaIndex Data Integration](100-os-libraries/LlamaIndex_Enhancing_Language_Models_with_Intelligent_Data_Integration.ipynb)
+
+### `ai-agents/`
+- **Definition:** Agent-building notebooks (single-agent and multi-agent) with practical orchestration patterns.
+- **Top Cookbooks:**
+  - [AgentScope](ai-agents/AgentScope.ipynb)
+  - [Kimi K2.5 Agent Swarm](ai-agents/Kimi_K2_5_Agent_Swarm_Cookbook.ipynb)
+  - [CSV Agents with LangChain + LlamaIndex](ai-agents/CSV_Agents_with_LangChain_&_LlamaIndex.ipynb)
+
+### `ai-apps-collection/`
+- **Definition:** End-to-end GenAI apps and demos, mostly app-first projects with selected cookbook assets.
+- **Top Cookbooks:**
+  - [Nano Banana 2 Cookbook](ai-apps-collection/nano-banana-2-cookbook/nano_banana_2_cookbook.ipynb)
+
+### `llm-testing/`
+- **Definition:** Model benchmarking, evaluation, and provider-specific capability testing notebooks.
+- **Top Cookbooks:**
+  - [GPT-5.4 Mini/Nano Cookbook](llm-testing/openai/gpt_5_4_mini_nano_cookbook.ipynb)
+  - [GLM OCR Cookbook](llm-testing/glm/glm_ocr_cookbook.ipynb)
+  - [Gemini Embedding 2 Cookbook](llm-testing/gemini/gemini_embedding_2_cookbook.ipynb)
+
+### `rag/`
+- **Definition:** Retrieval-Augmented Generation implementations, multimodal retrieval, and document-grounded QA.
+- **Top Cookbooks:**
+  - [Claude-Powered RAG from Scratch](rag/How_to_build_Claude_powered_RAG_from_Scratch.ipynb)
+  - [RAG Interactive](rag/RAG_Interactive.ipynb)
+  - [Vision RAG with Cohere + Gemini](rag/vision_rag_with_cohere_embed_v4__gemini_flash.ipynb)
+
+### `workshop/`
+- **Definition:** Hands-on workshop notebooks and guided classroom-style build sessions.
+- **Top Cookbooks:**
+  - [AI Customer Support Agent Workshop](workshop/AI_Customer_Support_Agent_.ipynb)
+  - [MCP Workshop](workshop/MCP_Workshop.ipynb)
+  - [Browser Use Workshop](workshop/Browser_Use_Workshop.ipynb)
+
+### `fine-tuning/`
+- **Definition:** Fine-tuning workflows and practical adaptation notebooks for custom LLM behavior.
+- **Top Cookbooks:**
+  - [Fine-Tuning LLMs with Nebius TokenFactory](fine-tuning/Fine_Tuning_LLMs_with_Nebius_TokenFactory.ipynb)
+
+### `experiment/`
+- **Definition:** Rapid experimentation area for new model features, frameworks, and exploratory ideas.
+- **Top Cookbooks:**
+  - [Educhain Step 3.5 Flash Cookbook](experiment/Educhain_Step_3_5_Flash_Cookbook.ipynb)
+  - [Baseten Inference](experiment/Baseten_Inference.ipynb)
+  - [Agno Skills](experiment/agno_skills.ipynb)
+
+### `roadmap/`
+- **Definition:** Structured role-based GenAI learning paths, checkpoints, and progression docs.
+- **Top Guides:**
+  - [Roadmap Hub](roadmap/README.md)
+  - [AI Engineer Path](roadmap/docs/paths/ai-engineer.md)
+  - [Level 0 Start Here](roadmap/docs/roadmap/level-0.md)
+
+### `genai-roadmap-site/`
+- **Definition:** Frontend site implementation for the interactive roadmap experience.
+- **Top Resources:**
+  - [Project README](genai-roadmap-site/README.md)
+
+---
+
+## 📈 Trending Notebooks 
+
+Curated from recently updated and high-interest notebooks available in this repository.
+
+- [GLM OCR Cookbook](llm-testing/glm/glm_ocr_cookbook.ipynb)
+- [GPT-5.4 Mini/Nano Cookbook](llm-testing/openai/gpt_5_4_mini_nano_cookbook.ipynb)
+- [Gemini 3.1 Flash Lite Guide](llm-testing/gemini/gemini_3_1_Flash_Lite_guide.ipynb)
+- [Gemini Embedding 2 Cookbook](llm-testing/gemini/gemini_embedding_2_cookbook.ipynb)
+- [LangGraph Multi Agent Swarm](100-os-libraries/LangGraph_Multi_Agent_Swarm.ipynb)
+- [AutoGen Collaborative Agents](100-os-libraries/AutoGen_Building_Collaborative_AI_Agents_in_Python.ipynb)
+- [How to Build Claude-Powered RAG from Scratch](rag/How_to_build_Claude_powered_RAG_from_Scratch.ipynb)
+- [RAG Interactive](rag/RAG_Interactive.ipynb)
+- [Kimi K2.5 Agent Swarm Cookbook](ai-agents/Kimi_K2_5_Agent_Swarm_Cookbook.ipynb)
+- [MCP Workshop](workshop/MCP_Workshop.ipynb)
+
+---
+
 ## 🚀 Getting Started
 
 ### Prerequisites

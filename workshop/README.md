@@ -75,7 +75,7 @@ This directory contains comprehensive workshops and tutorials designed for hands
 - **Skills:** Browser automation, web APIs, intelligent interaction
 - **Outcome:** Create AI agents that can navigate and interact with websites
 
-#### **[Scrape Latest Jobs with AI using Make.com](Scrape_Latest_Jobs_with_AI_using_Make.com/)**
+#### **[Scrape Latest Jobs with AI using Make.com](scrape-latest-jobs-with-ai-using-make-com/)**
 - **Duration:** 1-2 hours
 - **Level:** Beginner-Intermediate
 - **Topics:** Job scraping, automation workflows, no-code solutions
