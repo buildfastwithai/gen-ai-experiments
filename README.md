@@ -35,7 +35,7 @@
 - 🔥 **Latest Tech Stack** - Explore apps built with OpenAI, Anthropic, Gemini, QWEN, and open-source models
 - 🎓 **From Beginner to Advanced** - Structured learning path with starter, intermediate, and advanced projects
 - 🌍 **Multi-Language Support** - Projects supporting English, Hindi, and other Indian languages
-- 📚 **100+ Libraries Covered** - Comprehensive tutorials on LangChain, LlamaIndex, CrewAI, Weaviate, and 90+ more AI/ML libraries
+- 📚 **100+ Libraries Covered** - Comprehensive tutorials on LangChain, LlamaIndex, CrewAI, AG2, Weaviate, and 90+ more AI/ML libraries
 - 🚀 **Production-Ready Code** - Well-documented projects ready to deploy and integrate into your applications
 
 ---
@@ -59,6 +59,7 @@ Perfect for beginners getting started with Gen AI:
 Build more complex AI systems:
 
 - **[AutoGen Multi-Agent System](100-os-libraries/AutoGen_Building_Collaborative_AI_Agents_in_Python.ipynb)** - Collaborative AI agents
+- **[AG2 Multi-Agent AI Systems](ai-agents/AG2_Building_Multi_Agent_AI_Systems.ipynb)** - GroupChat, tool use, MCP client with AG2 (formerly AutoGen)
 - **[LangGraph Multi-Agent Swarm](100-os-libraries/LangGraph_Multi_Agent_Swarm.ipynb)** - Advanced agent orchestration
 - **[CSV Agents](ai-agents/csv_agents_with_langchain_&_llamaIndex.ipynb)** - Data analysis with LangChain & LlamaIndex
 - **[AI Customer Support Agent](workshop/AI_Customer_Support_Agent_.ipynb)** - Production-ready support system
