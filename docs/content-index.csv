@@ -1,0 +1,5 @@
+title,type,category,framework,provider,difficulty,status,path
+LangChain Basics,notebook,100-os-libraries,LangChain,multi,beginner,stable,100-os-libraries/LangChain_Basics_Building_Intelligent_Workflows.ipynb
+AI Customer Support Agent Workshop,workshop,workshops,multi,multi,intermediate,stable,workshops/AI_Customer_Support_Agent_.ipynb
+Kimi K2.5 Agent Swarm Cookbook,notebook,agents,CrewAI+Agents,Kimi,intermediate,stable,agents/Kimi_K2_5_Agent_Swarm_Cookbook.ipynb
+GPT-5.4 Mini/Nano Cookbook,notebook,cookbooks,OpenAI SDK,OpenAI,intermediate,stable,cookbooks/openai/gpt_5_4_mini_nano_cookbook.ipynb
