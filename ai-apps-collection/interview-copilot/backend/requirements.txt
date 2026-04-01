@@ -1,0 +1,6 @@
+fastapi==0.109.0
+uvicorn==0.27.0
+websockets==13.1
+python-dotenv==1.0.0
+google-genai==0.1.0
+aiofiles==23.2.1
