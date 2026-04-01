@@ -45,30 +45,30 @@
 ### 🌱 Starter Projects
 Perfect for beginners getting started with Gen AI:
 
-- **[LangChain Basics](100-os-libraries/LangChain_Basics_Building_Intelligent_Workflows.ipynb)** - Build intelligent workflows with LangChain
-- **[Fine-Tuning with Nebius Token Factory](100-os-libraries/Fine_Tuning_LLMs_with_Nebius_TokenFactory.ipynb)** - LoRA fine-tuning for custom LLMs
-- **[Getting Started with Pydantic AI](100-os-libraries/Getting_Started_with_Pydantic_AI.ipynb)** - Type-safe AI development
-- **[CrewAI Essentials](100-os-libraries/CrewAI_Essentials_Quick_Start_Guide.ipynb)** - Quick start guide for multi-agent systems
-- **[TextBlob NLP](100-os-libraries/Exploring_TextBlob_Simplified_NLP_for_Everyone.ipynb)** - Simplified natural language processing
-- **[Hugging Face Transformers](100-os-libraries/Hugging_Face_Transformers_A_Powerful_Foundation_for_Generative_AI_and_NLP.ipynb)** - Foundation for Gen AI and NLP
-- **[LlamaIndex](100-os-libraries/LlamaIndex_Enhancing_Language_Models_with_Intelligent_Data_Integration.ipynb)** - Intelligent data integration for LLMs
-- **[ChromaDB](100-os-libraries/ChromaDB_Efficient_Vector_Database_for_Embeddings.ipynb)** - Vector database for embeddings
-- **[Pinecone](100-os-libraries/🚀_Pinecone_Scalable_Vector_Database_for_AI_Applications.ipynb)** - Scalable vector search
+- **[LangChain Basics](100-os-libraries/langchain-basics-building-intelligent-workflows.ipynb)** - Build intelligent workflows with LangChain
+- **[Fine-Tuning with Nebius Token Factory](fine-tuning/fine-tuning-llms-with-nebius-tokenfactory.ipynb)** - LoRA fine-tuning for custom LLMs
+- **[Getting Started with Pydantic AI](100-os-libraries/getting-started-with-pydantic-ai.ipynb)** - Type-safe AI development
+- **[CrewAI Essentials](100-os-libraries/crewai-essentials-quick-start-guide.ipynb)** - Quick start guide for multi-agent systems
+- **[TextBlob NLP](100-os-libraries/exploring-textblob-simplified-nlp-for-everyone.ipynb)** - Simplified natural language processing
+- **[Hugging Face Transformers](100-os-libraries/hugging-face-transformers-a-powerful-foundation-for-generative-ai-and-nlp.ipynb)** - Foundation for Gen AI and NLP
+- **[LlamaIndex](100-os-libraries/llamaindex-enhancing-language-models-with-intelligent-data-integration.ipynb)** - Intelligent data integration for LLMs
+- **[ChromaDB](100-os-libraries/chromadb-efficient-vector-database-for-embeddings.ipynb)** - Vector database for embeddings
+- **[Pinecone](100-os-libraries/pinecone-scalable-vector-database-for-ai-applications.ipynb)** - Scalable vector search
 
 ### 🧠 Intermediate Projects
 Build more complex AI systems:
 
-- **[AutoGen Multi-Agent System](100-os-libraries/AutoGen_Building_Collaborative_AI_Agents_in_Python.ipynb)** - Collaborative AI agents
-- **[LangGraph Multi-Agent Swarm](100-os-libraries/LangGraph_Multi_Agent_Swarm.ipynb)** - Advanced agent orchestration
-- **[CSV Agents](agents/csv_agents_with_langchain_&_llamaIndex.ipynb)** - Data analysis with LangChain & LlamaIndex
-- **[AI Customer Support Agent](workshops/AI_Customer_Support_Agent_.ipynb)** - Production-ready support system
+- **[AutoGen Multi-Agent System](100-os-libraries/autogen-building-collaborative-ai-agents-in-python.ipynb)** - Collaborative AI agents
+- **[LangGraph Multi-Agent Swarm](100-os-libraries/langgraph-multi-agent-swarm.ipynb)** - Advanced agent orchestration
+- **[CSV Agents](agents/csv-agents-with-langchain-llamaindex.ipynb)** - Data analysis with LangChain & LlamaIndex
+- **[AI Customer Support Agent](workshops/ai-customer-support-agent.ipynb)** - Production-ready support system
 - **[RAG Systems](rag/)** - Advanced retrieval-augmented generation
 - **[Multi-Agent Workflows](agents/)** - Collaborative AI systems
 
 ### 🚀 Advanced Projects
 Production-grade implementations and cutting-edge research:
 
-- **[Cerebras Inference Comparison](apps/cerebras_inferance_comparision)** - High-performance model benchmarking
+- **[Cerebras Inference Comparison](apps/cerebras-inference-comparison)** - High-performance model benchmarking
 - **[Multi-Modal AI Systems](experiments/)** - Complex experimental implementations
 - **[Production LLM Testing](cookbooks/)** - Comprehensive model evaluation
 - **[Enterprise AI Agents](agents/)** - Production-grade agent systems
@@ -79,51 +79,51 @@ Production-grade implementations and cutting-edge research:
 ## 🎯 40+ Production-Ready Applications
 
 ### 🤖 **Chat & Communication**
-- **[Chat with QWEN3 Coder](apps/%20chat-with-qwen3-coder)** - Advanced coding assistant powered by QWEN
-- **[Chat with PDF or Webpage](apps/Chat_with_pdf_or_webpage)** - Extract and interact with document content
+- **[Chat with QWEN3 Coder](apps/chat-with-qwen3-coder)** - Advanced coding assistant powered by QWEN
+- **[Chat with PDF or Webpage](apps/chat-with-pdf-or-webpage)** - Extract and interact with document content
 - **[Chat with GPT-OSS](apps/chat-with-gpt-oss)** - Open-source GPT interface
 - **[Sutra V2 Multilingual Chatbot](apps/sutra-v2-multilingual-chatbot)** - Support for Hindi and Indian languages
 - **[Vibe Voice TTS](apps/vibe-voice-tts)** - Text-to-speech application
 
 ### 🎮 **Games & Entertainment**
-- **[Chess Playing Agents](apps/chess_playing_agents_GLM-model)** - AI chess opponents with GLM model
-- **[OpenAI Gemini Chess](apps/openai_gemini_chess)** - Multi-model chess game
+- **[Chess Playing Agents](apps/chess-playing-agents-glm-model)** - AI chess opponents with GLM model
+- **[OpenAI Gemini Chess](apps/openai-gemini-chess)** - Multi-model chess game
 - **[QWEN Game Generator](apps/qwen-game-generator)** - Automated game creation
 - **[World's Fastest Game Generator](apps/world-fastest-game-gen-qwen3coder)** - Rapid game development with QWEN3
 
 ### 📚 **Education & Learning**
-- **[Multilingual Quiz Generator](apps/Educhain_MultiLanguge_Quiz_Generator)** - Create quizzes in multiple languages
+- **[Multilingual Quiz Generator](apps/educhain-multilanguage-quiz-generator)** - Create quizzes in multiple languages
 - **[QnA Generator](apps/Educhain-Qna-Generator)** - Automated question generation
-- **[Origami Tutorial Generator](apps/Educhain_Origami_Tutorial_Generator)** - Creative step-by-step tutorials
-- **[Indian Language Quiz](apps/indian_language_quiz_Using_Sutra)** - Regional language support
+- **[Origami Tutorial Generator](apps/educhain-origami-tutorial-generator)** - Creative step-by-step tutorials
+- **[Indian Language Quiz](apps/indian-language-quiz-using-sutra)** - Regional language support
 - **[Language Learner](apps/language-learner)** - Interactive language learning platform
 - **[Visual Question Generator](apps/Visual-Question-Generator)** - Image-based question creation
 
 ### 💼 **Business & Productivity**
-- **[AI Business Consultant](apps/AI_Business_Consultant)** - Strategic business advisor
+- **[AI Business Consultant](apps/ai-business-consultant)** - Strategic business advisor
 - **[AI Ad Generator](apps/AI-Ad-Generator)** - Marketing content creation
-- **[Finance AgentOS](apps/Finance%20Agno%20AgentOS%20)** - Financial analysis and insights
-- **[Stock Market Agent](apps/Stock_Market_Agent)** - Real-time market analysis
+- **[Finance AgentOS](apps/finance-agno-agentos)** - Financial analysis and insights
+- **[Stock Market Agent](apps/stock-market-agent)** - Real-time market analysis
 - **[Deep Stock Research Agent](apps/deep-agent-stock-research)** - Advanced financial research
-- **[Marketing Automation](apps/Basten_marketing_app)** - Automated marketing campaigns
+- **[Marketing Automation](apps/basten-marketing-app)** - Automated marketing campaigns
 
 ### 🔍 **Research & Analysis**
 - **[Perplexity AI Research Assistant](apps/perplexity-ai-research-assistant)** - AI-powered research automation
 - **[Cerebras Search](apps/cerebras-search)** - Ultra-fast search engine
-- **[Personalized Search Agent](apps/personalized_search_agent)** - Customized search experience
-- **[Similarity Analyzer](apps/similarity_venn_GLM4.6)** - Content comparison with Venn diagrams
+- **[Personalized Search Agent](apps/personalized-search-agent)** - Customized search experience
+- **[Similarity Analyzer](apps/similarity-venn-glm4-6)** - Content comparison with Venn diagrams
 
 ### 🛠️ **Development Tools**
 - **[GitHub README Generator](apps/Github-Readme-File-Generator)** - Auto-generate documentation
 - **[Browser Automation](apps/Browser-use-streamlit)** - Web automation interface
 - **[World's Fastest Website Generator](apps/world-fastest-website-generator)** - Instant web development
 - **[Book Writer AI](apps/book-writer)** - Automated content creation
-- **[LLM-friendly Web Scraper](apps/LLm-friendly-Scarapping-Anycrawl)** - Intelligent web scraping
+- **[LLM-friendly Web Scraper](apps/llm-friendly-scraping-anycrawl)** - Intelligent web scraping
 
 ### 🌐 **Latest AI Integrations**
-- **[Gemini 2.0 Multimodal](apps/Gemini-2.0-Multimodal)** - Google's latest AI model
+- **[Gemini 2.0 Multimodal](apps/gemini-2-0-multimodal)** - Google's latest AI model
 - **[News to Blog Automator](apps/News-to-blog-automator)** - Content transformation pipeline
-- **[Gadget Comparator](apps/Gadget_comparator_using_gemini_url_context)** - Product analysis with Gemini
+- **[Gadget Comparator](apps/gadget-comparator-using-gemini-url-context)** - Product analysis with Gemini
 - **[Chroma Cloud RAG](apps/chroma-cloud-rag)** - Cloud-based retrieval system
 - **[MCP Implementation](apps/mcp-use)** - Model Context Protocol
 - **[TypeSafe Agno](apps/typesafe-agno)** - Type-safe AI development
@@ -138,16 +138,16 @@ Quick directory map to help contributors and learners navigate faster.
 ### `100-os-libraries/`
 - **Definition:** Library-focused notebook cookbooks and quick-start guides across the GenAI ecosystem.
 - **Top Cookbooks:**
-  - [LangChain Basics](100-os-libraries/LangChain_Basics_Building_Intelligent_Workflows.ipynb)
-  - [AutoGen: Collaborative AI Agents](100-os-libraries/AutoGen_Building_Collaborative_AI_Agents_in_Python.ipynb)
-  - [LlamaIndex Data Integration](100-os-libraries/LlamaIndex_Enhancing_Language_Models_with_Intelligent_Data_Integration.ipynb)
+  - [LangChain Basics](100-os-libraries/langchain-basics-building-intelligent-workflows.ipynb)
+  - [AutoGen: Collaborative AI Agents](100-os-libraries/autogen-building-collaborative-ai-agents-in-python.ipynb)
+  - [LlamaIndex Data Integration](100-os-libraries/llamaindex-enhancing-language-models-with-intelligent-data-integration.ipynb)
 
 ### `agents/`
 - **Definition:** Agent-building notebooks (single-agent and multi-agent) with practical orchestration patterns.
 - **Top Cookbooks:**
   - [AgentScope](agents/AgentScope.ipynb)
-  - [Kimi K2.5 Agent Swarm](agents/Kimi_K2_5_Agent_Swarm_Cookbook.ipynb)
-  - [CSV Agents with LangChain + LlamaIndex](agents/CSV_Agents_with_LangChain_&_LlamaIndex.ipynb)
+  - [Kimi K2.5 Agent Swarm](agents/kimi-k2-5-agent-swarm-cookbook.ipynb)
+  - [CSV Agents with LangChain + LlamaIndex](agents/csv-agents-with-langchain-llamaindex.ipynb)
 
 ### `apps/`
 - **Definition:** End-to-end GenAI apps and demos, mostly app-first projects with selected cookbook assets.
@@ -157,42 +157,42 @@ Quick directory map to help contributors and learners navigate faster.
 ### `cookbooks/`
 - **Definition:** Model benchmarking, evaluation, and provider-specific capability testing notebooks.
 - **Top Cookbooks:**
-  - [GPT-5.4 Mini/Nano Cookbook](cookbooks/openai/gpt_5_4_mini_nano_cookbook.ipynb)
-  - [GLM OCR Cookbook](cookbooks/glm/glm_ocr_cookbook.ipynb)
-  - [Gemini Embedding 2 Cookbook](cookbooks/gemini/gemini_embedding_2_cookbook.ipynb)
+  - [GPT-5.4 Mini/Nano Cookbook](cookbooks/openai/gpt-5-4-mini-nano-cookbook.ipynb)
+  - [GLM OCR Cookbook](cookbooks/glm/glm-ocr-cookbook.ipynb)
+  - [Gemini Embedding 2 Cookbook](cookbooks/gemini/gemini-embedding-2-cookbook.ipynb)
 
 ### `rag/`
 - **Definition:** Retrieval-Augmented Generation implementations, multimodal retrieval, and document-grounded QA.
 - **Top Cookbooks:**
-  - [Claude-Powered RAG from Scratch](rag/How_to_build_Claude_powered_RAG_from_Scratch.ipynb)
-  - [RAG Interactive](rag/RAG_Interactive.ipynb)
-  - [Vision RAG with Cohere + Gemini](rag/vision_rag_with_cohere_embed_v4__gemini_flash.ipynb)
+  - [Claude-Powered RAG from Scratch](rag/how-to-build-claude-powered-rag-from-scratch.ipynb)
+  - [RAG Interactive](rag/rag-interactive.ipynb)
+  - [Vision RAG with Cohere + Gemini](rag/vision-rag-with-cohere-embed-v4-gemini-flash.ipynb)
 
 ### `workshops/`
 - **Definition:** Hands-on workshop notebooks and guided classroom-style build sessions.
 - **Top Cookbooks:**
-  - [AI Customer Support Agent Workshop](workshops/AI_Customer_Support_Agent_.ipynb)
-  - [MCP Workshop](workshops/MCP_Workshop.ipynb)
-  - [Browser Use Workshop](workshops/Browser_Use_Workshop.ipynb)
+  - [AI Customer Support Agent Workshop](workshops/ai-customer-support-agent.ipynb)
+  - [MCP Workshop](workshops/mcp-workshop.ipynb)
+  - [Browser Use Workshop](workshops/browser-use-workshop.ipynb)
 
 ### `fine-tuning/`
 - **Definition:** Fine-tuning workflows and practical adaptation notebooks for custom LLM behavior.
 - **Top Cookbooks:**
-  - [Fine-Tuning LLMs with Nebius TokenFactory](fine-tuning/Fine_Tuning_LLMs_with_Nebius_TokenFactory.ipynb)
+  - [Fine-Tuning LLMs with Nebius TokenFactory](fine-tuning/fine-tuning-llms-with-nebius-tokenfactory.ipynb)
 
 ### `experiments/`
 - **Definition:** Rapid experimentation area for new model features, frameworks, and exploratory ideas.
 - **Top Cookbooks:**
-  - [Educhain Step 3.5 Flash Cookbook](experiments/Educhain_Step_3_5_Flash_Cookbook.ipynb)
-  - [Baseten Inference](experiments/Baseten_Inference.ipynb)
-  - [Agno Skills](experiments/agno_skills.ipynb)
+  - [Educhain Step 3.5 Flash Cookbook](experiments/educhain-step-3-5-flash-cookbook.ipynb)
+  - [Baseten Inference](experiments/baseten-inference.ipynb)
+  - [Agno Skills](experiments/agno-skills.ipynb)
 
 ### `roadmaps/`
 - **Definition:** Structured role-based GenAI learning paths, checkpoints, and progression docs.
 - **Top Guides:**
   - [Roadmap Hub](roadmaps/README.md)
   - [AI Engineer Path](roadmaps/docs/paths/ai-engineer.md)
-  - [Level 0 Start Here](roadmaps/docs/roadmaps/level-0.md)
+  - [Level 0 Start Here](roadmaps/docs/roadmap/level-0.md)
 
 ### `docs/`
 - **Definition:** Repository navigation, conventions, and contribution documentation.
@@ -208,16 +208,16 @@ Quick directory map to help contributors and learners navigate faster.
 
 Curated from recently updated and high-interest notebooks available in this repository.
 
-- [GLM OCR Cookbook](cookbooks/glm/glm_ocr_cookbook.ipynb)
-- [GPT-5.4 Mini/Nano Cookbook](cookbooks/openai/gpt_5_4_mini_nano_cookbook.ipynb)
-- [Gemini 3.1 Flash Lite Guide](cookbooks/gemini/gemini_3_1_Flash_Lite_guide.ipynb)
-- [Gemini Embedding 2 Cookbook](cookbooks/gemini/gemini_embedding_2_cookbook.ipynb)
-- [LangGraph Multi Agent Swarm](100-os-libraries/LangGraph_Multi_Agent_Swarm.ipynb)
-- [AutoGen Collaborative Agents](100-os-libraries/AutoGen_Building_Collaborative_AI_Agents_in_Python.ipynb)
-- [How to Build Claude-Powered RAG from Scratch](rag/How_to_build_Claude_powered_RAG_from_Scratch.ipynb)
-- [RAG Interactive](rag/RAG_Interactive.ipynb)
-- [Kimi K2.5 Agent Swarm Cookbook](agents/Kimi_K2_5_Agent_Swarm_Cookbook.ipynb)
-- [MCP Workshop](workshops/MCP_Workshop.ipynb)
+- [GLM OCR Cookbook](cookbooks/glm/glm-ocr-cookbook.ipynb)
+- [GPT-5.4 Mini/Nano Cookbook](cookbooks/openai/gpt-5-4-mini-nano-cookbook.ipynb)
+- [Gemini 3.1 Flash Lite Guide](cookbooks/gemini/gemini-3-1-flash-lite-guide.ipynb)
+- [Gemini Embedding 2 Cookbook](cookbooks/gemini/gemini-embedding-2-cookbook.ipynb)
+- [LangGraph Multi Agent Swarm](100-os-libraries/langgraph-multi-agent-swarm.ipynb)
+- [AutoGen Collaborative Agents](100-os-libraries/autogen-building-collaborative-ai-agents-in-python.ipynb)
+- [How to Build Claude-Powered RAG from Scratch](rag/how-to-build-claude-powered-rag-from-scratch.ipynb)
+- [RAG Interactive](rag/rag-interactive.ipynb)
+- [Kimi K2.5 Agent Swarm Cookbook](agents/kimi-k2-5-agent-swarm-cookbook.ipynb)
+- [MCP Workshop](workshops/mcp-workshop.ipynb)
 
 ---
 
