@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  * {
+    @apply box-border;
+  }
+
+  html,
+  body {
+    @apply min-h-full antialiased;
+  }
+
+  body {
+    font-family: 'Sora', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(56, 189, 248, 0.18), transparent 35%),
+      radial-gradient(circle at 80% 0%, rgba(16, 185, 129, 0.18), transparent 30%),
+      linear-gradient(180deg, #f8fbff 0%, #f5f7fb 45%, #f0f4fa 100%);
+    color: #0f172a;
+  }
+}
+
+@layer utilities {
+  .card-surface {
+    @apply rounded-2xl border border-slate-200/70 bg-white/90 shadow-soft-xl backdrop-blur;
+  }
+
+  .stream-caret {
+    @apply ml-1 inline-block h-4 w-0.5 rounded-full bg-slate-400 align-middle;
+    animation: stream 1.2s ease-in-out infinite;
+  }
+}
