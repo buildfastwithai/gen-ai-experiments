@@ -36,6 +36,7 @@ This directory contains comprehensive testing frameworks and evaluation notebook
 - **[GLM Testing](glm/)** - ChatGLM model benchmarks
 - **[Grok Testing](grok/)** - xAI's Grok model evaluation
 - **[DeepSeek Testing](deepseek/)** - DeepSeek model performance analysis
+- **[Xiaomi Testing](xiaomi/)** - Xiaomi Mimo model evaluation
 
 ### 🎭 **Specialized Models**
 - **[Mistral Testing](mistral/)** - Mistral AI model evaluation
