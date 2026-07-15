@@ -1,0 +1,79 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import test from "node:test";
+
+async function loadWorker() {
+  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
+  workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
+  return (await import(workerUrl.href)).default;
+}
+
+const env = {
+  ASSETS: {
+    fetch: async () => new Response("Not found", { status: 404 }),
+  },
+};
+
+const context = {
+  waitUntil() {},
+  passThroughOnException() {},
+};
+
+test("server-renders the __APP_NAME__ key gate", async () => {
+  const worker = await loadWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/", { headers: { accept: "text/html" } }),
+    env,
+    context,
+  );
+
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
+
+  const html = await response.text();
+  assert.match(html, /<title>__APP_NAME__ — Voice roleplay<\/title>/i);
+  assert.match(html, /Talk to __CHARACTER_NAME__/);
+  assert.match(html, /Your OpenAI API key/);
+  assert.ok(html.includes("__REALTIME_MODEL__"));
+  assert.doesNotMatch(html, /codex-preview|react-loading-skeleton/i);
+});
+
+test("rejects realtime session requests without a key", async () => {
+  const worker = await loadWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/api/realtime/session", {
+      method: "POST",
+      headers: { "Content-Type": "application/sdp" },
+      body: "v=0",
+    }),
+    env,
+    context,
+  );
+
+  assert.equal(response.status, 400);
+  assert.deepEqual(await response.json(), { error: "A complete OpenAI API key is required." });
+});
+
+test("keeps the pasted API key ephemeral", async () => {
+  const source = await readFile(new URL("../app/TalkingAvatarApp.tsx", import.meta.url), "utf8");
+  const route = await readFile(new URL("../app/api/realtime/session/route.ts", import.meta.url), "utf8");
+
+  assert.match(source, /setApiKey\(""\)/);
+  assert.doesNotMatch(source, /localStorage|sessionStorage|indexedDB/i);
+  assert.doesNotMatch(route, /console\.(log|info|debug|warn|error)/);
+  assert.match(route, /Cache-Control": "no-store"/);
+});
+
+test("drives the mouth from remote audio instead of a canned loop", async () => {
+  const source = await readFile(new URL("../app/TalkingAvatarApp.tsx", import.meta.url), "utf8");
+  const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(source, /createAnalyser\(\)/);
+  assert.match(source, /getByteTimeDomainData/);
+  assert.match(source, /requestAnimationFrame\(measure\)/);
+  assert.match(source, /POSE_INTERVAL_MS = 96/);
+  assert.match(source, /Math\.sign\(targetIndex - currentIndex\)/);
+  assert.match(source, /data-mouth="closed"/);
+  assert.doesNotMatch(source, /Backdrop|Wardrobe|Cartographer|midnight case/);
+  assert.doesNotMatch(styles, /@keyframes mouth-/);
+});
