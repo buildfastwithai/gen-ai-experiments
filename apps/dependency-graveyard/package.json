@@ -1,0 +1,21 @@
+{
+  "name": "dep-graveyard",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Scans your project dependencies (Node.js + Python) for abandoned, deprecated, and risky packages. Posts a report to Slack.",
+  "main": "src/cli.js",
+  "bin": {
+    "dep-graveyard": "bin/dep-graveyard.js"
+  },
+  "scripts": {
+    "start": "node src/cli.js"
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.2",
+    "chalk": "^5.3.0",
+    "dotenv": "^16.4.5",
+    "cli-table3": "^0.6.3"
+  },
+  "keywords": ["dependencies", "security", "npm", "pypi", "slack", "devtools"],
+  "license": "Apache-2.0"
+}

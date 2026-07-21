@@ -1,0 +1,48 @@
+name: 🪦 Dependency Graveyard — Weekly Audit
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'  # Every Monday at 9am UTC
+  workflow_dispatch:      # Allow manual runs from GitHub UI
+    inputs:
+      target_repo:
+        description: 'GitHub repo URL to scan (leave empty to scan this repo)'
+        required: false
+        default: ''
+
+jobs:
+  dependency-audit:
+    name: Scan Dependencies for Dead Packages
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run dep-graveyard scan
+        continue-on-error: true
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          TARGET="${{ github.event.inputs.target_repo }}"
+          if [ -n "$TARGET" ]; then
+            npx dep-graveyard@latest "$TARGET"
+          else
+            npx dep-graveyard@latest .
+          fi
+
+      - name: Write job summary
+        run: |
+          echo "## 🪦 Dependency Graveyard Scan Complete" >> $GITHUB_STEP_SUMMARY
+          echo "**Repository:** ${{ github.repository }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Triggered by:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Ran at:** $(date -u)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Check the logs above for the full dependency report." >> $GITHUB_STEP_SUMMARY
+          echo "If you received a Slack notification, risky packages were found." >> $GITHUB_STEP_SUMMARY

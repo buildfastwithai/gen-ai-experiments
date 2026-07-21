@@ -1,0 +1,11 @@
+import type { Metadata } from "next";
+import { TalkingAvatarApp } from "./TalkingAvatarApp";
+
+export const metadata: Metadata = {
+  title: { absolute: "__APP_NAME__ — Voice roleplay" },
+  description: "A realtime voice roleplaying room with a talking __CHARACTER_NAME__ avatar, powered by __REALTIME_MODEL__.",
+};
+
+export default function Home() {
+  return <TalkingAvatarApp />;
+}

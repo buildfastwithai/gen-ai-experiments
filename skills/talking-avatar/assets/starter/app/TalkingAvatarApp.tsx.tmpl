@@ -1,0 +1,690 @@
+"use client";
+
+import {
+  AnimatePresence,
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+  useTransform,
+} from "framer-motion";
+import {
+  ArrowRight,
+  ArrowUp,
+  Eye,
+  EyeSlash,
+  Key,
+  Microphone,
+  MicrophoneSlash,
+  PhoneDisconnect,
+  ShieldCheck,
+  SpeakerHigh,
+  SpeakerSlash,
+  Waveform,
+  X,
+} from "@phosphor-icons/react";
+import {
+  FormEvent,
+  MouseEvent as ReactMouseEvent,
+  RefObject,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+
+const MODEL = "__REALTIME_MODEL__";
+const POSE_INTERVAL_MS = 96;
+
+type Stage = "gate" | "connecting" | "live";
+type Activity = "ready" | "listening" | "thinking" | "speaking";
+type MouthPose = "closed" | "soft" | "round" | "open";
+type Message = { id: string; role: "user" | "assistant"; text: string };
+
+type RealtimeEvent = {
+  type: string;
+  item_id?: string;
+  delta?: string;
+  transcript?: string;
+  error?: { message?: string };
+  response?: { status?: string; status_details?: { error?: { message?: string } } };
+};
+
+function MagneticSubmit({ ready, busy }: { ready: boolean; busy: boolean }) {
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const springX = useSpring(x, { stiffness: 180, damping: 18, mass: 0.55 });
+  const springY = useSpring(y, { stiffness: 180, damping: 18, mass: 0.55 });
+  const arrowX = useTransform(springX, [-12, 12], [-2, 4]);
+
+  const handleMove = (event: ReactMouseEvent<HTMLButtonElement>) => {
+    const bounds = event.currentTarget.getBoundingClientRect();
+    x.set((event.clientX - bounds.left - bounds.width / 2) * 0.18);
+    y.set((event.clientY - bounds.top - bounds.height / 2) * 0.18);
+  };
+
+  const reset = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <motion.button
+      type="submit"
+      className="enter-button"
+      disabled={!ready || busy}
+      onMouseMove={handleMove}
+      onMouseLeave={reset}
+      style={{ x: springX, y: springY }}
+      whileTap={{ scale: 0.98, y: 1 }}
+    >
+      <span>{busy ? "Opening __CHARACTER_NAME__’s room" : "Start the conversation"}</span>
+      <motion.span className="enter-button__icon" style={{ x: arrowX }}>
+        <ArrowRight size={18} weight="bold" />
+      </motion.span>
+      {busy && <span className="button-scan" aria-hidden="true" />}
+    </motion.button>
+  );
+}
+
+function GatePortrait({ progress }: { progress: number }) {
+  return (
+    <div className={`gate-portrait ${progress >= 0.92 ? "gate-portrait--ready" : ""}`}>
+      <div className="portrait-orbit" aria-hidden="true">
+        {Array.from({ length: 14 }, (_, index) => (
+          <span
+            key={index}
+            className={index / 14 <= progress ? "portrait-dot portrait-dot--active" : "portrait-dot"}
+            style={{ "--dot-index": index } as React.CSSProperties}
+          />
+        ))}
+      </div>
+      <div className="gate-photo-wrap">
+        <img src="/avatar/avatar-base.jpg" alt="__CHARACTER_NAME__, your realtime conversation partner" />
+        <span className="face-scan" aria-hidden="true" />
+      </div>
+      <div className="gate-key-seal" aria-hidden="true">
+        <Key size={20} weight="duotone" />
+        <span>{progress >= 0.92 ? "READY" : "LOCKED"}</span>
+      </div>
+      <div className="gate-coordinate gate-coordinate--top">IDENTITY / __CHARACTER_NAME_UPPER__</div>
+      <div className="gate-coordinate gate-coordinate--bottom">VOICE / WEBRTC</div>
+    </div>
+  );
+}
+
+function KeyGate({
+  apiKey,
+  setApiKey,
+  onConnect,
+  busy,
+  error,
+}: {
+  apiKey: string;
+  setApiKey: (value: string) => void;
+  onConnect: (event: FormEvent<HTMLFormElement>) => void;
+  busy: boolean;
+  error: string;
+}) {
+  const [showKey, setShowKey] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
+  const progress = Math.min(apiKey.length / 46, 1);
+  const keyLooksValid = apiKey.trim().startsWith("sk-") && apiKey.trim().length >= 24;
+
+  return (
+    <motion.main
+      className="gate-shell"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0, scale: prefersReducedMotion ? 1 : 1.018 }}
+      transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+    >
+      <div className="gate-grid" aria-hidden="true" />
+      <header className="gate-nav">
+        <a className="wordmark" href="#main-content" aria-label="__APP_NAME__ home">__CHARACTER_NAME_UPPER__<span>/LIVE</span></a>
+        <div className="model-stamp"><span className="status-pip" />{MODEL}</div>
+      </header>
+
+      <section className="gate-layout" id="main-content">
+        <div className="gate-copy">
+          <motion.p className="eyebrow" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}>
+            REALTIME CONVERSATION / 01
+          </motion.p>
+          <motion.h1 initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18, duration: 0.6 }}>
+            Enter a key.
+            <br />
+            <span>Talk to __CHARACTER_NAME__.</span>
+          </motion.h1>
+          <motion.p className="gate-intro" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25, duration: 0.55 }}>
+            One avatar, one private voice line, one live conversation. Your key crosses the server once to open the WebRTC session and is never stored.
+          </motion.p>
+
+          <form className="key-form" onSubmit={onConnect} noValidate>
+            <label htmlFor="openai-key">Your OpenAI API key</label>
+            <div className={`key-input-wrap ${keyLooksValid ? "key-input-wrap--ready" : ""} ${error ? "key-input-wrap--error" : ""}`}>
+              <Key size={19} weight="duotone" aria-hidden="true" />
+              <input
+                id="openai-key"
+                type={showKey ? "text" : "password"}
+                value={apiKey}
+                onChange={(event) => setApiKey(event.target.value)}
+                placeholder="sk-proj-••••••••••••••••"
+                autoComplete="off"
+                spellCheck={false}
+                aria-describedby={error ? "key-error key-helper" : "key-helper"}
+                aria-invalid={Boolean(error)}
+                disabled={busy}
+              />
+              <button className="reveal-button" type="button" onClick={() => setShowKey((visible) => !visible)} aria-label={showKey ? "Hide API key" : "Show API key"}>
+                {showKey ? <EyeSlash size={19} /> : <Eye size={19} />}
+              </button>
+              <span className="key-progress" style={{ transform: `scaleX(${progress})` }} aria-hidden="true" />
+            </div>
+            <div className="form-feedback">
+              <p id="key-helper">Need one? <a href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer">Create a key on OpenAI</a></p>
+              <AnimatePresence mode="wait">
+                {error ? (
+                  <motion.p id="key-error" className="key-error" role="alert" initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}>{error}</motion.p>
+                ) : keyLooksValid ? (
+                  <motion.p className="key-ready" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>Line can open</motion.p>
+                ) : null}
+              </AnimatePresence>
+            </div>
+            <MagneticSubmit ready={keyLooksValid} busy={busy} />
+          </form>
+
+          <div className="privacy-note"><ShieldCheck size={18} weight="duotone" /><span>Memory only</span><i /><span>No account</span><i /><span>No key storage</span></div>
+        </div>
+        <motion.div className="gate-visual" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.16, duration: 0.7 }}>
+          <GatePortrait progress={progress} />
+        </motion.div>
+      </section>
+    </motion.main>
+  );
+}
+
+function ConversationMessage({ message, index }: { message: Message; index: number }) {
+  return (
+    <motion.article className={`message message--${message.role}`} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ type: "spring", stiffness: 130, damping: 22 }} layout>
+      <div className="message-meta"><span>{message.role === "user" ? "YOU" : "__CHARACTER_NAME_UPPER__"}</span><span>{String(index + 1).padStart(2, "0")}</span></div>
+      <p>{message.text}</p>
+    </motion.article>
+  );
+}
+
+function ConversationPanel({ messages, onSendText }: { messages: Message[]; onSendText: (text: string) => void }) {
+  const [prompt, setPrompt] = useState("");
+  const endRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [messages]);
+
+  const submit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const text = prompt.trim();
+    if (!text) return;
+    onSendText(text);
+    setPrompt("");
+  };
+
+  return (
+    <section className="conversation-panel" id="conversation" aria-label="Conversation transcript">
+      <div className="panel-heading"><p className="eyebrow">TRANSCRIPT / LIVE</p><span>{String(messages.length).padStart(2, "0")}</span></div>
+      <div className="messages" aria-live="polite">
+        {messages.length === 0 ? (
+          <div className="empty-conversation"><span>THE LINE IS OPEN</span><h2>Say hello to __CHARACTER_NAME__.</h2><p>Speak naturally or type a message below. The response will appear here with the voice.</p></div>
+        ) : (
+          <AnimatePresence initial={false}>{messages.map((message, index) => <ConversationMessage key={message.id} message={message} index={index} />)}</AnimatePresence>
+        )}
+        <div ref={endRef} />
+      </div>
+      <form className="prompt-composer" onSubmit={submit}>
+        <label className="sr-only" htmlFor="text-prompt">Type a message</label>
+        <input id="text-prompt" value={prompt} onChange={(event) => setPrompt(event.target.value)} placeholder="Type a line…" autoComplete="off" />
+        <button type="submit" disabled={!prompt.trim()} aria-label="Send message"><ArrowUp size={18} weight="bold" /></button>
+      </form>
+    </section>
+  );
+}
+
+function AvatarStage({
+  activity,
+  muted,
+  speakerMuted,
+  mouthRef,
+  onToggleMic,
+  onToggleSpeaker,
+}: {
+  activity: Activity;
+  muted: boolean;
+  speakerMuted: boolean;
+  mouthRef: RefObject<HTMLDivElement | null>;
+  onToggleMic: () => void;
+  onToggleSpeaker: () => void;
+}) {
+  const activityLabel = muted
+    ? "MIC PAUSED"
+    : activity === "listening"
+      ? "LISTENING"
+      : activity === "thinking"
+        ? "THINKING"
+        : activity === "speaking"
+          ? "SPEAKING"
+          : "YOUR MOVE";
+
+  return (
+    <section className="avatar-stage" aria-label={`__CHARACTER_NAME__ is ${activityLabel.toLowerCase()}`}>
+      <div className="stage-topline"><span>REMOTE AUDIO / LIVE</span><span className={`activity-badge activity-badge--${activity}`}><i />{activityLabel}</span></div>
+      <div className="avatar-figure">
+        <img className="avatar-base" src="/avatar/avatar-base.jpg" alt="__CHARACTER_NAME__, the interactive voice avatar" />
+        <div className="mouth-window" ref={mouthRef} data-mouth="closed" aria-hidden="true">
+          <img className="mouth-frame mouth-frame--soft" src="/avatar/mouth-soft.png?v=avatar-assets-1" alt="" />
+          <img className="mouth-frame mouth-frame--round" src="/avatar/mouth-round.png?v=avatar-assets-1" alt="" />
+          <img className="mouth-frame mouth-frame--open" src="/avatar/mouth-open.png?v=avatar-assets-1" alt="" />
+        </div>
+        <div className="avatar-vignette" aria-hidden="true" />
+      </div>
+      <div className="avatar-footer">
+        <div className="avatar-identity"><strong>__CHARACTER_NAME_UPPER__</strong><span>AUDIO-DRIVEN AVATAR</span></div>
+        <div className="voice-controls">
+          <button type="button" className={muted ? "round-control round-control--active" : "round-control"} onClick={onToggleMic} aria-label={muted ? "Unmute microphone" : "Mute microphone"}>
+            {muted ? <MicrophoneSlash size={20} /> : <Microphone size={20} />}
+          </button>
+          <button type="button" className={speakerMuted ? "round-control round-control--active" : "round-control"} onClick={onToggleSpeaker} aria-label={speakerMuted ? "Unmute speaker" : "Mute speaker"}>
+            {speakerMuted ? <SpeakerSlash size={20} /> : <SpeakerHigh size={20} />}
+          </button>
+        </div>
+      </div>
+      <p className="sync-note"><Waveform size={16} weight="duotone" />Mouth shapes follow __CHARACTER_NAME__’s actual output level in real time.</p>
+    </section>
+  );
+}
+
+function VoiceRoom({
+  activity,
+  messages,
+  muted,
+  speakerMuted,
+  mouthRef,
+  onToggleMic,
+  onToggleSpeaker,
+  onDisconnect,
+  onSendText,
+  error,
+  clearError,
+}: {
+  activity: Activity;
+  messages: Message[];
+  muted: boolean;
+  speakerMuted: boolean;
+  mouthRef: RefObject<HTMLDivElement | null>;
+  onToggleMic: () => void;
+  onToggleSpeaker: () => void;
+  onDisconnect: () => void;
+  onSendText: (text: string) => void;
+  error: string;
+  clearError: () => void;
+}) {
+  return (
+    <motion.main className="room-shell" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.45 }}>
+      <header className="room-nav">
+        <a className="wordmark" href="#conversation" aria-label="__APP_NAME__ conversation">__CHARACTER_NAME_UPPER__<span>/LIVE</span></a>
+        <div className="room-model"><span className="status-pip" />{MODEL}</div>
+        <button className="disconnect-link" type="button" onClick={onDisconnect}><PhoneDisconnect size={17} />Leave room</button>
+      </header>
+      <div className="room-layout">
+        <ConversationPanel messages={messages} onSendText={onSendText} />
+        <AvatarStage activity={activity} muted={muted} speakerMuted={speakerMuted} mouthRef={mouthRef} onToggleMic={onToggleMic} onToggleSpeaker={onToggleSpeaker} />
+      </div>
+      <AnimatePresence>
+        {error && (
+          <motion.div className="room-error" role="alert" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 18 }}>
+            <Waveform size={20} weight="duotone" /><p>{error}</p><button type="button" onClick={clearError} aria-label="Dismiss error"><X size={17} /></button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.main>
+  );
+}
+
+export function TalkingAvatarApp() {
+  const [stage, setStage] = useState<Stage>("gate");
+  const [apiKey, setApiKey] = useState("");
+  const [gateError, setGateError] = useState("");
+  const [roomError, setRoomError] = useState("");
+  const [activity, setActivity] = useState<Activity>("ready");
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [muted, setMuted] = useState(false);
+  const [speakerMuted, setSpeakerMuted] = useState(false);
+  const peerRef = useRef<RTCPeerConnection | null>(null);
+  const channelRef = useRef<RTCDataChannel | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const analyserSourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
+  const analyserSinkRef = useRef<GainNode | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
+  const mouthRef = useRef<HTMLDivElement | null>(null);
+
+  const setMouthPose = useCallback((pose: MouthPose, level = 0) => {
+    const mouth = mouthRef.current;
+    if (!mouth) return;
+    if (mouth.dataset.mouth !== pose) mouth.dataset.mouth = pose;
+    mouth.style.setProperty("--voice-level", String(Math.min(level * 10, 1)));
+  }, []);
+
+  const stopLipSync = useCallback(() => {
+    if (animationFrameRef.current !== null) cancelAnimationFrame(animationFrameRef.current);
+    animationFrameRef.current = null;
+    analyserSourceRef.current?.disconnect();
+    analyserRef.current?.disconnect();
+    analyserSinkRef.current?.disconnect();
+    analyserSourceRef.current = null;
+    analyserRef.current = null;
+    analyserSinkRef.current = null;
+    const context = audioContextRef.current;
+    audioContextRef.current = null;
+    if (context && context.state !== "closed") void context.close().catch(() => undefined);
+    setMouthPose("closed");
+  }, [setMouthPose]);
+
+  const startLipSync = useCallback((remoteStream: MediaStream) => {
+    stopLipSync();
+    try {
+      const context = new AudioContext({ latencyHint: "interactive" });
+      const source = context.createMediaStreamSource(remoteStream);
+      const analyser = context.createAnalyser();
+      const silentSink = context.createGain();
+      analyser.fftSize = 256;
+      analyser.smoothingTimeConstant = 0.45;
+      silentSink.gain.value = 0;
+      source.connect(analyser);
+      analyser.connect(silentSink);
+      silentSink.connect(context.destination);
+      audioContextRef.current = context;
+      analyserSourceRef.current = source;
+      analyserRef.current = analyser;
+      analyserSinkRef.current = silentSink;
+
+      const samples = new Uint8Array(analyser.fftSize);
+      let envelope = 0;
+      let rollingPeak = 0.055;
+      let currentPose: MouthPose = "closed";
+      let sampledLevel = 0;
+      let lastPoseUpdate = 0;
+      let silenceStartedAt: number | null = null;
+
+      const measure = (timestamp: number) => {
+        analyser.getByteTimeDomainData(samples);
+        let energy = 0;
+        for (const sample of samples) {
+          const normalized = (sample - 128) / 128;
+          energy += normalized * normalized;
+        }
+        const rms = Math.sqrt(energy / samples.length);
+        const envelopeEase = rms >= envelope ? 0.38 : 0.12;
+        envelope += (rms - envelope) * envelopeEase;
+        rollingPeak = Math.max(envelope, rollingPeak * 0.997, 0.035);
+        const normalizedLevel = Math.max(0, Math.min(1, (envelope - 0.012) / Math.max(rollingPeak - 0.012, 0.025)));
+        sampledLevel = Math.max(normalizedLevel, sampledLevel * 0.88);
+        silenceStartedAt = rms < 0.013 ? (silenceStartedAt ?? timestamp) : null;
+
+        const targetPose: MouthPose = silenceStartedAt !== null && timestamp - silenceStartedAt >= 120
+          ? "closed"
+          : sampledLevel < 0.12
+            ? "closed"
+            : sampledLevel < 0.4
+            ? "soft"
+            : sampledLevel < 0.78
+              ? "round"
+              : "open";
+
+        if (timestamp - lastPoseUpdate >= POSE_INTERVAL_MS) {
+          const poses: MouthPose[] = ["closed", "soft", "round", "open"];
+          const currentIndex = poses.indexOf(currentPose);
+          const targetIndex = poses.indexOf(targetPose);
+          const prolongedSilence = silenceStartedAt !== null && timestamp - silenceStartedAt >= 170;
+          const nextIndex = prolongedSilence
+            ? 0
+            : currentIndex + Math.sign(targetIndex - currentIndex);
+          const nextPose = poses[nextIndex];
+
+          if (nextPose !== currentPose) {
+            currentPose = nextPose;
+            setMouthPose(currentPose, sampledLevel);
+          }
+          sampledLevel = normalizedLevel;
+          lastPoseUpdate = timestamp;
+        }
+        mouthRef.current?.style.setProperty("--voice-level", String(normalizedLevel));
+        animationFrameRef.current = requestAnimationFrame(measure);
+      };
+
+      void context.resume().catch(() => undefined);
+      animationFrameRef.current = requestAnimationFrame(measure);
+    } catch {
+      setMouthPose("closed");
+    }
+  }, [setMouthPose, stopLipSync]);
+
+  const releaseConnection = useCallback(() => {
+    stopLipSync();
+    channelRef.current?.close();
+    peerRef.current?.close();
+    streamRef.current?.getTracks().forEach((track) => track.stop());
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.srcObject = null;
+    }
+    channelRef.current = null;
+    peerRef.current = null;
+    streamRef.current = null;
+    audioRef.current = null;
+  }, [stopLipSync]);
+
+  useEffect(() => releaseConnection, [releaseConnection]);
+
+  const appendAssistantDelta = useCallback((itemId: string, delta: string) => {
+    if (!delta) return;
+    setMessages((current) => {
+      const index = current.findIndex((message) => message.id === itemId);
+      if (index === -1) return [...current, { id: itemId, role: "assistant", text: delta }];
+      return current.map((message, messageIndex) => messageIndex === index ? { ...message, text: message.text + delta } : message);
+    });
+  }, []);
+
+  const handleServerEvent = useCallback((event: MessageEvent<string>) => {
+    let payload: RealtimeEvent;
+    try {
+      payload = JSON.parse(event.data) as RealtimeEvent;
+    } catch {
+      return;
+    }
+
+    switch (payload.type) {
+      case "input_audio_buffer.speech_started":
+        setActivity("listening");
+        break;
+      case "input_audio_buffer.speech_stopped":
+      case "response.created":
+        setActivity("thinking");
+        break;
+      case "conversation.item.input_audio_transcription.completed":
+        if (payload.transcript?.trim()) setMessages((current) => [...current, { id: payload.item_id ?? crypto.randomUUID(), role: "user", text: payload.transcript!.trim() }]);
+        break;
+      case "response.output_audio_transcript.delta":
+      case "response.output_text.delta":
+        setActivity("speaking");
+        appendAssistantDelta(payload.item_id ?? "assistant-live", payload.delta ?? "");
+        break;
+      case "response.output_audio.delta":
+        setActivity("speaking");
+        break;
+      case "response.done":
+        if (payload.response?.status === "failed") setRoomError(payload.response.status_details?.error?.message ?? "The response could not be completed.");
+        setActivity("ready");
+        break;
+      case "error":
+        setRoomError(payload.error?.message ?? "The realtime session reported an error.");
+        setActivity("ready");
+        break;
+      default:
+        break;
+    }
+  }, [appendAssistantDelta]);
+
+  const connect = useCallback(async (key: string) => {
+    releaseConnection();
+    setGateError("");
+    setStage("connecting");
+    try {
+      if (!window.RTCPeerConnection || !navigator.mediaDevices?.getUserMedia) throw new Error("This browser does not support the WebRTC features this room needs.");
+
+      const peer = new RTCPeerConnection();
+      peerRef.current = peer;
+      const audio = new Audio();
+      audio.autoplay = true;
+      audio.muted = speakerMuted;
+      audioRef.current = audio;
+      peer.ontrack = (event) => {
+        const remoteStream = event.streams[0] ?? new MediaStream([event.track]);
+        audio.srcObject = remoteStream;
+        startLipSync(remoteStream);
+        void audio.play().catch(() => setRoomError("Tap the speaker button once to hear __CHARACTER_NAME__."));
+      };
+
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
+      streamRef.current = stream;
+      peer.addTrack(stream.getAudioTracks()[0], stream);
+
+      const channel = peer.createDataChannel("oai-events");
+      channelRef.current = channel;
+      channel.addEventListener("message", handleServerEvent);
+      channel.addEventListener("open", () => {
+        setActivity("ready");
+        setStage("live");
+        channel.send(JSON.stringify({
+          type: "response.create",
+          response: { instructions: "Greet the user as __CHARACTER_NAME__ in one brief, natural sentence, then ask what they want to talk about." },
+        }));
+      });
+      channel.addEventListener("close", () => {
+        if (peerRef.current) setRoomError("The realtime line closed. Leave the room and reconnect to continue.");
+      });
+      peer.addEventListener("connectionstatechange", () => {
+        if (peer.connectionState === "failed" || peer.connectionState === "disconnected") setRoomError("The WebRTC connection dropped. Leave the room and reconnect to continue.");
+      });
+
+      const offer = await peer.createOffer();
+      await peer.setLocalDescription(offer);
+      const response = await fetch("/api/realtime/session", {
+        method: "POST",
+        body: offer.sdp,
+        headers: { "Content-Type": "application/sdp", "X-OpenAI-API-Key": key },
+        cache: "no-store",
+      });
+      if (!response.ok) {
+        const body = (await response.json().catch(() => null)) as { error?: string } | null;
+        throw new Error(body?.error ?? "The realtime session could not be opened.");
+      }
+
+      setApiKey("");
+      await peer.setRemoteDescription({ type: "answer", sdp: await response.text() });
+    } catch (error) {
+      releaseConnection();
+      setStage("gate");
+      setGateError(error instanceof DOMException && error.name === "NotAllowedError"
+        ? "Microphone access was blocked. Allow it in your browser, then try again."
+        : error instanceof Error ? error.message : "Something interrupted the connection.");
+    }
+  }, [handleServerEvent, releaseConnection, speakerMuted, startLipSync]);
+
+  const handleConnect = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const key = apiKey.trim();
+    if (!key.startsWith("sk-") || key.length < 24) {
+      setGateError("Enter a complete OpenAI project API key to continue.");
+      return;
+    }
+    void connect(key);
+  };
+
+  const disconnect = () => {
+    releaseConnection();
+    setStage("gate");
+    setApiKey("");
+    setMessages([]);
+    setActivity("ready");
+    setMuted(false);
+    setSpeakerMuted(false);
+    setRoomError("");
+  };
+
+  const resumeAudioContext = () => {
+    const context = audioContextRef.current;
+    if (context?.state === "suspended") void context.resume().catch(() => undefined);
+  };
+
+  const toggleMic = () => {
+    resumeAudioContext();
+    const track = streamRef.current?.getAudioTracks()[0];
+    if (!track) return;
+    track.enabled = !track.enabled;
+    setMuted(!track.enabled);
+    if (!track.enabled) setActivity("ready");
+  };
+
+  const toggleSpeaker = () => {
+    resumeAudioContext();
+    if (!audioRef.current) return;
+    audioRef.current.muted = !audioRef.current.muted;
+    setSpeakerMuted(audioRef.current.muted);
+    if (!audioRef.current.muted) void audioRef.current.play().catch(() => undefined);
+  };
+
+  const sendText = (text: string) => {
+    resumeAudioContext();
+    const channel = channelRef.current;
+    if (!channel || channel.readyState !== "open") {
+      setRoomError("The realtime line is not ready yet.");
+      return;
+    }
+    const itemId = crypto.randomUUID();
+    setMessages((current) => [...current, { id: itemId, role: "user", text }]);
+    setActivity("thinking");
+    channel.send(JSON.stringify({ type: "conversation.item.create", item: { type: "message", role: "user", content: [{ type: "input_text", text }] } }));
+    channel.send(JSON.stringify({ type: "response.create" }));
+  };
+
+  return (
+    <AnimatePresence mode="wait">
+      {stage !== "live" ? (
+        <KeyGate
+          key="gate"
+          apiKey={apiKey}
+          setApiKey={(value) => { setApiKey(value); if (gateError) setGateError(""); }}
+          onConnect={handleConnect}
+          busy={stage === "connecting"}
+          error={gateError}
+        />
+      ) : (
+        <VoiceRoom
+          key="room"
+          activity={activity}
+          messages={messages}
+          muted={muted}
+          speakerMuted={speakerMuted}
+          mouthRef={mouthRef}
+          onToggleMic={toggleMic}
+          onToggleSpeaker={toggleSpeaker}
+          onDisconnect={disconnect}
+          onSendText={sendText}
+          error={roomError}
+          clearError={() => setRoomError("")}
+        />
+      )}
+    </AnimatePresence>
+  );
+}
