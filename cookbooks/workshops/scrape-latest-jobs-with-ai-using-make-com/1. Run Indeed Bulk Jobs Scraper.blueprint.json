@@ -1,0 +1,124 @@
+{
+    "name": "1. Run Indeed Bulk Jobs Scraper",
+    "flow": [
+        {
+            "id": 1,
+            "module": "apify:runActor",
+            "version": 1,
+            "parameters": {
+                "__IMTCONN__": 5486073
+            },
+            "mapper": {
+                "actorId": "hMvNSpz3JnHgl5jkh",
+                "runSync": false,
+                "inputBody": "{\n    \"country\": \"IN\",\n    \"followApplyRedirects\": false,\n    \"maxItems\": 5,\n    \"parseCompanyDetails\": false,\n    \"position\": \"web developer\",\n    \"saveOnlyUniqueItems\": true\n}"
+            },
+            "metadata": {
+                "designer": {
+                    "x": -295,
+                    "y": -21
+                },
+                "restore": {
+                    "expect": {
+                        "memory": {
+                            "mode": "chose",
+                            "label": "Empty"
+                        },
+                        "actorId": {
+                            "mode": "chose",
+                            "label": "misceres/indeed-scraper"
+                        },
+                        "runSync": {
+                            "mode": "chose"
+                        }
+                    },
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "apify2"
+                            },
+                            "label": "My Apify [Recommended] connection (talk@buildfastwithai.com)"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:apify2,apify",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "actorId",
+                        "type": "select",
+                        "label": "Actor",
+                        "required": true
+                    },
+                    {
+                        "name": "runSync",
+                        "type": "boolean",
+                        "label": "Run synchronously",
+                        "required": true
+                    },
+                    {
+                        "name": "inputBody",
+                        "type": "text",
+                        "label": "Input JSON"
+                    },
+                    {
+                        "name": "build",
+                        "type": "text",
+                        "label": "Build"
+                    },
+                    {
+                        "name": "timeout",
+                        "type": "uinteger",
+                        "label": "Timeout"
+                    },
+                    {
+                        "name": "memory",
+                        "type": "select",
+                        "label": "Memory",
+                        "validate": {
+                            "enum": [
+                                128,
+                                256,
+                                512,
+                                1024,
+                                2048,
+                                4096,
+                                8192,
+                                16384,
+                                32768
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "metadata": {
+        "instant": false,
+        "version": 1,
+        "scenario": {
+            "roundtrips": 1,
+            "maxErrors": 3,
+            "autoCommit": true,
+            "autoCommitTriggerLast": true,
+            "sequential": false,
+            "slots": null,
+            "confidential": false,
+            "dataloss": false,
+            "dlq": false,
+            "freshVariables": false
+        },
+        "designer": {
+            "orphans": []
+        },
+        "zone": "us2.make.com",
+        "notes": []
+    }
+}

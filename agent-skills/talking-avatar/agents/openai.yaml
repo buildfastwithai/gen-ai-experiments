@@ -1,4 +1,0 @@
-interface:
-  display_name: "Talking Avatar"
-  short_description: "Build voice chatbots with animated avatars"
-  default_prompt: "Use $talking-avatar to turn my photo or character description into a realtime talking-avatar chatbot."

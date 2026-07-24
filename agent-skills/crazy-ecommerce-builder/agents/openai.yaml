@@ -1,4 +1,0 @@
-interface:
-  display_name: "Crazy Ecommerce Builder"
-  short_description: "Build wild, brand-specific ecommerce experiences"
-  default_prompt: "Use $crazy-ecommerce-builder to turn my company brief into an unconventional ecommerce site with original product imagery."

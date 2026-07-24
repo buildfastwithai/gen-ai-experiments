@@ -1,0 +1,4 @@
+interface:
+  display_name: "Landing Page Generator"
+  short_description: "Build high-converting single-page landing pages"
+  default_prompt: "Use $landing-page-generator to create or improve a landing page with conversion-focused copy, theme selection, SEO meta, and built-in audit checks."
