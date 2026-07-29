@@ -1,0 +1,4 @@
+interface:
+  display_name: "Test Strength"
+  short_description: "Find behavior gaps in Python tests"
+  default_prompt: "Use $test-strength to audit the changed Python code and propose verified tests for real surviving mutants."
