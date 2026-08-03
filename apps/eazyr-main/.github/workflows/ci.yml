@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    # eazyr generates scripts for both shells, so both have to stay green.
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node: [18, 20, 22]
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Test
+        run: node test/run.mjs
+
+      - name: Smoke-test the CLI against this repo
+        run: |
+          node bin/eazyr.mjs scan
+          node bin/eazyr.mjs scan --json > /dev/null
+          node bin/eazyr.mjs init --dry-run
+
+      - name: Generated doctor.sh is valid shell
+        if: runner.os == 'Linux'
+        run: |
+          node bin/eazyr.mjs init --force
+          bash -n scripts/doctor.sh
+          bash scripts/doctor.sh || true   # a bare runner won't pass every check

@@ -1,0 +1,19 @@
+# Dependencies (eazyr itself has none, but contributors may add tooling)
+node_modules/
+*.tgz
+
+# Local environment
+.env
+.env.local
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs and scratch
+*.log
+tmp/
+scratch/

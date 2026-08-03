@@ -1,0 +1,16 @@
+# Shell scripts must keep LF endings — CRLF breaks the shebang on Linux/macOS
+# with "bad interpreter: No such file or directory".
+*.sh text eol=lf
+
+# Same hazard for bin/eazyr.mjs: `npm publish` packs the working copy, so a
+# CRLF checkout on Windows would ship a binary that fails under npx on Linux
+# with "env: node\r: No such file or directory".
+*.mjs text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+
+# PowerShell is fine either way; CRLF is the platform norm.
+*.ps1 text eol=crlf
+
+*.md text
+*.template text

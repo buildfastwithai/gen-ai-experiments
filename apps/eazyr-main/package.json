@@ -1,0 +1,43 @@
+{
+  "name": "eazyr",
+  "version": "0.1.0",
+  "description": "Make any repo easy to run. Scans a project and generates a QUICKSTART, a prerequisite doctor script, and a documented .env.example — plus a Claude Code skill that drives it.",
+  "keywords": [
+    "onboarding",
+    "quickstart",
+    "developer-experience",
+    "dx",
+    "doctor",
+    "dotenv",
+    "claude",
+    "claude-code",
+    "skill"
+  ],
+  "homepage": "https://github.com/kh-bikash/eazyr#readme",
+  "bugs": "https://github.com/kh-bikash/eazyr/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kh-bikash/eazyr.git"
+  },
+  "license": "MIT",
+  "author": "Khundrakpam Bikash Meitei",
+  "type": "module",
+  "bin": {
+    "eazyr": "bin/eazyr.mjs"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "assets/",
+    "references/",
+    "SKILL.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node test/run.mjs"
+  }
+}
