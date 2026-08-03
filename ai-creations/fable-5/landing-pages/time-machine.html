@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Time Machine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=UnifrakturCook:wght@700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Roboto+Mono:wght@300;500&family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --scroll:0;
+  --era:0;
+  --light:0.3;
+  --mx:0.5;
+  --my:0.5;
+  --px:0;
+  --py:0;
+}
+html{scroll-behavior:auto}
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  background:#050508;
+  color:#f5f0e8;
+  overflow-x:hidden;
+  cursor:none;
+  -webkit-font-smoothing:antialiased;
+}
+body.era-0{--ui-font:'Cinzel',serif;--ui-accent:#d4a84b;--ui-surface:rgba(40,28,12,.55);--ui-border:rgba(212,168,75,.35);--ui-radius:2px;--ui-glow:0 0 20px rgba(212,168,75,.15)}
+body.era-1{--ui-font:'UnifrakturCook',cursive;--ui-accent:#c9a227;--ui-surface:rgba(28,22,18,.6);--ui-border:rgba(201,162,39,.4);--ui-radius:4px;--ui-glow:0 0 18px rgba(201,162,39,.12)}
+body.era-2{--ui-font:'Playfair Display',serif;--ui-accent:#b87333;--ui-surface:rgba(20,18,16,.65);--ui-border:rgba(184,115,51,.45);--ui-radius:6px;--ui-glow:0 0 16px rgba(184,115,51,.2)}
+body.era-3{--ui-font:'Inter',sans-serif;--ui-accent:#4fc3f7;--ui-surface:rgba(10,14,22,.7);--ui-border:rgba(79,195,247,.4);--ui-radius:12px;--ui-glow:0 0 24px rgba(79,195,247,.25)}
+body.era-4{--ui-font:'Orbitron',sans-serif;--ui-accent:#a78bfa;--ui-surface:rgba(8,6,20,.75);--ui-border:rgba(167,139,250,.5);--ui-radius:16px;--ui-glow:0 0 30px rgba(167,139,250,.35)}
+
+/* Custom cursor */
+#cursor{
+  position:fixed;z-index:9999;pointer-events:none;
+  width:12px;height:12px;border-radius:50%;
+  background:var(--ui-accent);mix-blend-mode:difference;
+  transform:translate(-50%,-50%);
+  transition:width .2s,height .2s,background .4s;
+  box-shadow:0 0 12px var(--ui-accent);
+}
+#cursor.hover{width:28px;height:28px;background:transparent;border:1.5px solid var(--ui-accent);mix-blend-mode:normal}
+#cursor-ring{
+  position:fixed;z-index:9998;pointer-events:none;
+  width:36px;height:36px;border-radius:50%;
+  border:1px solid rgba(255,255,255,.2);
+  transform:translate(-50%,-50%);
+  transition:width .35s,height .35s,border-color .4s,opacity .3s;
+  opacity:.6;
+}
+
+/* Scroll space — tall enough for journey */
+.scroll-space{height:600vh;position:relative}
+
+/* Stage */
+#stage{
+  position:fixed;inset:0;overflow:hidden;
+  perspective:1200px;
+}
+.layer{
+  position:absolute;inset:0;
+  will-change:transform,opacity;
+  transform-style:preserve-3d;
+}
+
+/* Sky / atmosphere gradient */
+#sky{
+  background:
+    radial-gradient(ellipse 120% 80% at 50% 100%, var(--sky-low,#1a0a00) 0%, transparent 55%),
+    radial-gradient(ellipse 80% 50% at 70% 20%, var(--sky-sun,transparent) 0%, transparent 40%),
+    linear-gradient(180deg, var(--sky-top,#0a0612) 0%, var(--sky-mid,#1a1028) 45%, var(--sky-bot,#2a1810) 100%);
+  transition:background 1.2s ease;
+}
+#vignette{
+  background:radial-gradient(ellipse 70% 70% at 50% 50%, transparent 40%, rgba(0,0,0,.55) 100%);
+  pointer-events:none;z-index:50;
+}
+#grain{
+  opacity:.04;pointer-events:none;z-index:51;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:200px;
+  animation:grain 0.4s steps(4) infinite;
+}
+@keyframes grain{0%,100%{transform:translate(0,0)}25%{transform:translate(-2%,1%)}50%{transform:translate(1%,-1%)}75%{transform:translate(-1%,2%)}}
+
+/* Light overlay */
+#light-overlay{
+  pointer-events:none;z-index:40;
+  background:var(--light-color,transparent);
+  mix-blend-mode:soft-light;
+  opacity:var(--light-opacity,0.3);
+  transition:background .8s,opacity .8s;
+}
+
+/* Ground / horizon */
+#ground{
+  position:absolute;left:-10%;right:-10%;bottom:0;height:42%;
+  background:linear-gradient(180deg, transparent 0%, var(--ground-top,#1a1208) 12%, var(--ground-bot,#0d0a06) 100%);
+  transform-origin:center bottom;
+}
+#horizon-glow{
+  position:absolute;left:0;right:0;bottom:38%;height:20%;
+  background:radial-gradient(ellipse 100% 100% at 50% 100%, var(--horizon,#c4783a) 0%, transparent 70%);
+  opacity:.5;pointer-events:none;filter:blur(8px);
+  transition:opacity .8s;
+}
+
+/* Stars (night / future) */
+#stars{
+  position:absolute;inset:0;opacity:0;transition:opacity 1s;
+  background-image:
+    radial-gradient(1px 1px at 10% 20%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 30% 40%, #fff, transparent),
+    radial-gradient(1px 1px at 50% 15%, #ffe, transparent),
+    radial-gradient(1px 1px at 70% 35%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 85% 25%, #eef, transparent),
+    radial-gradient(1px 1px at 20% 60%, #fff, transparent),
+    radial-gradient(1px 1px at 60% 55%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 90% 70%, #fff, transparent),
+    radial-gradient(1px 1px at 40% 80%, #fff, transparent),
+    radial-gradient(1px 1px at 15% 85%, #ffe, transparent),
+    radial-gradient(1px 1px at 75% 10%, #fff, transparent),
+    radial-gradient(2px 2px at 55% 30%, #aaf, transparent);
+  background-size:100% 100%;
+}
+
+/* Sun / moon */
+#celestial{
+  position:absolute;width:80px;height:80px;border-radius:50%;
+  left:50%;top:20%;
+  transform:translate(-50%,-50%);
+  background:radial-gradient(circle at 35% 35%, #fff8e0, #ffcc66 40%, #ff9944 70%, transparent 75%);
+  box-shadow:0 0 60px 20px rgba(255,180,80,.4),0 0 120px 40px rgba(255,140,40,.2);
+  transition:background .8s,box-shadow .8s,opacity .6s;
+  will-change:transform;
+  filter:blur(0.5px);
+}
+#celestial.moon{
+  background:radial-gradient(circle at 40% 40%, #f0f4ff, #c8d0e8 50%, #8890a8 80%);
+  box-shadow:0 0 40px 10px rgba(180,200,255,.3),0 0 80px 20px rgba(100,120,180,.15);
+}
+
+/* Particles canvas */
+#particles{position:absolute;inset:0;pointer-events:none;z-index:30}
+
+/* Architecture silhouettes */
+.arch-set{
+  position:absolute;left:0;right:0;bottom:0;height:55%;
+  opacity:0;transition:opacity 1.2s ease;
+  pointer-events:none;
+}
+.arch-set.active{opacity:1}
+.arch-set svg{width:100%;height:100%;display:block}
+
+/* Era content panels */
+.era-content{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  justify-content:center;align-items:center;
+  opacity:0;pointer-events:none;
+  transition:opacity .9s ease,transform 1s cubic-bezier(.22,1,.36,1);
+  transform:translateY(30px) scale(.97);
+  z-index:20;
+  padding:2rem;
+  text-align:center;
+}
+.era-content.active{
+  opacity:1;pointer-events:auto;
+  transform:translateY(0) scale(1);
+}
+.era-label{
+  font-size:clamp(.7rem,1.2vw,0.85rem);
+  letter-spacing:.35em;text-transform:uppercase;
+  color:var(--ui-accent);opacity:.85;margin-bottom:1rem;
+  font-family:var(--ui-font);
+  transition:font-family .6s,color .6s;
+}
+.era-title{
+  font-family:var(--ui-font);
+  font-size:clamp(2.2rem,6vw,4.5rem);
+  font-weight:700;line-height:1.1;
+  margin-bottom:1rem;
+  text-shadow:0 4px 40px rgba(0,0,0,.5);
+  transition:font-family .6s,letter-spacing .6s;
+  max-width:14ch;
+}
+.era-desc{
+  font-size:clamp(.9rem,1.5vw,1.1rem);
+  max-width:36ch;line-height:1.7;opacity:.8;
+  font-weight:300;margin-bottom:2rem;
+  font-family:'Inter',sans-serif;
+}
+
+/* Interactive button — morphs by era */
+.interact-btn{
+  font-family:var(--ui-font);
+  background:var(--ui-surface);
+  border:1px solid var(--ui-border);
+  color:var(--ui-accent);
+  padding:.85rem 1.8rem;
+  border-radius:var(--ui-radius);
+  font-size:.9rem;letter-spacing:.08em;
+  cursor:none;position:relative;
+  backdrop-filter:blur(12px);
+  box-shadow:var(--ui-glow);
+  transition:all .5s cubic-bezier(.22,1,.36,1),font-family .6s;
+  overflow:hidden;
+}
+.interact-btn::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.08) 50%,transparent 70%);
+  transform:translateX(-100%);transition:transform .6s;
+}
+.interact-btn:hover::before{transform:translateX(100%)}
+.interact-btn:hover{
+  transform:translateY(-2px) scale(1.03);
+  box-shadow:var(--ui-glow),0 8px 32px rgba(0,0,0,.3);
+  border-color:var(--ui-accent);
+}
+.interact-btn:active{transform:scale(.98)}
+.interact-btn.activated{
+  background:var(--ui-accent);color:#0a0a0c;
+  animation:pulse-btn .6s ease;
+}
+@keyframes pulse-btn{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+
+/* Effect flash overlays */
+.fx-overlay{
+  position:absolute;inset:0;pointer-events:none;z-index:25;
+  opacity:0;transition:opacity .4s;
+}
+.fx-overlay.show{opacity:1}
+
+/* Time indicator */
+#time-indicator{
+  position:fixed;top:1.5rem;right:1.5rem;z-index:100;
+  font-family:var(--ui-font);
+  background:var(--ui-surface);
+  border:1px solid var(--ui-border);
+  border-radius:var(--ui-radius);
+  padding:1rem 1.25rem;
+  backdrop-filter:blur(16px);
+  box-shadow:var(--ui-glow);
+  min-width:160px;
+  transition:all .6s cubic-bezier(.22,1,.36,1),font-family .6s;
+  text-align:left;
+}
+#time-year{
+  font-size:1.5rem;font-weight:700;color:var(--ui-accent);
+  letter-spacing:.04em;line-height:1.2;
+  transition:color .5s;
+}
+#time-era{
+  font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;
+  opacity:.7;margin-top:.25rem;font-family:'Inter',sans-serif;
+}
+#time-progress{
+  margin-top:.75rem;height:2px;background:rgba(255,255,255,.1);
+  border-radius:1px;overflow:hidden;
+}
+#time-progress-bar{
+  height:100%;width:0%;
+  background:var(--ui-accent);
+  border-radius:1px;
+  transition:width .15s linear,background .5s;
+  box-shadow:0 0 8px var(--ui-accent);
+}
+#time-clock{
+  font-family:'Roboto Mono',monospace;
+  font-size:.65rem;opacity:.45;margin-top:.5rem;
+  letter-spacing:.1em;
+}
+
+/* Nav / brand */
+#brand{
+  position:fixed;top:1.5rem;left:1.5rem;z-index:100;
+  font-family:var(--ui-font);
+  font-size:.75rem;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--ui-accent);opacity:.9;
+  transition:font-family .6s,color .5s;
+  display:flex;align-items:center;gap:.6rem;
+}
+#brand-icon{
+  width:22px;height:22px;border:1.5px solid var(--ui-accent);
+  border-radius:50%;position:relative;
+  transition:border-radius .6s,border-color .5s;
+}
+#brand-icon::after{
+  content:'';position:absolute;inset:4px;
+  border:1px solid var(--ui-accent);border-radius:50%;
+  border-top-color:transparent;
+  animation:spin 8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+body.era-4 #brand-icon{border-radius:4px}
+body.era-4 #brand-icon::after{border-radius:2px;animation-duration:3s}
+
+/* Scroll hint */
+#scroll-hint{
+  position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);
+  z-index:100;text-align:center;
+  opacity:1;transition:opacity .8s;
+  pointer-events:none;
+}
+#scroll-hint.hide{opacity:0}
+#scroll-hint span{
+  display:block;font-size:.65rem;letter-spacing:.35em;
+  text-transform:uppercase;opacity:.5;margin-bottom:.6rem;
+  font-family:'Inter',sans-serif;
+}
+#scroll-arrow{
+  width:1px;height:40px;margin:0 auto;
+  background:linear-gradient(to bottom,var(--ui-accent),transparent);
+  position:relative;animation:scrollPulse 2s ease infinite;
+}
+#scroll-arrow::after{
+  content:'';position:absolute;bottom:0;left:50%;
+  width:6px;height:6px;border-right:1px solid var(--ui-accent);
+  border-bottom:1px solid var(--ui-accent);
+  transform:translateX(-50%) rotate(45deg);
+}
+@keyframes scrollPulse{0%,100%{opacity:.4;transform:scaleY(1)}50%{opacity:1;transform:scaleY(1.15)}}
+
+/* Discovery toast */
+#discovery{
+  position:fixed;bottom:2rem;left:2rem;z-index:110;
+  background:var(--ui-surface);border:1px solid var(--ui-border);
+  border-radius:var(--ui-radius);padding:1rem 1.25rem;
+  max-width:280px;backdrop-filter:blur(16px);
+  box-shadow:var(--ui-glow);
+  transform:translateY(20px);opacity:0;
+  transition:all .5s cubic-bezier(.22,1,.36,1);
+  pointer-events:none;
+}
+#discovery.show{transform:translateY(0);opacity:1;pointer-events:auto}
+#discovery h4{
+  font-family:var(--ui-font);font-size:.85rem;color:var(--ui-accent);
+  margin-bottom:.35rem;letter-spacing:.05em;
+}
+#discovery p{font-size:.75rem;opacity:.75;line-height:1.5;font-family:'Inter',sans-serif}
+
+/* Hidden hotspots */
+.hotspot{
+  position:absolute;z-index:35;width:28px;height:28px;
+  border-radius:50%;cursor:none;
+  border:1px solid rgba(255,255,255,.15);
+  background:rgba(255,255,255,.04);
+  transition:all .4s;opacity:0;
+  animation:hotspotPulse 3s ease infinite;
+}
+.hotspot.visible{opacity:1}
+.hotspot:hover{
+  background:rgba(255,255,255,.12);
+  border-color:var(--ui-accent);
+  box-shadow:0 0 20px var(--ui-accent);
+  transform:scale(1.3);
+}
+.hotspot::after{
+  content:'';position:absolute;inset:-4px;border-radius:50%;
+  border:1px solid var(--ui-accent);opacity:0;
+  animation:ringExpand 3s ease infinite;
+}
+@keyframes hotspotPulse{0%,100%{box-shadow:0 0 0 0 transparent}50%{box-shadow:0 0 12px 2px rgba(255,255,255,.1)}}
+@keyframes ringExpand{0%{transform:scale(.8);opacity:.5}100%{transform:scale(1.8);opacity:0}}
+
+/* Intro */
+#intro{
+  position:fixed;inset:0;z-index:200;
+  background:#050508;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  transition:opacity 1.2s ease,visibility 1.2s;
+}
+#intro.done{opacity:0;visibility:hidden;pointer-events:none}
+#intro h1{
+  font-family:'Cinzel',serif;font-size:clamp(2rem,5vw,3.5rem);
+  letter-spacing:.2em;font-weight:400;
+  background:linear-gradient(135deg,#d4a84b,#f5e6c8,#d4a84b);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;margin-bottom:1rem;
+  animation:titleIn 1.5s ease;
+}
+#intro p{
+  font-size:.85rem;letter-spacing:.4em;text-transform:uppercase;
+  opacity:0;animation:fadeUp 1s ease .6s forwards;
+  color:rgba(255,255,255,.5);
+}
+#intro-cta{
+  margin-top:3rem;opacity:0;animation:fadeUp 1s ease 1.2s forwards;
+  font-family:'Inter',sans-serif;font-size:.7rem;
+  letter-spacing:.25em;text-transform:uppercase;
+  color:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.15);
+  padding:.8rem 2rem;background:transparent;cursor:none;
+  transition:all .4s;border-radius:2px;
+}
+#intro-cta:hover{
+  color:#d4a84b;border-color:#d4a84b;
+  box-shadow:0 0 30px rgba(212,168,75,.2);
+}
+@keyframes titleIn{from{opacity:0;letter-spacing:.5em;filter:blur(8px)}to{opacity:1;letter-spacing:.2em;filter:blur(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* Interaction FX elements */
+#sun-rays{
+  position:absolute;left:50%;top:20%;width:200px;height:200px;
+  transform:translate(-50%,-50%);pointer-events:none;opacity:0;
+  background:conic-gradient(from 0deg,transparent,rgba(255,200,80,.15),transparent 20%,transparent 40%,rgba(255,200,80,.1),transparent 60%,transparent 80%,rgba(255,200,80,.12),transparent);
+  animation:raySpin 20s linear infinite;filter:blur(2px);
+  transition:opacity .8s;
+}
+#sun-rays.on{opacity:1}
+@keyframes raySpin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+
+#steam{
+  position:absolute;bottom:35%;left:30%;width:100px;height:200px;
+  pointer-events:none;opacity:0;transition:opacity .6s;
+}
+#steam.on{opacity:1}
+.steam-puff{
+  position:absolute;bottom:0;width:40px;height:40px;border-radius:50%;
+  background:rgba(180,180,190,.25);filter:blur(8px);
+  animation:steamRise 3s ease-in infinite;
+}
+.steam-puff:nth-child(2){left:20px;animation-delay:.8s;width:50px;height:50px}
+.steam-puff:nth-child(3){left:40px;animation-delay:1.6s}
+@keyframes steamRise{0%{transform:translateY(0) scale(1);opacity:.6}100%{transform:translateY(-180px) scale(2.5);opacity:0}}
+
+#neon-glow{
+  position:absolute;inset:0;pointer-events:none;opacity:0;
+  background:
+    radial-gradient(ellipse 30% 20% at 25% 60%, rgba(255,0,128,.25), transparent),
+    radial-gradient(ellipse 25% 15% at 70% 55%, rgba(0,200,255,.2), transparent),
+    radial-gradient(ellipse 20% 20% at 50% 50%, rgba(180,0,255,.15), transparent);
+  transition:opacity .8s;z-index:15;
+}
+#neon-glow.on{opacity:1}
+
+#holo-grid{
+  position:absolute;inset:0;pointer-events:none;opacity:0;
+  background:
+    linear-gradient(rgba(167,139,250,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(167,139,250,.03) 1px, transparent 1px);
+  background-size:60px 60px;
+  transform:perspective(500px) rotateX(60deg) translateY(20%);
+  transition:opacity .8s;z-index:12;
+}
+#holo-grid.on{opacity:1;animation:gridMove 8s linear infinite}
+@keyframes gridMove{to{background-position:0 60px,60px 0}}
+
+/* Bell ring waves */
+.ring-wave{
+  position:absolute;width:60px;height:60px;border-radius:50%;
+  border:2px solid rgba(201,162,39,.5);
+  left:50%;top:40%;transform:translate(-50%,-50%) scale(0);
+  pointer-events:none;opacity:0;
+}
+.ring-wave.go{animation:ringOut 1.5s ease-out forwards}
+@keyframes ringOut{0%{transform:translate(-50%,-50%) scale(0);opacity:.8}100%{transform:translate(-50%,-50%) scale(8);opacity:0}}
+
+/* Artifact glow */
+.artifact-found{
+  animation:artifactPop .8s cubic-bezier(.22,1,.36,1);
+}
+@keyframes artifactPop{0%{filter:brightness(1)}30%{filter:brightness(2) drop-shadow(0 0 20px gold)}100%{filter:brightness(1)}}
+
+/* Responsive */
+@media(max-width:600px){
+  #time-indicator{top:auto;bottom:5rem;right:1rem;min-width:130px;padding:.75rem 1rem}
+  #time-year{font-size:1.15rem}
+  #brand{font-size:.6rem}
+  .era-title{font-size:clamp(1.8rem,8vw,2.5rem)}
+  body{cursor:auto}
+  #cursor,#cursor-ring{display:none}
+}
+</style>
+</head>
+<body class="era-0">
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<div id="intro">
+  <h1>THE TIME MACHINE</h1>
+  <p>A journey through civilization</p>
+  <button id="intro-cta" type="button">Begin Voyage</button>
+</div>
+
+<div id="brand">
+  <div id="brand-icon"></div>
+  <span>Chronos</span>
+</div>
+
+<div id="time-indicator">
+  <div id="time-year">3200 BCE</div>
+  <div id="time-era">Ancient Civilization</div>
+  <div id="time-progress"><div id="time-progress-bar"></div></div>
+  <div id="time-clock">06:00 · SUNRISE</div>
+</div>
+
+<div id="discovery">
+  <h4 id="disc-title">Discovery</h4>
+  <p id="disc-text"></p>
+</div>
+
+<div id="scroll-hint">
+  <span>Scroll to travel through time</span>
+  <div id="scroll-arrow"></div>
+</div>
+
+<div id="stage">
+  <div class="layer" id="sky"></div>
+  <div class="layer" id="stars"></div>
+  <div id="celestial"></div>
+  <div id="sun-rays"></div>
+  <div id="horizon-glow"></div>
+  <div class="layer" id="ground" data-depth="0.15"></div>
+
+  <!-- Ancient architecture -->
+  <div class="arch-set active" id="arch-0" data-depth="0.3">
+    <svg viewBox="0 0 1400 500" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+      <defs>
+        <linearGradient id="sand" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#c4a574"/><stop offset="100%" stop-color="#8b6914"/>
+        </linearGradient>
+        <linearGradient id="sandDark" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#a08050"/><stop offset="100%" stop-color="#5c4010"/>
+        </linearGradient>
+      </defs>
+      <!-- Pyramids -->
+      <polygon points="200,480 380,120 560,480" fill="url(#sand)" opacity=".9"/>
+      <polygon points="380,120 560,480 480,480" fill="url(#sandDark)" opacity=".7"/>
+      <polygon points="550,480 700,200 850,480" fill="url(#sand)" opacity=".85"/>
+      <polygon points="700,200 850,480 780,480" fill="url(#sandDark)" opacity=".65"/>
+      <!-- Columns / temple -->
+      <rect x="1000" y="280" width="28" height="200" fill="#b8956a"/>
+      <rect x="1060" y="260" width="28" height="220" fill="#b8956a"/>
+      <rect x="1120" y="270" width="28" height="210" fill="#b8956a"/>
+      <rect x="1180" y="255" width="28" height="225" fill="#b8956a"/>
+      <rect x="990" y="255" width="230" height="30" fill="#c4a574"/>
+      <polygon points="980,255 1105,180 1230,255" fill="#d4b88a"/>
+      <!-- Obelisk -->
+      <polygon points="80,480 95,200 110,480" fill="#a08050"/>
+      <rect x="85" y="190" width="20" height="12" fill="#c4a574"/>
+      <!-- Distant dunes -->
+      <ellipse cx="300" cy="480" rx="400" ry="40" fill="#8b7340" opacity=".4"/>
+      <ellipse cx="900" cy="490" rx="500" ry="30" fill="#7a6535" opacity=".35"/>
+    </svg>
+  </div>
+
+  <!-- Medieval -->
+  <div class="arch-set" id="arch-1" data-depth="0.28">
+    <svg viewBox="0 0 1400 500" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+      <defs>
+        <linearGradient id="stone" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#6a6570"/><stop offset="100%" stop-color="#3a3540"/>
+        </linearGradient>
+        <linearGradient id="stoneLt" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#8a8590"/><stop offset="100%" stop-color="#555060"/>
+        </linearGradient>
+      </defs>
+      <!-- Castle -->
+      <rect x="400" y="220" width="400" height="260" fill="url(#stone)"/>
+      <rect x="380" y="180" width="60" height="300" fill="url(#stoneLt)"/>
+      <rect x="760" y="160" width="70" height="320" fill="url(#stoneLt)"/>
+      <rect x="550" y="120" width="80" height="360" fill="url(#stone)"/>
+      <!-- Battlements -->
+      <rect x="375" y="165" width="18" height="25" fill="#5a5560"/>
+      <rect x="400" y="165" width="18" height="25" fill="#5a5560"/>
+      <rect x="425" y="165" width="18" height="25" fill="#5a5560"/>
+      <rect x="755" y="145" width="18" height="25" fill="#5a5560"/>
+      <rect x="780" y="145" width="18" height="25" fill="#5a5560"/>
+      <rect x="805" y="145" width="18" height="25" fill="#5a5560"/>
+      <rect x="545" y="100" width="20" height="30" fill="#5a5560"/>
+      <rect x="575" y="100" width="20" height="30" fill="#5a5560"/>
+      <rect x="605" y="100" width="20" height="30" fill="#5a5560"/>
+      <!-- Keep roof -->
+      <polygon points="540,120 590,50 640,120" fill="#4a3040"/>
+      <!-- Gate -->
+      <path d="M560 480 L560 380 Q590 340 620 380 L620 480 Z" fill="#1a1210"/>
+      <!-- Windows -->
+      <rect x="450" y="280" width="20" height="35" rx="10" fill="#1a1520"/>
+      <rect x="500" y="280" width="20" height="35" rx="10" fill="#1a1520"/>
+      <rect x="680" y="280" width="20" height="35" rx="10" fill="#1a1520"/>
+      <rect x="720" y="280" width="20" height="35" rx="10" fill="#1a1520"/>
+      <rect x="570" y="200" width="18" height="30" rx="9" fill="#c9a227" opacity=".6"/>
+      <!-- Village houses -->
+      <rect x="100" y="380" width="80" height="100" fill="#5a4030"/>
+      <polygon points="95,380 140,320 185,380" fill="#3a2020"/>
+      <rect x="200" y="400" width="60" height="80" fill="#4a3830"/>
+      <polygon points="195,400 230,350 265,400" fill="#2a1818"/>
+      <rect x="1000" y="390" width="90" height="90" fill="#504030"/>
+      <polygon points="995,390 1045,330 1095,390" fill="#3a2025"/>
+      <!-- Trees -->
+      <ellipse cx="50" cy="420" rx="30" ry="50" fill="#1a3020"/>
+      <rect x="45" y="450" width="10" height="30" fill="#2a2010"/>
+      <ellipse cx="1300" cy="400" rx="40" ry="70" fill="#1a3525"/>
+      <rect x="1293" y="450" width="14" height="30" fill="#2a2010"/>
+      <!-- Hills -->
+      <ellipse cx="200" cy="500" rx="300" ry="50" fill="#1a2818" opacity=".6"/>
+      <ellipse cx="1100" cy="500" rx="350" ry="45" fill="#152215" opacity=".5"/>
+    </svg>
+  </div>
+
+  <!-- Industrial -->
+  <div class="arch-set" id="arch-2" data-depth="0.32">
+    <svg viewBox="0 0 1400 500" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+      <defs>
+        <linearGradient id="brick" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#8b5a3c"/><stop offset="100%" stop-color="#5a3020"/>
+        </linearGradient>
+        <linearGradient id="iron" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#5a5a60"/><stop offset="100%" stop-color="#2a2a30"/>
+        </linearGradient>
+      </defs>
+      <!-- Factories -->
+      <rect x="100" y="200" width="200" height="280" fill="url(#brick)"/>
+      <rect x="120" y="80" width="40" height="140" fill="url(#iron)"/>
+      <rect x="200" y="100" width="35" height="120" fill="url(#iron)"/>
+      <rect x="350" y="250" width="180" height="230" fill="url(#brick)"/>
+      <rect x="380" y="120" width="45" height="150" fill="url(#iron)"/>
+      <!-- Smoke stacks extra -->
+      <rect x="600" y="180" width="250" height="300" fill="#4a3a35"/>
+      <rect x="630" y="60" width="50" height="140" fill="#3a3a40"/>
+      <rect x="720" y="90" width="40" height="110" fill="#3a3a40"/>
+      <!-- Bridge / crane -->
+      <line x1="900" y1="300" x2="1200" y2="300" stroke="#4a4a50" stroke-width="8"/>
+      <line x1="900" y1="300" x2="950" y2="480" stroke="#4a4a50" stroke-width="4"/>
+      <line x1="1200" y1="300" x2="1150" y2="480" stroke="#4a4a50" stroke-width="4"/>
+      <line x1="1000" y1="300" x2="1000" y2="200" stroke="#5a5a60" stroke-width="3"/>
+      <line x1="1000" y1="200" x2="1100" y2="220" stroke="#5a5a60" stroke-width="3"/>
+      <!-- Windows lit -->
+      <rect x="130" y="230" width="25" height="20" fill="#ffaa44" opacity=".7"/>
+      <rect x="170" y="230" width="25" height="20" fill="#ffaa44" opacity=".4"/>
+      <rect x="130" y="280" width="25" height="20" fill="#ffcc66" opacity=".5"/>
+      <rect x="390" y="280" width="20" height="18" fill="#ff9944" opacity=".6"/>
+      <rect x="430" y="280" width="20" height="18" fill="#ffaa44" opacity=".3"/>
+      <rect x="640" y="220" width="30" height="22" fill="#ffbb55" opacity=".5"/>
+      <rect x="700" y="220" width="30" height="22" fill="#ff9944" opacity=".7"/>
+      <!-- Train silhouette -->
+      <rect x="950" y="400" width="180" height="40" rx="4" fill="#2a2520"/>
+      <circle cx="980" cy="445" r="14" fill="#1a1815"/>
+      <circle cx="1040" cy="445" r="14" fill="#1a1815"/>
+      <circle cx="1100" cy="445" r="14" fill="#1a1815"/>
+      <rect x="1120" y="380" width="50" height="60" fill="#3a3028"/>
+      <!-- Smog layer hint -->
+      <ellipse cx="140" cy="70" rx="40" ry="20" fill="#4a4a50" opacity=".4"/>
+      <ellipse cx="650" cy="50" rx="50" ry="25" fill="#4a4a55" opacity=".35"/>
+    </svg>
+    <div id="steam">
+      <div class="steam-puff"></div>
+      <div class="steam-puff"></div>
+      <div class="steam-puff"></div>
+    </div>
+  </div>
+
+  <!-- Modern city -->
+  <div class="arch-set" id="arch-3" data-depth="0.35">
+    <svg viewBox="0 0 1400 500" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+      <defs>
+        <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#2a4a6a"/><stop offset="100%" stop-color="#0a1a2a"/>
+        </linearGradient>
+        <linearGradient id="glass2" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#1a3a5a"/><stop offset="100%" stop-color="#0a1525"/>
+        </linearGradient>
+      </defs>
+      <!-- Skyscrapers -->
+      <rect x="80" y="150" width="70" height="330" fill="url(#glass)"/>
+      <rect x="170" y="80" width="90" height="400" fill="url(#glass2)"/>
+      <rect x="280" y="200" width="60" height="280" fill="#1a3050"/>
+      <rect x="360" y="50" width="100" height="430" fill="url(#glass)"/>
+      <rect x="480" y="180" width="75" height="300" fill="#152840"/>
+      <rect x="580" y="100" width="85" height="380" fill="url(#glass2)"/>
+      <rect x="690" y="160" width="55" height="320" fill="#1a2840"/>
+      <rect x="770" y="30" width="110" height="450" fill="url(#glass)"/>
+      <rect x="900" y="140" width="80" height="340" fill="#123050"/>
+      <rect x="1000" y="90" width="95" height="390" fill="url(#glass2)"/>
+      <rect x="1120" y="200" width="65" height="280" fill="#1a2a40"/>
+      <rect x="1210" y="120" width="100" height="360" fill="url(#glass)"/>
+      <!-- Windows grid pattern via small rects -->
+      <g opacity=".5" fill="#4fc3f7">
+        <rect x="185" y="100" width="8" height="8" opacity=".6"/><rect x="200" y="100" width="8" height="8" opacity=".3"/>
+        <rect x="215" y="100" width="8" height="8" opacity=".7"/><rect x="230" y="100" width="8" height="8" opacity=".2"/>
+        <rect x="185" y="120" width="8" height="8" opacity=".4"/><rect x="200" y="120" width="8" height="8" opacity=".8"/>
+        <rect x="215" y="120" width="8" height="8" opacity=".3"/><rect x="230" y="120" width="8" height="8" opacity=".5"/>
+        <rect x="375" y="70" width="10" height="10" opacity=".7"/><rect x="395" y="70" width="10" height="10" opacity=".3"/>
+        <rect x="415" y="70" width="10" height="10" opacity=".5"/><rect x="375" y="95" width="10" height="10" opacity=".4"/>
+        <rect x="395" y="95" width="10" height="10" opacity=".9"/><rect x="415" y="95" width="10" height="10" opacity=".2"/>
+        <rect x="790" y="50" width="12" height="10" opacity=".8"/><rect x="815" y="50" width="12" height="10" opacity=".3"/>
+        <rect x="840" y="50" width="12" height="10" opacity=".6"/><rect x="790" y="75" width="12" height="10" opacity=".4"/>
+        <rect x="815" y="75" width="12" height="10" opacity=".7"/><rect x="840" y="75" width="12" height="10" opacity=".5"/>
+        <rect x="1020" y="110" width="10" height="8" opacity=".6"/><rect x="1040" y="110" width="10" height="8" opacity=".9"/>
+        <rect x="1060" y="110" width="10" height="8" opacity=".3"/><rect x="1020" y="130" width="10" height="8" opacity=".5"/>
+      </g>
+      <!-- Neon accent lines -->
+      <rect x="170" y="470" width="90" height="3" fill="#ff0080" opacity=".6" class="neon-line"/>
+      <rect x="770" y="470" width="110" height="3" fill="#00e5ff" opacity=".5" class="neon-line"/>
+      <rect x="360" y="470" width="100" height="2" fill="#a0f" opacity=".4" class="neon-line"/>
+    </svg>
+    <div id="neon-glow"></div>
+  </div>
+
+  <!-- Far future -->
+  <div class="arch-set" id="arch-4" data-depth="0.38">
+    <svg viewBox="0 0 1400 500" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+      <defs>
+        <linearGradient id="neonP" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#2a1a4a"/><stop offset="100%" stop-color="#0a0618"/>
+        </linearGradient>
+        <linearGradient id="neonC" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#a78bfa"/><stop offset="100%" stop-color="#6366f1"/>
+        </linearGradient>
+        <filter id="glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <!-- Floating spires -->
+      <polygon points="200,480 250,80 300,480" fill="url(#neonP)" opacity=".9"/>
+      <polygon points="240,80 250,40 260,80" fill="#a78bfa" opacity=".8" filter="url(#glow)"/>
+      <rect x="400" y="150" width="80" height="330" rx="8" fill="url(#neonP)"/>
+      <rect x="410" y="100" width="60" height="60" rx="4" fill="#1a0a30" stroke="#a78bfa" stroke-width="1" opacity=".8"/>
+      <ellipse cx="440" cy="100" rx="40" ry="12" fill="none" stroke="#818cf8" stroke-width="1.5" opacity=".7" filter="url(#glow)"/>
+      <!-- Crystal towers -->
+      <polygon points="600,480 650,60 700,480" fill="#1a1040" opacity=".85"/>
+      <polygon points="650,60 670,120 650,100 630,120" fill="#c4b5fd" opacity=".5" filter="url(#glow)"/>
+      <rect x="750" y="180" width="120" height="300" rx="20" fill="url(#neonP)"/>
+      <rect x="770" y="120" width="80" height="80" rx="40" fill="none" stroke="#a78bfa" stroke-width="2" opacity=".6" filter="url(#glow)"/>
+      <!-- Orbit ring building -->
+      <rect x="950" y="200" width="90" height="280" fill="#120828"/>
+      <ellipse cx="995" cy="200" rx="70" ry="25" fill="none" stroke="#818cf8" stroke-width="2" opacity=".7" filter="url(#glow)"/>
+      <ellipse cx="995" cy="200" rx="50" ry="18" fill="none" stroke="#c4b5fd" stroke-width="1" opacity=".4"/>
+      <!-- Megastructure -->
+      <rect x="1100" y="80" width="140" height="400" fill="url(#neonP)"/>
+      <rect x="1120" y="40" width="100" height="50" rx="4" fill="#1a0a35" stroke="#a78bfa" stroke-width="1"/>
+      <line x1="1170" y1="40" x2="1170" y2="10" stroke="#c4b5fd" stroke-width="2" filter="url(#glow)"/>
+      <circle cx="1170" cy="8" r="6" fill="#a78bfa" filter="url(#glow)"/>
+      <!-- Floating platforms -->
+      <ellipse cx="150" cy="250" rx="40" ry="8" fill="#2a1a50" stroke="#818cf8" stroke-width="1" opacity=".6"/>
+      <ellipse cx="850" cy="160" rx="30" ry="6" fill="#2a1a50" stroke="#a78bfa" stroke-width="1" opacity=".5"/>
+      <!-- Energy beams -->
+      <line x1="250" y1="80" x2="250" y2="20" stroke="#c4b5fd" stroke-width="1" opacity=".4"/>
+      <line x1="650" y1="60" x2="650" y2="10" stroke="#a78bfa" stroke-width="1.5" opacity=".5" filter="url(#glow)"/>
+    </svg>
+    <div id="holo-grid"></div>
+  </div>
+
+  <!-- Era content -->
+  <div class="era-content active" id="content-0">
+    <div class="era-label">Chapter I</div>
+    <h2 class="era-title">The Dawn of Stone</h2>
+    <p class="era-desc">Beneath an eternal sun, monuments rise from desert sands. Empires carve eternity into stone and silence.</p>
+    <button class="interact-btn" type="button" data-action="obelisk">Activate the Obelisk</button>
+  </div>
+  <div class="era-content" id="content-1">
+    <div class="era-label">Chapter II</div>
+    <h2 class="era-title">Iron & Faith</h2>
+    <p class="era-desc">Castles crown misty hills. Bells call across valleys where kings and legends are forged.</p>
+    <button class="interact-btn" type="button" data-action="bell">Ring the Great Bell</button>
+  </div>
+  <div class="era-content" id="content-2">
+    <div class="era-label">Chapter III</div>
+    <h2 class="era-title">Age of Steam</h2>
+    <p class="era-desc">Chimneys breathe black clouds. Iron rails stitch continents together. Progress roars.</p>
+    <button class="interact-btn" type="button" data-action="steam">Power the Engine</button>
+  </div>
+  <div class="era-content" id="content-3">
+    <div class="era-label">Chapter IV</div>
+    <h2 class="era-title">Electric Nights</h2>
+    <p class="era-desc">Towers of glass pierce the clouds. Neon rewrites the sky. The city never sleeps.</p>
+    <button class="interact-btn" type="button" data-action="neon">Ignite the Neon</button>
+  </div>
+  <div class="era-content" id="content-4">
+    <div class="era-label">Chapter V</div>
+    <h2 class="era-title">Beyond Horizon</h2>
+    <p class="era-desc">Orbiting gardens. Light as architecture. Humanity reaches for the stars it once worshipped.</p>
+    <button class="interact-btn" type="button" data-action="holo">Engage Holonet</button>
+  </div>
+
+  <!-- Hotspots / easter eggs -->
+  <div class="hotspot" id="hs-0" data-era="0" style="left:8%;bottom:45%" title="?"></div>
+  <div class="hotspot" id="hs-1" data-era="0" style="left:72%;bottom:52%" title="?"></div>
+  <div class="hotspot" id="hs-2" data-era="1" style="left:42%;bottom:55%" title="?"></div>
+  <div class="hotspot" id="hs-3" data-era="1" style="left:15%;bottom:40%" title="?"></div>
+  <div class="hotspot" id="hs-4" data-era="2" style="left:25%;bottom:48%" title="?"></div>
+  <div class="hotspot" id="hs-5" data-era="2" style="left:75%;bottom:42%" title="?"></div>
+  <div class="hotspot" id="hs-6" data-era="3" style="left:55%;bottom:60%" title="?"></div>
+  <div class="hotspot" id="hs-7" data-era="3" style="left:20%;bottom:50%" title="?"></div>
+  <div class="hotspot" id="hs-8" data-era="4" style="left:48%;bottom:65%" title="?"></div>
+  <div class="hotspot" id="hs-9" data-era="4" style="left:80%;bottom:55%" title="?"></div>
+
+  <!-- Bell waves container -->
+  <div id="bell-waves"></div>
+
+  <canvas id="particles"></canvas>
+  <div class="layer" id="light-overlay"></div>
+  <div class="layer" id="vignette"></div>
+  <div class="layer" id="grain"></div>
+</div>
+
+<div class="scroll-space" id="scroll-space" aria-hidden="true"></div>
+
+<script>
+(function(){
+'use strict';
+
+const ERAS = [
+  {
+    id:0, year:'3200 BCE', name:'Ancient Civilization', chapter:'The Dawn of Stone',
+    lightPhase:'SUNRISE', clock:'06:00',
+    sky:{top:'#1a0a20',mid:'#4a2040',bot:'#c4783a',low:'#e8a060',sun:'rgba(255,180,80,.5)',horizon:'#ff9944'},
+    ground:{top:'#3a2810',bot:'#1a1008'},
+    celestial:{y:35, moon:false, glow:'rgba(255,160,60,.45)'},
+    stars:0, font:'Cinzel'
+  },
+  {
+    id:1, year:'1247 CE', name:'Medieval Kingdom', chapter:'Iron & Faith',
+    lightPhase:'DAYLIGHT', clock:'12:30',
+    sky:{top:'#3a5068',mid:'#6a8a9a',bot:'#a8b8a0',low:'#8a9a70',sun:'rgba(255,240,200,.35)',horizon:'#c8d0a0'},
+    ground:{top:'#2a3820',bot:'#121810'},
+    celestial:{y:18, moon:false, glow:'rgba(255,250,220,.35)'},
+    stars:0, font:'UnifrakturCook'
+  },
+  {
+    id:2, year:'1889 CE', name:'Industrial Revolution', chapter:'Age of Steam',
+    lightPhase:'GOLDEN HOUR', clock:'17:15',
+    sky:{top:'#2a2030',mid:'#6a4050',bot:'#c46830',low:'#d47840',sun:'rgba(255,140,40,.4)',horizon:'#e88840'},
+    ground:{top:'#2a2018',bot:'#120e0a'},
+    celestial:{y:55, moon:false, glow:'rgba(255,120,40,.4)'},
+    stars:0.05, font:'Playfair Display'
+  },
+  {
+    id:3, year:'2024 CE', name:'Modern World', chapter:'Electric Nights',
+    lightPhase:'SUNSET', clock:'19:45',
+    sky:{top:'#0a1028',mid:'#1a2048',bot:'#2a1840',low:'#4a2860',sun:'rgba(255,80,120,.25)',horizon:'#ff4080'},
+    ground:{top:'#0a1018',bot:'#050810'},
+    celestial:{y:70, moon:false, glow:'rgba(255,100,150,.3)'},
+    stars:0.35, font:'Inter'
+  },
+  {
+    id:4, year:'2847 CE', name:'Far Future', chapter:'Beyond Horizon',
+    lightPhase:'NIGHT', clock:'23:59',
+    sky:{top:'#050218',mid:'#0a0630',bot:'#120828',low:'#1a0a40',sun:'rgba(167,139,250,.2)',horizon:'#6366f1'},
+    ground:{top:'#08061a',bot:'#030210'},
+    celestial:{y:22, moon:true, glow:'rgba(180,200,255,.35)'},
+    stars:1, font:'Orbitron'
+  }
+];
+
+const DISCOVERIES = {
+  'hs-0':{title:'Forgotten Cartouche', text:'A royal name, deliberately erased. Someone wanted history rewritten even then.'},
+  'hs-1':{title:'Temple Archive', text:'Astronomers tracked Sirius for centuries. The first calendar was written in stars.'},
+  'hs-2':{title:'Hidden Reliquary', text:'Inside the keep: a lock of hair said to belong to a saint — or a king.'},
+  'hs-3':{title:'Village Ledger', text:'Taxes paid in grain, honey, and three days of labor on the castle walls.'},
+  'hs-4':{title:'Engineer\'s Notebook', text:'Sketches of a flying machine. Margins: "Not yet. But soon."'},
+  'hs-5':{title:'Railway Spike', text:'One of a million. Each a mile of earth conquered by iron will.'},
+  'hs-6':{title:'Server Farm Access', text:'Beneath the skyline: more compute than every human mind combined, 1990.'},
+  'hs-7':{title:'Last Paper Newspaper', text:'Front page, 2019. Someone framed it. Nostalgia is also infrastructure.'},
+  'hs-8':{title:'Quantum Seed Vault', text:'DNA of extinct species, stored as light. Restoration pending ethics review.'},
+  'hs-9':{title:'Signal from Outside', text:'A pulse from beyond the Oort cloud. Reply queued. No language match yet.'}
+};
+
+const found = new Set();
+let scrollProgress = 0;
+let targetScroll = 0;
+let currentEra = 0;
+let mouseX = 0.5, mouseY = 0.5;
+let smoothMX = 0.5, smoothMY = 0.5;
+let introDone = false;
+let particles = [];
+let particleMode = 'dust';
+let reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// DOM refs
+const body = document.body;
+const celestial = document.getElementById('celestial');
+const stars = document.getElementById('stars');
+const sky = document.getElementById('sky');
+const ground = document.getElementById('ground');
+const horizon = document.getElementById('horizon-glow');
+const timeYear = document.getElementById('time-year');
+const timeEra = document.getElementById('time-era');
+const timeBar = document.getElementById('time-progress-bar');
+const timeClock = document.getElementById('time-clock');
+const cursor = document.getElementById('cursor');
+const cursorRing = document.getElementById('cursor-ring');
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+const discovery = document.getElementById('discovery');
+const discTitle = document.getElementById('disc-title');
+const discText = document.getElementById('disc-text');
+const scrollHint = document.getElementById('scroll-hint');
+const intro = document.getElementById('intro');
+const lightOverlay = document.getElementById('light-overlay');
+
+function resizeCanvas(){
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+// Intro
+document.getElementById('intro-cta').addEventListener('click', () => {
+  intro.classList.add('done');
+  introDone = true;
+  setTimeout(() => { intro.style.display = 'none'; }, 1300);
+});
+
+// Cursor
+document.addEventListener('mousemove', (e) => {
+  mouseX = e.clientX / window.innerWidth;
+  mouseY = e.clientY / window.innerHeight;
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top = e.clientY + 'px';
+  cursorRing.style.left = e.clientX + 'px';
+  cursorRing.style.top = e.clientY + 'px';
+});
+document.addEventListener('mousedown', () => { cursor.style.transform = 'translate(-50%,-50%) scale(0.7)'; });
+document.addEventListener('mouseup', () => { cursor.style.transform = 'translate(-50%,-50%) scale(1)'; });
+
+const hoverables = 'button, .hotspot, a, #intro-cta';
+document.addEventListener('mouseover', (e) => {
+  if (e.target.closest(hoverables)) cursor.classList.add('hover');
+});
+document.addEventListener('mouseout', (e) => {
+  if (e.target.closest(hoverables)) cursor.classList.remove('hover');
+});
+
+// Scroll
+window.addEventListener('scroll', () => {
+  const max = document.documentElement.scrollHeight - window.innerHeight;
+  targetScroll = max > 0 ? window.scrollY / max : 0;
+  if (targetScroll > 0.02) scrollHint.classList.add('hide');
+}, {passive:true});
+
+// Wheel fine-tune for smoother feel on some browsers — use native scroll primarily
+// Keyboard
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowDown' || e.key === ' ') {
+    e.preventDefault();
+    window.scrollBy({top: window.innerHeight * 0.15, behavior: reducedMotion ? 'auto' : 'smooth'});
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    window.scrollBy({top: -window.innerHeight * 0.15, behavior: reducedMotion ? 'auto' : 'smooth'});
+  }
+});
+
+// Lerp helper
+function lerp(a, b, t){ return a + (b - a) * t; }
+function lerpColor(c1, c2, t){
+  // parse #rrggbb
+  const p = (c) => {
+    if (c.startsWith('rgba')) {
+      const m = c.match(/[\d.]+/g);
+      return m ? m.map(Number) : [0,0,0,1];
+    }
+    const n = parseInt(c.slice(1), 16);
+    return [(n>>16)&255,(n>>8)&255,n&255,1];
+  };
+  const a = p(c1), b = p(c2);
+  const r = Math.round(lerp(a[0],b[0],t));
+  const g = Math.round(lerp(a[1],b[1],t));
+  const bl = Math.round(lerp(a[2],b[2],t));
+  if (a.length>3 || b.length>3 || c1.startsWith('rgba') || c2.startsWith('rgba')) {
+    const al = lerp(a[3]!==undefined?a[3]:1, b[3]!==undefined?b[3]:1, t);
+    return `rgba(${r},${g},${bl},${al})`;
+  }
+  return `rgb(${r},${g},${bl})`;
+}
+
+function getEraBlend(p){
+  // p 0..1 maps across 5 eras
+  const seg = Math.min(0.999, Math.max(0, p)) * (ERAS.length - 1);
+  const i = Math.floor(seg);
+  const t = seg - i;
+  // smoothstep
+  const st = t * t * (3 - 2 * t);
+  return {i, t: st, next: Math.min(i+1, ERAS.length-1)};
+}
+
+function applyAtmosphere(p){
+  const {i, t, next} = getEraBlend(p);
+  const a = ERAS[i], b = ERAS[next];
+
+  const skyTop = lerpColor(a.sky.top, b.sky.top, t);
+  const skyMid = lerpColor(a.sky.mid, b.sky.mid, t);
+  const skyBot = lerpColor(a.sky.bot, b.sky.bot, t);
+  const skyLow = lerpColor(a.sky.low, b.sky.low, t);
+  const sunCol = t < 0.5 ? a.sky.sun : b.sky.sun;
+  const hor = lerpColor(a.sky.horizon, b.sky.horizon, t);
+
+  document.documentElement.style.setProperty('--sky-top', skyTop);
+  document.documentElement.style.setProperty('--sky-mid', skyMid);
+  document.documentElement.style.setProperty('--sky-bot', skyBot);
+  document.documentElement.style.setProperty('--sky-low', skyLow);
+  document.documentElement.style.setProperty('--sky-sun', sunCol);
+  document.documentElement.style.setProperty('--horizon', hor);
+  document.documentElement.style.setProperty('--ground-top', lerpColor(a.ground.top, b.ground.top, t));
+  document.documentElement.style.setProperty('--ground-bot', lerpColor(a.ground.bot, b.ground.bot, t));
+
+  // Force sky repaint via inline
+  sky.style.background =
+    `radial-gradient(ellipse 120% 80% at 50% 100%, ${skyLow} 0%, transparent 55%),` +
+    `radial-gradient(ellipse 80% 50% at ${50 + (smoothMX-0.5)*10}% ${20 + (smoothMY-0.5)*5}%, ${sunCol} 0%, transparent 40%),` +
+    `linear-gradient(180deg, ${skyTop} 0%, ${skyMid} 45%, ${skyBot} 100%)`;
+
+  horizon.style.background = `radial-gradient(ellipse 100% 100% at 50% 100%, ${hor} 0%, transparent 70%)`;
+  horizon.style.opacity = String(0.35 + (1 - Math.abs(t - 0.5)*0.3) * 0.3);
+
+  // Celestial position & type
+  const cy = lerp(a.celestial.y, b.celestial.y, t);
+  const cx = 50 + (smoothMX - 0.5) * 8;
+  celestial.style.left = cx + '%';
+  celestial.style.top = cy + '%';
+  const isMoon = t > 0.5 ? b.celestial.moon : a.celestial.moon;
+  celestial.classList.toggle('moon', isMoon);
+  if (isMoon) {
+    celestial.style.boxShadow = `0 0 40px 10px ${b.celestial.glow}, 0 0 80px 20px rgba(100,120,180,.15)`;
+  } else {
+    celestial.style.boxShadow = `0 0 60px 20px ${a.celestial.glow || b.celestial.glow}, 0 0 120px 40px rgba(255,140,40,.15)`;
+  }
+
+  // Stars
+  const starOp = lerp(a.stars, b.stars, t);
+  stars.style.opacity = String(starOp);
+
+  // Light overlay by phase
+  const lightPhases = [
+    {color:'rgba(255,180,100,.35)', op:0.4},
+    {color:'rgba(255,250,230,.2)', op:0.25},
+    {color:'rgba(255,140,50,.35)', op:0.45},
+    {color:'rgba(100,40,120,.3)', op:0.4},
+    {color:'rgba(80,60,180,.35)', op:0.35}
+  ];
+  const la = lightPhases[i], lb = lightPhases[next];
+  lightOverlay.style.background = t < 0.5 ? la.color : lb.color;
+  lightOverlay.style.opacity = String(lerp(la.op, lb.op, t));
+
+  // Year interpolation (display)
+  updateTimeDisplay(p, i, t, next);
+
+  // Architecture crossfade
+  for (let e = 0; e < ERAS.length; e++) {
+    const el = document.getElementById('arch-' + e);
+    const cont = document.getElementById('content-' + e);
+    const dist = Math.abs((p * (ERAS.length - 1)) - e);
+    const archOp = Math.max(0, 1 - dist * 1.15);
+    el.classList.toggle('active', archOp > 0.15);
+    el.style.opacity = String(archOp);
+    cont.classList.toggle('active', dist < 0.55);
+  }
+
+  // Body era class for UI
+  const eraIdx = t < 0.5 ? i : next;
+  if (eraIdx !== currentEra) {
+    body.classList.remove('era-' + currentEra);
+    body.classList.add('era-' + eraIdx);
+    currentEra = eraIdx;
+    updateHotspots(eraIdx);
+    setParticleMode(eraIdx);
+  }
+
+  // Parallax layers
+  applyParallax(p);
+}
+
+function updateTimeDisplay(p, i, t, next){
+  const a = ERAS[i], b = ERAS[next];
+  // Fancy year morph: show dominant era year
+  if (t < 0.5) {
+    timeYear.textContent = a.year;
+    timeEra.textContent = a.name;
+    timeClock.textContent = a.clock + ' · ' + a.lightPhase;
+  } else {
+    timeYear.textContent = b.year;
+    timeEra.textContent = b.name;
+    timeClock.textContent = b.clock + ' · ' + b.lightPhase;
+  }
+  // During transition, blend clock feel
+  if (t > 0.25 && t < 0.75) {
+    timeClock.textContent = '— TRANSITION —';
+  }
+  timeBar.style.width = (p * 100) + '%';
+}
+
+function applyParallax(p){
+  const px = (smoothMX - 0.5) * 2;
+  const py = (smoothMY - 0.5) * 2;
+  // Tunnel depth based on scroll velocity-ish
+  const tunnel = Math.sin(p * Math.PI * 4) * 0.02;
+
+  document.querySelectorAll('[data-depth]').forEach(el => {
+    const d = parseFloat(el.getAttribute('data-depth')) || 0.2;
+    const tx = px * d * 40;
+    const ty = py * d * 20 + tunnel * d * 100;
+    const scale = 1 + d * 0.03;
+    el.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(${scale})`;
+  });
+
+  // Content slight counter-parallax
+  document.querySelectorAll('.era-content.active').forEach(el => {
+    el.style.transform = `translate3d(${-px * 12}px, ${-py * 8}px, 0)`;
+  });
+
+  stars.style.transform = `translate3d(${px * 15}px, ${py * 10}px, 0)`;
+}
+
+function updateHotspots(era){
+  document.querySelectorAll('.hotspot').forEach(hs => {
+    const e = parseInt(hs.dataset.era, 10);
+    hs.classList.toggle('visible', e === era && !found.has(hs.id));
+  });
+}
+
+// Particles
+function setParticleMode(era){
+  const modes = ['dust','leaves','smoke','rain','energy'];
+  particleMode = modes[era] || 'dust';
+  // reseed
+  particles = [];
+  const count = reducedMotion ? 20 : 60;
+  for (let i = 0; i < count; i++) particles.push(spawnParticle());
+}
+
+function spawnParticle(){
+  const w = canvas.width, h = canvas.height;
+  switch(particleMode){
+    case 'dust':
+      return {x:Math.random()*w, y:Math.random()*h, r:Math.random()*1.5+0.3, vx:(Math.random()-.5)*.3, vy:-Math.random()*.4-.1, a:Math.random()*.4+.1, life:1};
+    case 'leaves':
+      return {x:Math.random()*w, y:-10, r:Math.random()*3+2, vx:Math.random()*.8+.2, vy:Math.random()*.6+.3, a:.5, rot:Math.random()*Math.PI, vr:(Math.random()-.5)*.05, life:1, hue:30+Math.random()*40};
+    case 'smoke':
+      return {x:w*(.15+Math.random()*.5), y:h*(.35+Math.random()*.15), r:Math.random()*20+10, vx:(Math.random()-.5)*.4, vy:-Math.random()*.8-.3, a:Math.random()*.15+.05, life:1};
+    case 'rain':
+      return {x:Math.random()*w, y:Math.random()*h, r:Math.random()*1.5+.5, vx:-.5, vy:Math.random()*8+6, a:.3, life:1};
+    case 'energy':
+      return {x:Math.random()*w, y:Math.random()*h, r:Math.random()*2+.5, vx:(Math.random()-.5)*.5, vy:(Math.random()-.5)*.5, a:Math.random()*.6+.2, life:1, hue:250+Math.random()*40};
+    default:
+      return {x:0,y:0,r:1,vx:0,vy:0,a:0,life:0};
+  }
+}
+
+function drawParticles(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  if (!introDone && intro.style.display !== 'none') return;
+
+  for (let i = 0; i < particles.length; i++){
+    const p = particles[i];
+    p.x += p.vx;
+    p.y += p.vy;
+    if (p.rot !== undefined) p.rot += p.vr || 0;
+    p.life -= 0.002;
+
+    if (p.y < -30 || p.y > canvas.height + 30 || p.x < -30 || p.x > canvas.width + 30 || p.life <= 0){
+      particles[i] = spawnParticle();
+      continue;
+    }
+
+    ctx.save();
+    ctx.globalAlpha = p.a * Math.min(1, p.life * 2);
+    if (particleMode === 'leaves'){
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.fillStyle = `hsla(${p.hue},60%,40%,1)`;
+      ctx.beginPath();
+      ctx.ellipse(0,0,p.r,p.r*0.5,0,0,Math.PI*2);
+      ctx.fill();
+    } else if (particleMode === 'rain'){
+      ctx.strokeStyle = 'rgba(180,200,255,.5)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      ctx.lineTo(p.x + p.vx * 2, p.y + p.vy * 0.5);
+      ctx.stroke();
+    } else if (particleMode === 'smoke'){
+      ctx.fillStyle = `rgba(120,120,130,${p.a})`;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fill();
+      p.r += 0.15;
+    } else if (particleMode === 'energy'){
+      ctx.fillStyle = `hsla(${p.hue},80%,70%,1)`;
+      ctx.shadowColor = `hsla(${p.hue},80%,60%,.8)`;
+      ctx.shadowBlur = 8;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fill();
+    } else {
+      ctx.fillStyle = 'rgba(255,230,180,1)';
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+}
+
+// Interactions
+document.querySelectorAll('.interact-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const action = btn.dataset.action;
+    btn.classList.add('activated');
+    setTimeout(() => btn.classList.remove('activated'), 800);
+    runAction(action, btn);
+  });
+});
+
+function runAction(action, btn){
+  switch(action){
+    case 'obelisk':
+      document.getElementById('sun-rays').classList.add('on');
+      celestial.style.transform = 'translate(-50%,-50%) scale(1.3)';
+      setTimeout(() => { celestial.style.transform = 'translate(-50%,-50%) scale(1)'; }, 1200);
+      showDiscovery('Solar Alignment', 'The obelisk casts no shadow. Midday of the gods — an ancient engineering marvel.');
+      btn.textContent = 'Aligned with Ra';
+      break;
+    case 'bell': {
+      const container = document.getElementById('bell-waves');
+      for (let i = 0; i < 3; i++){
+        setTimeout(() => {
+          const w = document.createElement('div');
+          w.className = 'ring-wave go';
+          container.appendChild(w);
+          setTimeout(() => w.remove(), 1600);
+        }, i * 300);
+      }
+      // Brief screen shake
+      if (!reducedMotion){
+        body.style.transition = 'transform .05s';
+        let n = 0;
+        const shake = setInterval(() => {
+          body.style.transform = `translate(${(Math.random()-.5)*4}px,${(Math.random()-.5)*3}px)`;
+          if (++n > 12){ clearInterval(shake); body.style.transform = ''; }
+        }, 40);
+      }
+      showDiscovery('The Great Bell', 'Cast in 1182. Its tone once synchronized harvests, prayers, and the town\'s heartbeat.');
+      btn.textContent = 'The Valley Echoes';
+      break;
+    }
+    case 'steam':
+      document.getElementById('steam').classList.add('on');
+      // Boost smoke particles
+      for (let i = 0; i < 15; i++) particles.push(spawnParticle());
+      showDiscovery('Steam Engaged', 'Boiler pressure rising. The industrial heart of the age begins to thunder.');
+      btn.textContent = 'Engine Running';
+      break;
+    case 'neon':
+      document.getElementById('neon-glow').classList.add('on');
+      document.querySelectorAll('.neon-line').forEach(el => {
+        el.style.opacity = '1';
+        el.style.filter = 'drop-shadow(0 0 6px currentColor)';
+      });
+      showDiscovery('City Awakens', 'A billion LEDs answer. Night becomes optional — and advertising becomes sky.');
+      btn.textContent = 'City Alive';
+      break;
+    case 'holo':
+      document.getElementById('holo-grid').classList.add('on');
+      for (let i = 0; i < 20; i++){
+        const p = spawnParticle();
+        p.a = 0.8;
+        particles.push(p);
+      }
+      showDiscovery('Holonet Online', 'Planetary mesh at 99.7%. Latency to Mars colony: 4.2 minutes. Dream of the network.');
+      btn.textContent = 'Mesh Linked';
+      break;
+  }
+}
+
+// Hotspots
+document.querySelectorAll('.hotspot').forEach(hs => {
+  hs.addEventListener('click', () => {
+    if (found.has(hs.id)) return;
+    found.add(hs.id);
+    hs.classList.remove('visible');
+    hs.classList.add('artifact-found');
+    const d = DISCOVERIES[hs.id];
+    if (d) showDiscovery(d.title, d.text);
+  });
+});
+
+let discTimer;
+function showDiscovery(title, text){
+  discTitle.textContent = title;
+  discText.textContent = text;
+  discovery.classList.add('show');
+  clearTimeout(discTimer);
+  discTimer = setTimeout(() => discovery.classList.remove('show'), 5500);
+}
+
+// Main loop
+function tick(){
+  // Smooth scroll progress
+  scrollProgress = lerp(scrollProgress, targetScroll, reducedMotion ? 1 : 0.08);
+  smoothMX = lerp(smoothMX, mouseX, 0.06);
+  smoothMY = lerp(smoothMY, mouseY, 0.06);
+
+  applyAtmosphere(scrollProgress);
+  drawParticles();
+
+  // Soft cursor ring lag
+  // already positioned on mousemove; subtle scale from scroll
+  const ringScale = 1 + Math.abs(targetScroll - scrollProgress) * 8;
+  cursorRing.style.width = (36 * ringScale) + 'px';
+  cursorRing.style.height = (36 * ringScale) + 'px';
+
+  requestAnimationFrame(tick);
+}
+
+// Init
+setParticleMode(0);
+updateHotspots(0);
+applyAtmosphere(0);
+requestAnimationFrame(tick);
+
+// Start with intro particles
+particles = [];
+for (let i = 0; i < 40; i++) particles.push(spawnParticle());
+
+})();
+</script>
+</body>
+</html>
