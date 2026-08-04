@@ -1,0 +1,13 @@
+node_modules/
+dist/
+desktop-release/
+desktop-release-*/
+!desktop-release-github/
+desktop-release-github/*
+!desktop-release-github/AuditMyCode.exe
+desktop-build-*/
+release/
+release-nexe/
+*.log
+*.zip
+.env
