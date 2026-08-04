@@ -3,1355 +3,644 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Unified dashboard for exploring and playing games and landing pages created by Generative AI models. Built with BuildFastWithAI.">
-  <title>AI Creations Hub — BuildFastWithAI</title>
-  
-  <!-- Modern Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
-  
+  <meta name="description" content="A collection of small HTML games, demos, and interactive web experiments.">
+  <title>HTML Creations | BuildFastWithAI</title>
+
   <style>
-    /* Reset & Custom Variables */
-    *, *::before, *::after {
+    *,
+    *::before,
+    *::after {
       box-sizing: border-box;
-      margin: 0;
-      padding: 0;
     }
-    
+
     :root {
-      --bg-deep: #030712;
-      --bg-card: rgba(17, 24, 39, 0.7);
-      --bg-card-hover: rgba(31, 41, 55, 0.8);
-      --border-color: rgba(255, 255, 255, 0.08);
-      --border-color-glow: rgba(6, 182, 212, 0.4);
-      --accent-cyan: #06b6d4;
-      --accent-purple: #8b5cf6;
-      --accent-pink: #ec4899;
-      --accent-gradient: linear-gradient(135deg, #06b6d4, #8b5cf6);
-      --text-main: #f3f4f6;
-      --text-muted: #9ca3af;
-      --sidebar-width: 360px;
-      --glass-blur: blur(16px);
-      --shadow-glow: 0 0 20px rgba(6, 182, 212, 0.15);
-      --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      color-scheme: dark;
+      --page: #07111f;
+      --surface: #0d1b2d;
+      --text: #eef4ff;
+      --muted: #97a9c2;
+      --line: #1e3350;
+      --accent: #6ea8ff;
+      --accent-hover: #9ac4ff;
+      --radius: 16px;
+      --shadow: 0 10px 28px rgba(0, 5, 14, 0.32);
+    }
+
+    html {
+      scroll-behavior: smooth;
     }
 
     body {
-      font-family: 'Outfit', sans-serif;
-      background-color: var(--bg-deep);
-      color: var(--text-main);
-      height: 100vh;
-      overflow: hidden;
-      display: flex;
-      position: relative;
+      margin: 0;
+      background: var(--page);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
     }
 
-    /* Ambient Background Blobs */
-    .bg-blobs {
+    button,
+    input {
+      font: inherit;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .visually-hidden {
       position: absolute;
-      inset: 0;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
       overflow: hidden;
-      z-index: 0;
-      pointer-events: none;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
     }
 
-    .blob {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(120px);
-      opacity: 0.15;
-      animation: float 20s infinite alternate;
+    .site-header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
     }
 
-    .blob-1 {
-      width: 400px;
-      height: 400px;
-      background: var(--accent-cyan);
-      top: -100px;
-      left: -100px;
+    .header-inner,
+    .main-content,
+    .footer-inner {
+      width: min(1120px, calc(100% - 40px));
+      margin: 0 auto;
     }
 
-    .blob-2 {
-      width: 500px;
-      height: 500px;
-      background: var(--accent-purple);
-      bottom: -150px;
-      right: -100px;
-      animation-delay: -5s;
-    }
-
-    .blob-3 {
-      width: 300px;
-      height: 300px;
-      background: var(--accent-pink);
-      top: 50%;
-      left: 40%;
-      transform: translate(-50%, -50%);
-      opacity: 0.08;
-      animation-delay: -10s;
-    }
-
-    @keyframes float {
-      0% { transform: translate(0, 0) scale(1); }
-      50% { transform: translate(40px, 30px) scale(1.1); }
-      100% { transform: translate(-20px, -40px) scale(0.95); }
-    }
-
-    /* App Container Layout */
-    .app-container {
+    .header-inner {
+      min-height: 70px;
       display: flex;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
-      position: relative;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
     }
 
-    /* Sidebar Styling */
-    aside.sidebar {
-      width: var(--sidebar-width);
-      border-right: 1px solid var(--border-color);
-      background: rgba(10, 15, 30, 0.6);
-      backdrop-filter: var(--glass-blur);
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      color: var(--text);
+      font-size: 17px;
+      font-weight: 750;
+      text-decoration: none;
+      letter-spacing: -0.01em;
+    }
+
+    .brand-mark {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      border-radius: 9px;
+      background: var(--accent);
+      color: white;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .header-link {
+      color: var(--muted);
+      font-size: 14px;
+      text-decoration: none;
+    }
+
+    .header-link:hover {
+      color: var(--text);
+    }
+
+    .main-content {
+      padding: 76px 0 80px;
+    }
+
+    .hero {
+      max-width: 760px;
+      margin-bottom: 52px;
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 750;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 720px;
+      margin: 0;
+      font-size: clamp(40px, 6vw, 64px);
+      line-height: 1.05;
+      letter-spacing: -0.045em;
+    }
+
+    .hero-copy {
+      max-width: 640px;
+      margin: 22px 0 0;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.7;
+    }
+
+    .section-heading {
       display: flex;
-      flex-direction: column;
-      flex-shrink: 0;
-      transition: var(--transition-smooth);
-      position: relative;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 22px;
     }
 
-    /* Logo & Branding */
-    .brand-header {
-      padding: 24px 20px;
-      border-bottom: 1px solid var(--border-color);
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
+    .section-heading h2 {
+      margin: 0;
+      font-size: 25px;
+      letter-spacing: -0.025em;
     }
 
-    .brand-title-wrap {
+    .result-count {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .controls {
       display: flex;
       align-items: center;
       gap: 10px;
     }
 
-    .brand-logo {
-      width: 32px;
-      height: 32px;
-      background: var(--accent-gradient);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: var(--shadow-glow);
-    }
-
-    .brand-logo svg {
-      width: 18px;
-      height: 18px;
-      fill: white;
-    }
-
-    .brand-title {
-      font-size: 20px;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      background: linear-gradient(135deg, #ffffff 40%, #a5f3fc 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .brand-subtitle {
-      font-size: 11px;
-      color: var(--accent-cyan);
-      text-transform: uppercase;
-      font-weight: 700;
-      letter-spacing: 2px;
-    }
-
-    /* System Stats Dashboard in Sidebar */
-    .system-stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      padding: 12px 20px;
-      border-bottom: 1px solid var(--border-color);
-      background: rgba(255, 255, 255, 0.02);
-    }
-
-    .stat-box {
-      text-align: center;
-      padding: 6px;
-      border-radius: 6px;
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      background: rgba(0, 0, 0, 0.2);
-    }
-
-    .stat-value {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--text-main);
-    }
-
-    .stat-label {
-      font-size: 9px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-top: 2px;
-    }
-
-    /* Search Container */
-    .search-container {
-      padding: 16px 20px 10px;
-      position: relative;
-    }
-
-    .search-input-wrapper {
-      position: relative;
-      width: 100%;
-    }
-
-    .search-icon {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-muted);
-      pointer-events: none;
-    }
-
-    .search-icon svg {
-      width: 16px;
-      height: 16px;
-    }
-
-    .search-input {
-      width: 100%;
-      padding: 10px 16px 10px 38px;
-      border-radius: 8px;
-      border: 1px solid var(--border-color);
-      background: rgba(0, 0, 0, 0.3);
-      color: var(--text-main);
-      font-family: inherit;
-      font-size: 14px;
-      transition: var(--transition-smooth);
-    }
-
-    .search-input:focus {
+    .search-field {
+      width: 230px;
+      height: 42px;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
       outline: none;
-      border-color: var(--accent-cyan);
-      box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
-      background: rgba(0, 0, 0, 0.45);
+      background: var(--surface);
+      color: var(--text);
     }
 
-    /* Filter Sections */
-    .filters-wrapper {
-      padding: 0 20px 16px;
+    .search-field::placeholder {
+      color: #7488a5;
+    }
+
+    .search-field:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(110, 168, 255, 0.16);
+    }
+
+    .filters {
       display: flex;
-      flex-direction: column;
-      gap: 12px;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    /* Tabs Filter Grid */
-    .filter-tabs {
-      display: flex;
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 8px;
-      padding: 3px;
-      border: 1px solid var(--border-color);
-    }
-
-    .filter-tab {
-      flex: 1;
-      padding: 6px 4px;
-      text-align: center;
-      font-size: 12px;
-      font-weight: 600;
-      border: none;
-      background: transparent;
-      color: var(--text-muted);
-      border-radius: 6px;
-      cursor: pointer;
-      transition: var(--transition-smooth);
-    }
-
-    .filter-tab.active {
-      background: var(--bg-deep);
-      color: var(--text-main);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-    }
-
-    /* Model Pill Filters */
-    .model-pills {
-      display: flex;
-      flex-wrap: wrap;
       gap: 6px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: var(--surface);
     }
 
-    .model-pill {
-      padding: 5px 10px;
-      font-size: 11px;
-      font-weight: 500;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--border-color);
-      color: var(--text-muted);
-      border-radius: 20px;
+    .filter-button {
+      min-height: 32px;
+      padding: 0 12px;
+      border: 0;
+      border-radius: 7px;
+      background: transparent;
+      color: var(--muted);
       cursor: pointer;
-      transition: var(--transition-smooth);
+      font-size: 13px;
+      font-weight: 650;
     }
 
-    .model-pill:hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--text-main);
+    .filter-button:hover {
+      color: var(--text);
     }
 
-    .model-pill.active {
-      background: rgba(6, 182, 212, 0.15);
-      border-color: var(--accent-cyan);
-      color: var(--accent-cyan);
-      font-weight: 600;
+    .filter-button.is-active {
+      background: #172c49;
+      color: var(--accent);
     }
 
-    /* Scrollable Creations List */
-    .creation-list-container {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px 20px;
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .project-card {
+      min-width: 0;
       display: flex;
       flex-direction: column;
-      gap: 12px;
-    }
-
-    /* Scrollbar customization */
-    .creation-list-container::-webkit-scrollbar,
-    .main-panel::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    .creation-list-container::-webkit-scrollbar-track,
-    .main-panel::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    .creation-list-container::-webkit-scrollbar-thumb,
-    .main-panel::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 3px;
-    }
-
-    .creation-list-container::-webkit-scrollbar-thumb:hover,
-    .main-panel::-webkit-scrollbar-thumb:hover {
-      background: rgba(255, 255, 255, 0.25);
-    }
-
-    /* Creation List Items (Cards) */
-    .creation-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 14px;
-      cursor: pointer;
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-      transition: var(--transition-smooth);
-      position: relative;
       overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
       text-decoration: none;
-      color: inherit;
+      transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
     }
 
-    .creation-card::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      height: 100%;
-      width: 3px;
-      background: var(--accent-gradient);
-      opacity: 0;
-      transition: var(--transition-smooth);
+    .project-card:hover {
+      transform: translateY(-3px);
+      border-color: #365174;
+      box-shadow: var(--shadow);
     }
 
-    .creation-card:hover {
-      transform: translateY(-2px);
-      background: var(--bg-card-hover);
-      border-color: rgba(255, 255, 255, 0.15);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    .project-card:focus-visible {
+      outline: 3px solid rgba(110, 168, 255, 0.38);
+      outline-offset: 3px;
     }
 
-    .creation-card.active {
-      background: rgba(6, 182, 212, 0.08);
-      border-color: var(--accent-cyan);
-      box-shadow: var(--shadow-glow);
-    }
-
-    .creation-card.active::before {
-      opacity: 1;
-    }
-
-    .card-icon-box {
-      width: 38px;
-      height: 38px;
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--border-color);
+    .card-visual {
+      min-height: 138px;
       display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      flex-shrink: 0;
-      transition: var(--transition-smooth);
+      align-items: end;
+      padding: 18px;
+      background: var(--card-bg);
+      color: var(--card-fg);
     }
 
-    .creation-card:hover .card-icon-box {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: rgba(255, 255, 255, 0.2);
+    .card-mark {
+      font-size: 31px;
+      font-weight: 850;
+      letter-spacing: -0.045em;
     }
 
-    .card-info {
+    .card-body {
       flex: 1;
-      min-width: 0;
-    }
-
-    .card-title {
-      font-size: 15px;
-      font-weight: 600;
-      margin-bottom: 4px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
     }
 
     .card-meta {
       display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
       align-items: center;
-    }
-
-    .model-badge {
-      font-size: 10px;
-      padding: 2px 6px;
-      border-radius: 4px;
-      background: rgba(139, 92, 246, 0.15);
-      color: #c084fc;
-      border: 1px solid rgba(139, 92, 246, 0.25);
-      font-weight: 600;
-    }
-
-    .creation-card.active .model-badge {
-      background: rgba(6, 182, 212, 0.2);
-      color: #22d3ee;
-      border-color: rgba(6, 182, 212, 0.3);
-    }
-
-    .type-badge {
-      font-size: 10px;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-weight: 600;
-    }
-
-    .type-badge.game {
-      background: rgba(236, 72, 153, 0.1);
-      color: #f472b6;
-      border: 1px solid rgba(236, 72, 153, 0.2);
-    }
-
-    .type-badge.landing-page {
-      background: rgba(16, 185, 129, 0.1);
-      color: #34d399;
-      border: 1px solid rgba(16, 185, 129, 0.2);
-    }
-
-    /* Main Preview Panel Layout */
-    main.main-panel {
-      flex: 1;
-      height: 100%;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      background: rgba(3, 7, 18, 0.4);
-      backdrop-filter: var(--glass-blur);
-    }
-
-    /* Welcome Section */
-    .welcome-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      padding: 40px;
-      text-align: center;
-      animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .welcome-hero {
-      max-width: 680px;
-      background: rgba(10, 15, 30, 0.55);
-      border: 1px solid var(--border-color);
-      border-radius: 24px;
-      padding: 40px 30px;
-      backdrop-filter: var(--glass-blur);
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .welcome-hero::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: 24px;
-      padding: 1.5px;
-      background: linear-gradient(135deg, rgba(6, 182, 212, 0.3), rgba(139, 92, 246, 0.3));
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      pointer-events: none;
-    }
-
-    .welcome-icon-ring {
-      width: 72px;
-      height: 72px;
-      border-radius: 50%;
-      background: rgba(6, 182, 212, 0.08);
-      border: 1px solid rgba(6, 182, 212, 0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 20px;
-      box-shadow: 0 0 15px rgba(6, 182, 212, 0.1);
-    }
-
-    .welcome-icon-ring svg {
-      width: 32px;
-      height: 32px;
-      fill: none;
-      stroke: var(--accent-cyan);
-      stroke-width: 1.5;
-    }
-
-    .welcome-title {
-      font-size: 32px;
-      font-weight: 800;
-      margin-bottom: 12px;
-      background: linear-gradient(135deg, #ffffff 30%, #93c5fd 65%, #c084fc 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      letter-spacing: -0.5px;
-    }
-
-    .welcome-desc {
-      color: var(--text-muted);
-      font-size: 15px;
-      line-height: 1.6;
-      margin-bottom: 28px;
-    }
-
-    .welcome-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-      text-align: left;
-      margin-top: 10px;
-    }
-
-    .welcome-feature {
-      display: flex;
+      justify-content: space-between;
       gap: 12px;
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      padding: 14px;
-      border-radius: 12px;
-      transition: var(--transition-smooth);
+      margin-bottom: 12px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 650;
     }
 
-    .welcome-feature:hover {
-      background: rgba(255, 255, 255, 0.04);
-      border-color: rgba(255, 255, 255, 0.08);
+    .card-type {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 0 8px;
+      border-radius: 999px;
+      background: #152740;
+      color: #afc0d5;
     }
 
-    .feature-icon-box {
-      font-size: 20px;
+    .card-title {
+      margin: 0;
+      font-size: 19px;
+      line-height: 1.3;
+      letter-spacing: -0.02em;
     }
 
-    .feature-text-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-main);
+    .card-description {
+      margin: 9px 0 20px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
     }
 
-    .feature-text-desc {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 2px;
+    .card-action {
+      margin-top: auto;
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: 750;
     }
 
-    /* Iframe Layout Header Controls */
-    .preview-header {
-      height: 60px;
-      border-bottom: 1px solid var(--border-color);
-      background: rgba(10, 15, 30, 0.7);
-      backdrop-filter: var(--glass-blur);
+    .project-card:hover .card-action {
+      color: var(--accent-hover);
+    }
+
+    .empty-state {
+      display: none;
+      padding: 52px 24px;
+      border: 1px dashed #294464;
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .empty-state strong {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--text);
+      font-size: 17px;
+    }
+
+    .site-footer {
+      border-top: 1px solid var(--line);
+      background: var(--surface);
+    }
+
+    .footer-inner {
+      min-height: 82px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 20px;
-      z-index: 2;
-      transition: var(--transition-smooth);
-    }
-
-    .preview-title-area {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      min-width: 0;
-    }
-
-    .back-btn {
-      display: none;
-      align-items: center;
-      justify-content: center;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      width: 34px;
-      height: 34px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: var(--transition-smooth);
-    }
-
-    .back-btn svg {
-      width: 18px;
-      height: 18px;
-    }
-
-    .back-btn:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.2);
-    }
-
-    .preview-title {
-      font-size: 16px;
-      font-weight: 700;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .preview-meta {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .preview-controls {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .control-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      padding: 7px 12px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: var(--transition-smooth);
-      font-family: inherit;
-    }
-
-    .control-btn svg {
-      width: 14px;
-      height: 14px;
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 2;
-    }
-
-    .control-btn:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.2);
-    }
-
-    .control-btn.primary-action {
-      background: var(--accent-gradient);
-      border: none;
-      font-weight: 600;
-      box-shadow: 0 4px 12px rgba(6, 182, 212, 0.2);
-    }
-
-    .control-btn.primary-action:hover {
-      box-shadow: 0 4px 18px rgba(6, 182, 212, 0.4);
-      filter: brightness(1.1);
-    }
-
-    /* Iframe Wrapper Content */
-    .preview-body {
-      flex: 1;
-      position: relative;
-      width: 100%;
-      height: 100%;
-      background: #000;
-    }
-
-    .iframe-wrapper {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-    }
-
-    .preview-iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      outline: none;
-      background: #000;
-      opacity: 0;
-      transition: opacity 0.4s ease;
-    }
-
-    .preview-iframe.loaded {
-      opacity: 1;
-    }
-
-    /* Loader Indicator */
-    .iframe-loader {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: var(--bg-deep);
-      z-index: 1;
-      opacity: 1;
-      transition: opacity 0.3s ease;
-      pointer-events: none;
-    }
-
-    .iframe-loader.hidden {
-      opacity: 0;
-    }
-
-    .spinner {
-      width: 48px;
-      height: 48px;
-      border: 3px solid rgba(255, 255, 255, 0.05);
-      border-radius: 50%;
-      border-top-color: var(--accent-cyan);
-      animation: spin 1s linear infinite;
-      margin-bottom: 16px;
-    }
-
-    .loader-text {
+      gap: 20px;
+      color: var(--muted);
       font-size: 13px;
-      color: var(--text-muted);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      font-weight: 500;
     }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+    .footer-inner p {
+      margin: 0;
     }
 
-    /* Fade-in Animations */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+    [hidden] {
+      display: none !important;
     }
 
-    /* Mobile Sidebar Toggle Controls */
-    .sidebar-toggle-btn {
-      display: none;
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      z-index: 999;
-      background: var(--accent-gradient);
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      border: none;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 6px 20px rgba(6, 182, 212, 0.4);
-      cursor: pointer;
-      transition: var(--transition-smooth);
-    }
+    @media (max-width: 900px) {
+      .section-heading {
+        align-items: stretch;
+        flex-direction: column;
+      }
 
-    .sidebar-toggle-btn svg {
-      width: 24px;
-      height: 24px;
-      fill: none;
-      stroke: white;
-      stroke-width: 2.5;
-    }
+      .controls {
+        justify-content: space-between;
+      }
 
-    /* Responsive Style Definitions */
-    @media (max-width: 960px) {
-      aside.sidebar {
-        width: 320px;
+      .search-field {
+        flex: 1;
+        width: auto;
+      }
+
+      .project-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
 
-    @media (max-width: 768px) {
-      body {
-        position: relative;
+    @media (max-width: 620px) {
+      .header-inner,
+      .main-content,
+      .footer-inner {
+        width: min(100% - 28px, 1120px);
       }
 
-      /* Stack panels horizontally but toggled in view */
-      aside.sidebar {
+      .header-inner {
+        min-height: 62px;
+      }
+
+      .header-link {
+        display: none;
+      }
+
+      .main-content {
+        padding: 52px 0 60px;
+      }
+
+      .hero {
+        margin-bottom: 42px;
+      }
+
+      h1 {
+        font-size: clamp(38px, 13vw, 50px);
+      }
+
+      .hero-copy {
+        font-size: 16px;
+      }
+
+      .controls {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .search-field {
+        flex: none;
         width: 100%;
-        position: absolute;
-        inset: 0;
-        z-index: 10;
-        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
-      .app-container.show-preview aside.sidebar {
-        transform: translateX(-100%);
-      }
-
-      main.main-panel {
+      .filters {
         width: 100%;
-        position: absolute;
-        inset: 0;
-        z-index: 5;
-        transform: translateX(100%);
-        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
-      .app-container.show-preview main.main-panel {
-        transform: translateX(0);
+      .filter-button {
+        flex: 1;
       }
 
-      .back-btn {
-        display: flex;
-      }
-
-      .welcome-grid {
+      .project-grid {
         grid-template-columns: 1fr;
+      }
+
+      .card-visual {
+        min-height: 118px;
+      }
+
+      .footer-inner {
+        align-items: flex-start;
+        flex-direction: column;
+        justify-content: center;
+        padding: 20px 0;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      .project-card {
+        transition: none;
       }
     }
   </style>
 </head>
+
 <body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="./" aria-label="HTML Creations home">
+        <span class="brand-mark" aria-hidden="true">H</span>
+        <span>HTML Creations</span>
+      </a>
+      <a class="header-link" href="#projects">Browse all 7 projects</a>
+    </div>
+  </header>
 
-  <!-- Background Animated Lights -->
-  <div class="bg-blobs">
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-    <div class="blob blob-3"></div>
-  </div>
+  <main class="main-content">
+    <section class="hero" aria-labelledby="page-title">
+      <p class="eyebrow">BuildFastWithAI collection</p>
+      <h1 id="page-title">Small experiments, games, and web ideas.</h1>
+      <p class="hero-copy">
+        A growing collection of standalone HTML projects. Pick a card below to open a game or explore an interactive demo.
+      </p>
+    </section>
 
-  <div class="app-container" id="app">
-    
-    <!-- Sidebar Navigation -->
-    <aside class="sidebar" id="sidebar">
-      <!-- Branding & Title -->
-      <div class="brand-header">
-        <div class="brand-title-wrap">
-          <div class="brand-logo" aria-hidden="true">
-            <svg viewBox="0 0 24 24">
-              <path d="M12 2L2 22h20L12 2zm0 3.99L18.66 19H5.34L12 5.99zM11 16h2v2h-2zm0-6h2v4h-2z" />
-            </svg>
-          </div>
-          <span class="brand-title">Creations Hub</span>
-        </div>
-        <span class="brand-subtitle">BuildFastWithAI</span>
-      </div>
-
-      <!-- Compact Statistics -->
-      <div class="system-stats">
-        <div class="stat-box">
-          <div class="stat-value" id="stat-total">7</div>
-          <div class="stat-label">Total</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-value" id="stat-games">6</div>
-          <div class="stat-label">Games</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-value" id="stat-landings">1</div>
-          <div class="stat-label">Pages</div>
-        </div>
-      </div>
-
-      <!-- Search Box -->
-      <div class="search-container">
-        <div class="search-input-wrapper">
-          <div class="search-icon" aria-hidden="true">
-            <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-            </svg>
-          </div>
-          <input type="text" class="search-input" id="search-bar" placeholder="Search creations..." aria-label="Search creations">
-        </div>
-      </div>
-
-      <!-- Quick filters -->
-      <div class="filters-wrapper">
-        <!-- Type Segment Selector -->
-        <div class="filter-tabs">
-          <button class="filter-tab active" data-type="all" id="tab-all">All</button>
-          <button class="filter-tab" data-type="game" id="tab-games">Games</button>
-          <button class="filter-tab" data-type="landing-page" id="tab-pages">Pages</button>
+    <section id="projects" aria-labelledby="projects-title">
+      <div class="section-heading">
+        <div>
+          <h2 id="projects-title">Explore the collection</h2>
+          <p class="result-count" id="result-count" aria-live="polite">Showing all 7 projects</p>
         </div>
 
-        <!-- Model Pills Selector -->
-        <div class="model-pills" id="model-pills-container">
-          <button class="model-pill active" data-model="all">All Models</button>
-          <button class="model-pill" data-model="Fable-5">Fable-5</button>
-          <button class="model-pill" data-model="Kimi-k3">Kimi-k3</button>
-          <button class="model-pill" data-model="Opus-5">Opus-5</button>
-          <button class="model-pill" data-model="Qwen-3.8-max">Qwen Max</button>
-        </div>
-      </div>
+        <div class="controls">
+          <label>
+            <span class="visually-hidden">Search projects</span>
+            <input class="search-field" id="search" type="search" placeholder="Search projects..." autocomplete="off">
+          </label>
 
-      <!-- List of Creations -->
-      <nav class="creation-list-container" id="creations-list" aria-label="Creations list"></nav>
-    </aside>
-
-    <!-- Main Dynamic Interface -->
-    <main class="main-panel" id="main-panel">
-      
-      <!-- Welcome Hero Panel (Default State) -->
-      <div class="welcome-container" id="welcome-panel">
-        <div class="welcome-hero">
-          <div class="welcome-icon-ring" aria-hidden="true">
-            <svg fill="none" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 21l8.904-4.813L21 11l-5.187-5.187-5.187 5.187z" />
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9.25l-.25-.25a2.5 2.5 0 00-3.5 3.5l.25.25" />
-            </svg>
-          </div>
-          <h1 class="welcome-title">Unified AI Creations Explorer</h1>
-          <p class="welcome-desc">Welcome to the interactive showcase. Explore next-generation HTML games, high-fidelity UI modules, and dynamic landing pages generated autonomously by frontier AI models. Select any project from the sidebar to launch it instantly.</p>
-          
-          <div class="welcome-grid">
-            <div class="welcome-feature">
-              <div class="feature-icon-box" aria-hidden="true">🚀</div>
-              <div class="feature-text">
-                <div class="feature-text-title">Arcade & Simulators</div>
-                <div class="feature-text-desc">High-framerate retro and 3D runner games utilizing canvases and particle streams.</div>
-              </div>
-            </div>
-            
-            <div class="welcome-feature">
-              <div class="feature-icon-box" aria-hidden="true">⚡</div>
-              <div class="feature-text">
-                <div class="feature-text-title">Interactive Interfaces</div>
-                <div class="feature-text-desc">Smooth parallax effects, retro-cyber timelines, and immersive design systems.</div>
-              </div>
-            </div>
-
-            <div class="welcome-feature">
-              <div class="feature-icon-box" aria-hidden="true">🎨</div>
-              <div class="feature-text">
-                <div class="feature-text-title">Model-Driven Aesthetics</div>
-                <div class="feature-text-desc">Unique layouts inspired by Opus-5, Fable-5, Kimi-k3, and Qwen.</div>
-              </div>
-            </div>
-
-            <div class="welcome-feature">
-              <div class="feature-icon-box" aria-hidden="true">🛠️</div>
-              <div class="feature-text">
-                <div class="feature-text-title">Premium Sandbox Tools</div>
-                <div class="feature-text-desc">Run in fullscreen, test controls, refresh the state, or link straight out.</div>
-              </div>
-            </div>
+          <div class="filters" aria-label="Filter projects by type">
+            <button class="filter-button is-active" type="button" data-filter="all" aria-pressed="true">All</button>
+            <button class="filter-button" type="button" data-filter="game" aria-pressed="false">Games</button>
+            <button class="filter-button" type="button" data-filter="page" aria-pressed="false">Pages</button>
           </div>
         </div>
       </div>
 
-      <!-- Loaded Creation Container -->
-      <div class="iframe-wrapper" id="preview-panel" style="display: none;">
-        <!-- Control Bar -->
-        <header class="preview-header">
-          <div class="preview-title-area">
-            <button class="back-btn" id="btn-back" title="Back to menu" aria-label="Back to menu">
-              <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path>
-              </svg>
-            </button>
-            <div class="preview-meta">
-              <h2 class="preview-title" id="preview-active-title">Creation Title</h2>
-              <span class="model-badge" id="preview-active-model">Model</span>
-              <span class="type-badge game" id="preview-active-type">Game</span>
-            </div>
+      <div class="project-grid" id="project-grid">
+        <a class="project-card" href="fable-5/games/lumi_aurora_runner.html" data-type="game" data-search="lumi spirit aurora runner fable 5 game">
+          <div class="card-visual" style="--card-bg:#12324a;--card-fg:#83d6ff;">
+            <span class="card-mark">LUMI</span>
           </div>
-          
-          <div class="preview-controls">
-            <button class="control-btn" id="btn-reload" title="Reset Frame">
-              <svg viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-              </svg>
-              Reload
-            </button>
-            <button class="control-btn" id="btn-fullscreen" title="Toggle Fullscreen">
-              <svg viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75v4.5m0-4.5h-4.5m4.5 0L15 9m5.25 11.25v-4.5m0 4.5h-4.5m4.5 0L15 15" />
-              </svg>
-              Fullscreen
-            </button>
-            <a class="control-btn primary-action" id="btn-open-tab" href="#" target="_blank" rel="noopener noreferrer">
-              <svg viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-              </svg>
-              Open Live
-            </a>
+          <div class="card-body">
+            <div class="card-meta"><span class="card-type">Game</span><span>Fable-5</span></div>
+            <h3 class="card-title">LUMI: Spirit of the Aurora</h3>
+            <p class="card-description">Run through an aurora landscape, collect energy, and dodge void crystals.</p>
+            <span class="card-action">Play game &rarr;</span>
           </div>
-        </header>
+        </a>
 
-        <!-- Dynamic Frame Area -->
-        <div class="preview-body">
-          <div class="iframe-loader" id="frame-loader" aria-live="polite">
-            <div class="spinner" aria-hidden="true"></div>
-            <div class="loader-text">Loading creation sandbox...</div>
+        <a class="project-card" href="fable-5/landing-pages/time-machine.html" data-type="page" data-search="time machine history travel fable 5 landing page interactive demo">
+          <div class="card-visual" style="--card-bg:#1e2f4c;--card-fg:#b9d1ff;">
+            <span class="card-mark">TIME</span>
           </div>
-          <iframe id="preview-iframe" class="preview-iframe" title="Interactive Creation Viewport"></iframe>
-        </div>
+          <div class="card-body">
+            <div class="card-meta"><span class="card-type">Web page</span><span>Fable-5</span></div>
+            <h3 class="card-title">The Time Machine</h3>
+            <p class="card-description">An interactive time-travel page with eras to explore and layered historical scenes.</p>
+            <span class="card-action">View page &rarr;</span>
+          </div>
+        </a>
+
+        <a class="project-card" href="kimi-k3/games/ant-civilization.html" data-type="game" data-search="formica ant civilization simulator colony kimi k3 game 3d">
+          <div class="card-visual" style="--card-bg:#18263f;--card-fg:#8fb9f8;">
+            <span class="card-mark">FORMICA</span>
+          </div>
+          <div class="card-body">
+            <div class="card-meta"><span class="card-type">Game</span><span>Kimi-k3</span></div>
+            <h3 class="card-title">Formica: Ant Simulator</h3>
+            <p class="card-description">Observe an active ant colony as it forages, gathers food, and grows.</p>
+            <span class="card-action">Play game &rarr;</span>
+          </div>
+        </a>
+
+        <a class="project-card" href="kimi-k3/games/sky-smashers.html" data-type="game" data-search="sky smashers arcade shooter retro space kimi k3 game">
+          <div class="card-visual" style="--card-bg:#102d50;--card-fg:#85c5ff;">
+            <span class="card-mark">SKY</span>
+          </div>
+          <div class="card-body">
+            <div class="card-meta"><span class="card-type">Game</span><span>Kimi-k3</span></div>
+            <h3 class="card-title">Sky Smashers</h3>
+            <p class="card-description">A fast retro shooter with power-ups, enemy waves, and a final boss.</p>
+            <span class="card-action">Play game &rarr;</span>
+          </div>
+        </a>
+
+        <a class="project-card" href="opus-5/games/pulse-drift.html" data-type="game" data-search="pulse drift rhythm racer synthwave opus 5 game">
+          <div class="card-visual" style="--card-bg:#251f4b;--card-fg:#c4b5ff;">
+            <span class="card-mark">PULSE</span>
+          </div>
+          <div class="card-body">
+            <div class="card-meta"><span class="card-type">Game</span><span>Opus-5</span></div>
+            <h3 class="card-title">Pulse Drift</h3>
+            <p class="card-description">A rhythm racer about sharp turns, clean drifts, and perfectly timed boosts.</p>
+            <span class="card-action">Play game &rarr;</span>
+          </div>
+        </a>
+
+        <a class="project-card" href="opus-5/games/SummitRunner.html" data-type="game" data-search="summit runner mountain climbing weather opus 5 game platformer">
+          <div class="card-visual" style="--card-bg:#13344a;--card-fg:#8ed7e5;">
+            <span class="card-mark">SUMMIT</span>
+          </div>
+          <div class="card-body">
+            <div class="card-meta"><span class="card-type">Game</span><span>Opus-5</span></div>
+            <h3 class="card-title">Summit Runner</h3>
+            <p class="card-description">Climb procedural peaks, manage stamina, and push through changing weather.</p>
+            <span class="card-action">Play game &rarr;</span>
+          </div>
+        </a>
+
+        <a class="project-card" href="qwen-3.8-max/games/space-invaders.html" data-type="game" data-search="space invaders arcade retro laser qwen 3.8 max game">
+          <div class="card-visual" style="--card-bg:#161d3f;--card-fg:#9aaeff;">
+            <span class="card-mark">SPACE</span>
+          </div>
+          <div class="card-body">
+            <div class="card-meta"><span class="card-type">Game</span><span>Qwen-3.8-max</span></div>
+            <h3 class="card-title">Space Invaders</h3>
+            <p class="card-description">A modern take on the arcade classic with lasers and increasing difficulty.</p>
+            <span class="card-action">Play game &rarr;</span>
+          </div>
+        </a>
       </div>
-    </main>
-  </div>
+
+      <div class="empty-state" id="empty-state">
+        <strong>No projects found</strong>
+        Try a different search or choose another category.
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p>HTML Creations</p>
+      <p>Games and demos built with BuildFastWithAI.</p>
+    </div>
+  </footer>
 
   <script>
-    // Static Catalog Metadata representing current state
-    const creations = [
-      {
-        id: "lumi-aurora-runner",
-        title: "LUMI · Spirit of the Aurora",
-        model: "Fable-5",
-        type: "game",
-        path: "fable-5/games/lumi_aurora_runner.html",
-        description: "A fluid vector runner game set in a neon aurora landscape. Collect energy cells and jump to dodge void crystals.",
-        tags: ["Runner", "Dynamic Canvas", "Speedrun", "Vibrant"],
-        icon: "✨"
-      },
-      {
-        id: "time-machine",
-        title: "The Time Machine",
-        model: "Fable-5",
-        type: "landing-page",
-        path: "fable-5/landing-pages/time-machine.html",
-        description: "An immersive historic time travel landing portal featuring era selection mechanics, retro interfaces, and parallax layers.",
-        tags: ["Interactive Layout", "Storytelling", "History UI", "Parallax"],
-        icon: "⏳"
-      },
-      {
-        id: "ant-civilization",
-        title: "Formica — 3D Ant Simulator",
-        model: "Kimi-k3",
-        type: "game",
-        path: "kimi-k3/games/ant-civilization.html",
-        description: "An incredibly deep 3D simulation of an active ant hill. Observe foraging, food collection, and colony dynamics.",
-        tags: ["Simulation", "WebGL 3D", "Ant Colony", "Agent AI"],
-        icon: "🐜"
-      },
-      {
-        id: "sky-smashers",
-        title: "Sky Smashers",
-        model: "Kimi-k3",
-        type: "game",
-        path: "kimi-k3/games/sky-smashers.html",
-        description: "Fast-paced retro vertical shooter. Power up weapon grids, destroy waves of alien fighters, and beat the final boss mothership.",
-        tags: ["Arcade Shooter", "Retro", "Combat", "Upgrades"],
-        icon: "🚀"
-      },
-      {
-        id: "pulse-drift",
-        title: "PULSE DRIFT",
-        model: "Opus-5",
-        type: "game",
-        path: "opus-5/games/pulse-drift.html",
-        description: "Synthwave rhythm-driven racer. Drift around sharp obstacles and gates mapped to pulsing beats and speed boosters.",
-        tags: ["Rhythm Racer", "Neon Vector", "Drift Physics", "Synthwave"],
-        icon: "🏎️"
-      },
-      {
-        id: "summit-runner",
-        title: "Summit Runner",
-        model: "Opus-5",
-        type: "game",
-        path: "opus-5/games/SummitRunner.html",
-        description: "An active physics runner climbing massive procedural peaks. Combat snowstorms, manage stamina, and scale slopes.",
-        tags: ["Physics Simulator", "Platformer", "Weather Engine", "Climbing"],
-        icon: "🏔️"
-      },
-      {
-        id: "space-invaders",
-        title: "Space Invaders — Neon Arcade",
-        model: "Qwen-3.8-max",
-        type: "game",
-        path: "qwen-3.8-max/games/space-invaders.html",
-        description: "A gorgeous retro arcade classic modernized with brilliant glowing assets, heavy screenshakes, and dynamic difficulty scaling.",
-        tags: ["Arcade Retro", "Neon Grid", "Classic Remake", "Laser FX"],
-        icon: "👾"
-      }
-    ];
+    const cards = [...document.querySelectorAll('.project-card')];
+    const searchInput = document.getElementById('search');
+    const filterButtons = [...document.querySelectorAll('.filter-button')];
+    const resultCount = document.getElementById('result-count');
+    const projectGrid = document.getElementById('project-grid');
+    const emptyState = document.getElementById('empty-state');
+    let activeFilter = 'all';
 
-    // State Variables
-    let activeFilters = {
-      type: 'all',
-      model: 'all',
-      query: ''
-    };
-    let activeId = null;
+    function updateProjects() {
+      const query = searchInput.value.trim().toLowerCase();
+      let visibleCount = 0;
 
-    // DOM Elements
-    const creationsList = document.getElementById('creations-list');
-    const searchBar = document.getElementById('search-bar');
-    const welcomePanel = document.getElementById('welcome-panel');
-    const previewPanel = document.getElementById('preview-panel');
-    const previewIframe = document.getElementById('preview-iframe');
-    const frameLoader = document.getElementById('frame-loader');
-    
-    // Preview controls
-    const previewTitle = document.getElementById('preview-active-title');
-    const previewModel = document.getElementById('preview-active-model');
-    const previewType = document.getElementById('preview-active-type');
-    const btnReload = document.getElementById('btn-reload');
-    const btnFullscreen = document.getElementById('btn-fullscreen');
-    const btnOpenTab = document.getElementById('btn-open-tab');
-    const btnBack = document.getElementById('btn-back');
-    const appContainer = document.getElementById('app');
+      cards.forEach((card) => {
+        const matchesType = activeFilter === 'all' || card.dataset.type === activeFilter;
+        const matchesSearch = !query || card.dataset.search.includes(query);
+        const isVisible = matchesType && matchesSearch;
 
-    // Count statistics helper
-    function updateStatistics() {
-      const totalCount = creations.length;
-      const gameCount = creations.filter(c => c.type === 'game').length;
-      const landingCount = creations.filter(c => c.type === 'landing-page').length;
-      
-      document.getElementById('stat-total').innerText = totalCount;
-      document.getElementById('stat-games').innerText = gameCount;
-      document.getElementById('stat-landings').innerText = landingCount;
-    }
-
-    // Render list based on active filters
-    function renderList() {
-      creationsList.innerHTML = '';
-      
-      const filtered = creations.filter(item => {
-        // Filter by Type
-        if (activeFilters.type !== 'all' && item.type !== activeFilters.type) {
-          return false;
-        }
-        // Filter by Model
-        if (activeFilters.model !== 'all' && item.model !== activeFilters.model) {
-          return false;
-        }
-        // Filter by Search Query
-        if (activeFilters.query.trim() !== '') {
-          const q = activeFilters.query.toLowerCase();
-          const matchTitle = item.title.toLowerCase().includes(q);
-          const matchDesc = item.description.toLowerCase().includes(q);
-          const matchTags = item.tags.some(tag => tag.toLowerCase().includes(q));
-          const matchModel = item.model.toLowerCase().includes(q);
-          if (!matchTitle && !matchDesc && !matchTags && !matchModel) {
-            return false;
-          }
-        }
-        return true;
+        card.hidden = !isVisible;
+        if (isVisible) visibleCount += 1;
       });
 
-      if (filtered.length === 0) {
-        creationsList.innerHTML = `
-          <div style="text-align: center; color: var(--text-muted); padding: 30px 10px; font-size: 14px;">
-            <div style="font-size: 24px; margin-bottom: 8px;">🔍</div>
-            No creations match the current filters.
-          </div>
-        `;
-        return;
-      }
+      projectGrid.hidden = visibleCount === 0;
+      emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
+      resultCount.textContent = visibleCount === cards.length
+        ? `Showing all ${cards.length} projects`
+        : `Showing ${visibleCount} of ${cards.length} projects`;
+    }
 
-      filtered.forEach(item => {
-        const card = document.createElement('a');
-        card.href = `#${item.id}`;
-        card.className = `creation-card ${activeId === item.id ? 'active' : ''}`;
-        card.setAttribute('aria-current', activeId === item.id ? 'true' : 'false');
-        card.id = `card-${item.id}`;
-        
-        const typeBadgeText = item.type === 'game' ? 'Game' : 'Landing Page';
-        const typeBadgeClass = item.type === 'game' ? 'game' : 'landing-page';
+    filterButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        activeFilter = button.dataset.filter;
 
-        card.innerHTML = `
-          <div class="card-icon-box" aria-hidden="true">${item.icon}</div>
-          <div class="card-info">
-            <h3 class="card-title" title="${item.title}">${item.title}</h3>
-            <div class="card-meta">
-              <span class="model-badge">${item.model}</span>
-              <span class="type-badge ${typeBadgeClass}">${typeBadgeText}</span>
-            </div>
-          </div>
-        `;
-
-        card.addEventListener('click', (e) => {
-          // The click updates hash, which will trigger route handling.
-          // Smooth slide on mobile.
-          appContainer.classList.add('show-preview');
+        filterButtons.forEach((item) => {
+          const isActive = item === button;
+          item.classList.toggle('is-active', isActive);
+          item.setAttribute('aria-pressed', String(isActive));
         });
 
-        creationsList.appendChild(card);
+        updateProjects();
       });
-    }
-
-    // Set filters active states
-    function setupFilterListeners() {
-      // Type Filters
-      document.querySelectorAll('.filter-tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-          document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-          tab.classList.add('active');
-          activeFilters.type = tab.dataset.type;
-          renderList();
-        });
-      });
-
-      // Model Filters
-      document.querySelectorAll('.model-pill').forEach(pill => {
-        pill.addEventListener('click', () => {
-          document.querySelectorAll('.model-pill').forEach(p => p.classList.remove('active'));
-          pill.classList.add('active');
-          activeFilters.model = pill.dataset.model;
-          renderList();
-        });
-      });
-
-      // Search Filter
-      searchBar.addEventListener('input', (e) => {
-        activeFilters.query = e.target.value;
-        renderList();
-      });
-    }
-
-    // Router - Select active item based on hash
-    function handleRouting() {
-      const hash = window.location.hash.substring(1);
-      const selected = creations.find(c => c.id === hash);
-      
-      if (selected) {
-        activeId = selected.id;
-        loadCreation(selected);
-      } else {
-        activeId = null;
-        unloadCreation();
-      }
-      
-      // Update active cards highlight
-      document.querySelectorAll('.creation-card').forEach(card => {
-        card.classList.remove('active');
-        card.setAttribute('aria-current', 'false');
-      });
-      
-      const activeCard = document.getElementById(`card-${activeId}`);
-      if (activeCard) {
-        activeCard.classList.add('active');
-        activeCard.setAttribute('aria-current', 'true');
-      }
-    }
-
-    // Load Creation to Iframe
-    function loadCreation(item) {
-      welcomePanel.style.display = 'none';
-      previewPanel.style.display = 'block';
-      
-      // Update titles
-      previewTitle.innerText = item.title;
-      previewTitle.title = item.title;
-      previewModel.innerText = item.model;
-      
-      // Update type badge
-      previewType.innerText = item.type === 'game' ? 'Game' : 'Landing Page';
-      previewType.className = `type-badge ${item.type === 'game' ? 'game' : 'landing-page'}`;
-      
-      // Update external link
-      btnOpenTab.href = item.path;
-      
-      // Reset iframe state & show loader
-      frameLoader.classList.remove('hidden');
-      previewIframe.classList.remove('loaded');
-      
-      // Setup load listener
-      previewIframe.onload = () => {
-        frameLoader.classList.add('hidden');
-        previewIframe.classList.add('loaded');
-      };
-      
-      // Load source
-      previewIframe.src = item.path;
-      
-      // Slide container in mobile views
-      appContainer.classList.add('show-preview');
-    }
-
-    // Reset layout to welcome panel
-    function unloadCreation() {
-      previewIframe.src = '';
-      welcomePanel.style.display = 'flex';
-      previewPanel.style.display = 'none';
-      appContainer.classList.remove('show-preview');
-    }
-
-    // Setup utility controls
-    function setupControls() {
-      // Reload Button
-      btnReload.addEventListener('click', () => {
-        if (previewIframe.src) {
-          frameLoader.classList.remove('hidden');
-          previewIframe.classList.remove('loaded');
-          // Reload source
-          previewIframe.src = previewIframe.src;
-        }
-      });
-
-      // Fullscreen Button
-      btnFullscreen.addEventListener('click', () => {
-        if (previewIframe.requestFullscreen) {
-          previewIframe.requestFullscreen();
-        } else if (previewIframe.mozRequestFullScreen) { /* Firefox */
-          previewIframe.mozRequestFullScreen();
-        } else if (previewIframe.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
-          previewIframe.webkitRequestFullscreen();
-        } else if (previewIframe.msRequestFullscreen) { /* IE/Edge */
-          previewIframe.msRequestFullscreen();
-        }
-      });
-
-      // Mobile Back button
-      btnBack.addEventListener('click', () => {
-        window.location.hash = '';
-      });
-    }
-
-    // Startup & Initialize
-    window.addEventListener('DOMContentLoaded', () => {
-      updateStatistics();
-      setupFilterListeners();
-      setupControls();
-      
-      // Initial render & routing check
-      renderList();
-      handleRouting();
     });
 
-    window.addEventListener('hashchange', handleRouting);
+    searchInput.addEventListener('input', updateProjects);
   </script>
 </body>
 </html>
