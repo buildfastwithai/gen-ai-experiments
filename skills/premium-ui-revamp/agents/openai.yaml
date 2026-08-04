@@ -1,0 +1,4 @@
+interface:
+  display_name: "Premium UI Revamp"
+  short_description: "Turn generic interfaces into polished products"
+  default_prompt: "Use $premium-ui-revamp to audit and professionally redesign this existing interface."
