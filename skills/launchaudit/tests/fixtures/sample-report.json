@@ -1,0 +1,258 @@
+{
+  "meta": {
+    "title": "Acme LaunchAudit",
+    "tested_url": "https://example.com/",
+    "mode": "standard",
+    "language": "en",
+    "generated_at": "2026-07-27"
+  },
+  "startup": {
+    "name": "Acme",
+    "appears_to_be": "A collaborative release checklist for small software teams.",
+    "audience": "Small product teams preparing a customer-facing software release.",
+    "problem": "Release knowledge is spread across documents, chat, and issue trackers.",
+    "promise": "Give every launch one visible source of truth.",
+    "mechanism": "A shared checklist linked to owners, evidence, and release state.",
+    "primary_action": "Start a free workspace.",
+    "alternative": "Spreadsheets, issue templates, and manual status meetings.",
+    "evidence_notes": [
+      "Observed — The hero names release checklists and small teams.",
+      "Inferred — The product is intended to replace a manual coordination layer.",
+      "Unknown — Activation and retention are not visible from the public site."
+    ]
+  },
+  "verdict": {
+    "label": "Launch after critical fixes",
+    "score": 73,
+    "coverage": 100,
+    "summary": "The product is understandable and usable, but its primary action needs a clearer next-step expectation.",
+    "strongest_asset": "A concrete release-workflow demonstration.",
+    "biggest_risk": "Visitors do not know whether the trial requires a team setup.",
+    "retest_condition": "The CTA explains the commitment and reaches a working setup screen."
+  },
+  "dimensions": [
+    {
+      "key": "positioning",
+      "name": "Positioning clarity",
+      "weight": 15,
+      "score": 4,
+      "status": "Strong",
+      "finding": "The product and outcome are visible in the hero.",
+      "evidence": "Headline and supporting sentence.",
+      "recommendation": "Name the release trigger more explicitly."
+    },
+    {
+      "key": "audience",
+      "name": "Audience relevance",
+      "weight": 10,
+      "score": 4,
+      "status": "Strong",
+      "finding": "Small product teams are named.",
+      "evidence": "Hero eyebrow.",
+      "recommendation": "Show one concrete team configuration."
+    },
+    {
+      "key": "conversion",
+      "name": "Conversion path",
+      "weight": 15,
+      "score": 4,
+      "status": "Strong",
+      "finding": "The CTA is prominent and functional.",
+      "evidence": "Start free button.",
+      "recommendation": "Explain what happens after clicking."
+    },
+    {
+      "key": "proof",
+      "name": "Product proof",
+      "weight": 15,
+      "score": 3,
+      "status": "Incomplete",
+      "finding": "The interface is visible but outcomes are not.",
+      "evidence": "Workflow screenshot without a completed launch example.",
+      "recommendation": "Add one complete release record."
+    },
+    {
+      "key": "trust",
+      "name": "Trust and risk",
+      "weight": 10,
+      "score": 3,
+      "status": "Incomplete",
+      "finding": "Privacy exists but setup effort is unclear.",
+      "evidence": "Footer privacy link and missing onboarding details.",
+      "recommendation": "State setup time and required permissions."
+    },
+    {
+      "key": "experience",
+      "name": "Experience quality",
+      "weight": 10,
+      "score": 4,
+      "status": "Strong",
+      "finding": "Hierarchy remains clear on desktop and mobile.",
+      "evidence": "Responsive hero and navigation.",
+      "recommendation": "Preserve the current density."
+    },
+    {
+      "key": "technical",
+      "name": "Technical surface",
+      "weight": 15,
+      "score": 4,
+      "status": "Strong",
+      "finding": "Inspected public paths load and resolve.",
+      "evidence": "Homepage, pricing, privacy, and signup routes.",
+      "recommendation": "Add social preview metadata."
+    },
+    {
+      "key": "operations",
+      "name": "Launch operations",
+      "weight": 10,
+      "score": 3,
+      "status": "Incomplete",
+      "finding": "Availability is clear but support expectations are not.",
+      "evidence": "Public launch badge and missing support response guidance.",
+      "recommendation": "Name the support channel and expected response."
+    }
+  ],
+  "journey": [
+    {
+      "stage": "Arrival",
+      "state": "pass",
+      "observation": "The hero names the product and audience.",
+      "consequence": "Relevant teams can orient quickly.",
+      "fix": "Preserve the hierarchy."
+    },
+    {
+      "stage": "Comprehension",
+      "state": "pass",
+      "observation": "The workflow is explained with a product screen.",
+      "consequence": "Visitors can explain the mechanism.",
+      "fix": "Add one release trigger."
+    },
+    {
+      "stage": "Evidence",
+      "state": "friction",
+      "observation": "No completed launch example is shown.",
+      "consequence": "The result remains abstract.",
+      "fix": "Show a before-and-after release record."
+    },
+    {
+      "stage": "Risk reduction",
+      "state": "friction",
+      "observation": "Setup time and permissions are not stated.",
+      "consequence": "Teams cannot estimate effort.",
+      "fix": "Add a setup note beside the CTA."
+    },
+    {
+      "stage": "Action",
+      "state": "pass",
+      "observation": "The primary CTA reaches the signup route.",
+      "consequence": "The public path is usable.",
+      "fix": "Clarify the commitment."
+    },
+    {
+      "stage": "Expectation",
+      "state": "friction",
+      "observation": "The post-click setup is not previewed.",
+      "consequence": "Visitors may delay starting.",
+      "fix": "Preview the three setup steps."
+    }
+  ],
+  "blockers": [],
+  "improvements": [
+    {
+      "rank": 1,
+      "severity": "High",
+      "title": "Explain what happens after starting",
+      "evidence": "The CTA says Start free without showing the next step.",
+      "consequence": "Visitors cannot estimate setup effort.",
+      "change": "Add a three-step onboarding preview immediately below the CTA.",
+      "effort": "Small",
+      "confidence": "High",
+      "validation": "Measure CTA completion and setup completion separately."
+    },
+    {
+      "rank": 2,
+      "severity": "Medium",
+      "title": "Show a completed launch",
+      "evidence": "The product screen contains an empty example.",
+      "consequence": "The promised outcome remains theoretical.",
+      "change": "Replace it with a realistic completed release checklist.",
+      "effort": "Small",
+      "confidence": "High",
+      "validation": "Run a five-second outcome-comprehension test."
+    }
+  ],
+  "rewrites": [
+    {
+      "location": "CTA helper",
+      "before": "Start free",
+      "after": "Create a workspace in under two minutes",
+      "reason": "Sets a concrete expectation without changing the action."
+    }
+  ],
+  "plan": [
+    {
+      "when": "Day 1",
+      "focus": "Clarify",
+      "actions": ["Add the CTA expectation", "Name the release trigger"],
+      "done_when": "A visitor can explain who the product is for and what happens next."
+    },
+    {
+      "when": "Days 2–3",
+      "focus": "Prove",
+      "actions": ["Create a completed release example", "Label the product workflow"],
+      "done_when": "The page demonstrates a realistic outcome."
+    },
+    {
+      "when": "Days 4–5",
+      "focus": "Reduce risk",
+      "actions": ["State setup requirements", "Add the support channel"],
+      "done_when": "Visitors can estimate effort and support."
+    },
+    {
+      "when": "Day 6",
+      "focus": "Verify",
+      "actions": ["Retest mobile", "Check public paths and metadata"],
+      "done_when": "The inspected journey works at common viewports."
+    },
+    {
+      "when": "Day 7",
+      "focus": "Launch",
+      "actions": ["Repeat the audit", "Start the launch experiment"],
+      "done_when": "No critical blocker remains."
+    }
+  ],
+  "validation": {
+    "strengths": [
+      "The product mechanism is concrete.",
+      "The visual hierarchy is calm and readable."
+    ],
+    "unknowns": [
+      "Real activation rate",
+      "Authenticated setup behavior"
+    ],
+    "retest": [
+      "Five-second comprehension",
+      "Primary CTA destination",
+      "Mobile hierarchy",
+      "Public paths and metadata"
+    ],
+    "experiment": {
+      "hypothesis": "A visible onboarding preview will increase completed workspace creation.",
+      "change": "Add three setup steps below the primary CTA.",
+      "measure": "CTA click-to-workspace completion",
+      "success_signal": "A sustained relative improvement without more support requests"
+    },
+    "limitations": [
+      "This fixture contains <script>alert('escaped')</script> to verify safe report output.",
+      "The public audit cannot establish product-market fit."
+    ],
+    "legal_note": "This is a preliminary public-experience audit, not legal, accessibility, privacy, or security certification."
+  },
+  "sources": [
+    {
+      "label": "Acme homepage",
+      "url": "https://example.com/",
+      "note": "Primary public journey inspected on 2026-07-27."
+    }
+  ]
+}

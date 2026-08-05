@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='14' fill='%2306060a'/%3E%3Cpath d='M20 16v30h20' fill='none' stroke='%23d7ff3f' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M33 46l9-28 11 28M37 36h10' fill='none' stroke='%234de3ff' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<title>Sarvam AI — LaunchAudit Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#06060a;
+    --bg-2:#0b0b12;
+    --panel:rgba(255,255,255,.028);
+    --line:rgba(255,255,255,.09);
+    --ink:#f3f1ea;
+    --muted:#9794a2;
+    --faint:#6d6a78;
+    --acid:#d7ff3f;
+    --cyan:#4de3ff;
+    --violet:#8b7bff;
+    --orange:#ff5c33;
+    --green:#3ddc97;
+    --amber:#ffb020;
+    --red:#ff5252;
+    --mono:"JetBrains Mono",ui-monospace,monospace;
+    --disp:"Space Grotesk",Inter,sans-serif;
+    --body:"Inter",system-ui,sans-serif;
+  }
+  body[data-theme="light"]{--bg:#f4f6fb;--bg-2:#e9edf7;--panel:rgba(255,255,255,.86);--line:rgba(17,21,42,.12);--ink:#11152a;--muted:#5e6982;--faint:#7b849a;--acid:#5d7200;--cyan:#087e9c;--violet:#6558d9;--orange:#db4728;--green:#087c58;--amber:#9a6500;--red:#bb3232}
+  body[data-theme="light"] aside{background:linear-gradient(180deg,#fff,#e9edff);color:var(--ink);border-color:var(--line)}
+  body[data-theme="light"] nav a{color:var(--muted)} body[data-theme="light"] nav a:hover{color:var(--ink);background:rgba(17,21,42,.06)}
+  body[data-theme="light"] .blocker{color:var(--ink);background:linear-gradient(160deg,rgba(255,82,82,.08),rgba(255,255,255,.8)),#fff;border-color:rgba(187,50,50,.3)}
+  body[data-theme="light"] .blocker h3,body[data-theme="light"] .blocker p strong{color:var(--ink)} body[data-theme="light"] .blocker p{color:#596174}
+  body[data-theme="light"] .card>p,body[data-theme="light"] .plain-list li,body[data-theme="light"] .stage p,body[data-theme="light"] .fix .fix-body>p{color:#4f5b74}
+  body[data-theme="light"] .fix-num{color:var(--acid);-webkit-text-stroke:0;text-shadow:none}
+  body[data-theme="light"] .verdict h2,body[data-theme="light"] .verdict .lede2,body[data-theme="light"] .verdict .mini p,body[data-theme="light"] .verdict .score-value{color:#fff}
+  body[data-theme="light"] .experiment{color:#fff;background:linear-gradient(135deg,#171b35,#43358b)}
+  body[data-theme="light"] .experiment h3,body[data-theme="light"] .experiment .cell p{color:#fff}
+  .theme-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;margin-top:auto;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.04);color:var(--muted);font:600 10px var(--mono);letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
+  @property --a{syntax:'<angle>';initial-value:0deg;inherits:false}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:var(--body);line-height:1.5;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  }
+  ::selection{background:var(--acid);color:#0a0a0a}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:#23232d;border-radius:99px;border:2px solid var(--bg)}
+  ::-webkit-scrollbar-thumb:hover{background:var(--acid)}
+  a{color:inherit}
+  h1,h2,h3,p{margin:0}
+  ul{margin:0}
+
+  /* ---------- atmosphere ---------- */
+  .grain{position:fixed;inset:-60%;width:220%;height:220%;pointer-events:none;z-index:2000;opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.7'/%3E%3C/svg%3E");
+    animation:grain 7s steps(8) infinite}
+  @keyframes grain{0%,100%{transform:translate(0,0)}20%{transform:translate(-4%,3%)}40%{transform:translate(3%,-4%)}60%{transform:translate(-3%,-2%)}80%{transform:translate(4%,3%)}}
+  .progress{position:fixed;top:0;left:0;height:2px;width:0;z-index:1500;
+    background:linear-gradient(90deg,var(--acid),var(--cyan));box-shadow:0 0 14px rgba(215,255,63,.55)}
+
+  /* ---------- cursor ---------- */
+  .cursor-dot,.cursor-ring{position:fixed;top:0;left:0;pointer-events:none;z-index:3000;border-radius:50%}
+  .cursor-dot{width:6px;height:6px;background:var(--acid);margin:-3px 0 0 -3px}
+  .cursor-ring{width:34px;height:34px;border:1px solid rgba(215,255,63,.45);margin:-17px 0 0 -17px;
+    transition:width .25s,height .25s,margin .25s,border-color .25s,background .25s}
+  body.c-hover .cursor-ring{width:58px;height:58px;margin:-29px 0 0 -29px;border-color:var(--acid);background:rgba(215,255,63,.06)}
+  @media (hover:none),(pointer:coarse){.cursor-dot,.cursor-ring{display:none}}
+
+  /* ---------- preloader ---------- */
+  .preloader{position:fixed;inset:0;background:var(--bg);z-index:5000;display:grid;place-items:center;
+    transition:transform .85s cubic-bezier(.75,0,.2,1)}
+  .preloader.done{transform:translateY(-101%)}
+  .pre-inner{display:grid;justify-items:center;gap:20px}
+  .pre-logo{font:700 44px var(--disp);letter-spacing:-.04em;color:var(--acid);text-shadow:0 0 40px rgba(215,255,63,.4)}
+  .pre-bar{width:190px;height:2px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden}
+  .pre-fill{height:100%;width:0;background:linear-gradient(90deg,var(--acid),var(--cyan))}
+  .pre-num{font:500 11px var(--mono);letter-spacing:.35em;color:var(--muted)}
+
+  /* ---------- layout ---------- */
+  .layout{display:grid;grid-template-columns:266px minmax(0,1fr);min-height:100vh}
+  main{min-width:0}
+
+  /* ---------- sidebar ---------- */
+  aside{position:sticky;top:0;height:100vh;padding:30px 22px;display:flex;flex-direction:column;gap:26px;
+    border-right:1px solid var(--line);background:rgba(9,9,15,.72);backdrop-filter:blur(14px);z-index:60}
+  .brand{display:flex;align-items:center;gap:14px}
+  .mark{width:46px;height:46px;border-radius:13px;background:var(--acid);color:#0a0a0a;display:grid;place-items:center;
+    font:700 15px var(--disp);letter-spacing:-.02em;flex-shrink:0;
+    box-shadow:0 0 0 1px rgba(215,255,63,.35),0 0 32px rgba(215,255,63,.22);
+    transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+  .mark:hover{transform:rotate(-8deg) scale(1.07)}
+  .side-name{font:700 17px var(--disp);letter-spacing:-.02em}
+  .side-sub{font:500 10px var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-top:5px}
+  nav{display:grid;gap:3px}
+  nav a{display:flex;align-items:baseline;gap:12px;padding:9px 12px;border-radius:10px;text-decoration:none;
+    color:var(--muted);font:500 11.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;
+    transition:color .25s,background .25s,transform .25s}
+  nav a span{font-size:9.5px;color:var(--faint);transition:color .25s;min-width:16px}
+  nav a:hover{color:var(--ink);background:rgba(255,255,255,.045);transform:translateX(5px)}
+  nav a.active{color:var(--acid);background:rgba(215,255,63,.07)}
+  nav a.active span{color:var(--acid)}
+  .side-foot{margin-top:auto;font:400 10.5px var(--mono);letter-spacing:.06em;color:var(--faint);line-height:1.7;
+    border-top:1px solid var(--line);padding-top:18px}
+  .side-foot b{color:var(--muted);font-weight:500}
+
+  /* ---------- shared ---------- */
+  .eyebrow{font:600 10.5px var(--mono);letter-spacing:.24em;text-transform:uppercase;color:var(--acid)}
+  .reveal{opacity:0;transform:translateY(28px);
+    transition:opacity .85s ease var(--d,0s),transform .85s cubic-bezier(.16,.8,.24,1) var(--d,0s)}
+  .reveal.in{opacity:1;transform:none}
+  .grid>.reveal:nth-child(2),.diagnostics>.reveal:nth-child(2),.journey>.reveal:nth-child(2),.improvements>.reveal:nth-child(2),.plan>.reveal:nth-child(2),.source-list>.reveal:nth-child(2){--d:.06s}
+  .grid>.reveal:nth-child(3),.diagnostics>.reveal:nth-child(3),.journey>.reveal:nth-child(3),.improvements>.reveal:nth-child(3),.plan>.reveal:nth-child(3),.source-list>.reveal:nth-child(3){--d:.12s}
+  .grid>.reveal:nth-child(4),.diagnostics>.reveal:nth-child(4),.journey>.reveal:nth-child(4),.improvements>.reveal:nth-child(4),.plan>.reveal:nth-child(4),.source-list>.reveal:nth-child(4){--d:.18s}
+  .grid>.reveal:nth-child(5),.diagnostics>.reveal:nth-child(5),.journey>.reveal:nth-child(5),.improvements>.reveal:nth-child(5),.plan>.reveal:nth-child(5),.source-list>.reveal:nth-child(5){--d:.24s}
+  .grid>.reveal:nth-child(6),.diagnostics>.reveal:nth-child(6),.journey>.reveal:nth-child(6),.improvements>.reveal:nth-child(6),.source-list>.reveal:nth-child(6){--d:.3s}
+  .grid>.reveal:nth-child(7),.diagnostics>.reveal:nth-child(7),.improvements>.reveal:nth-child(7),.source-list>.reveal:nth-child(7){--d:.36s}
+  .diagnostics>.reveal:nth-child(8),.improvements>.reveal:nth-child(8){--d:.42s}
+
+  .spot{position:relative;overflow:hidden}
+  .spot::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .4s;
+    background:radial-gradient(340px circle at var(--mx,50%) var(--my,50%),rgba(215,255,63,.07),transparent 65%)}
+  .spot:hover::before{opacity:1}
+  .spot>*{position:relative;z-index:1}
+
+  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+  .span-3{grid-column:span 3}.span-4{grid-column:span 4}.span-5{grid-column:span 5}
+  .span-6{grid-column:span 6}.span-7{grid-column:span 7}.span-8{grid-column:span 8}.span-12{grid-column:span 12}
+
+  .card{position:relative;border:1px solid var(--line);border-radius:20px;padding:24px;background:var(--panel);
+    transition:transform .35s cubic-bezier(.2,.8,.2,1),border-color .35s,box-shadow .35s}
+  .card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.2);box-shadow:0 18px 44px rgba(0,0,0,.4)}
+  .card>.eyebrow{color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:9px}
+  .card>.eyebrow::before{content:"";width:6px;height:6px;background:var(--acid);transform:rotate(45deg);flex-shrink:0}
+  .card>p{font-size:15px;line-height:1.6;color:#cfcdd6}
+
+  .plain-list{list-style:none;padding:0;display:grid;gap:9px}
+  .plain-list li{position:relative;padding-left:18px;font-size:13.5px;line-height:1.55;color:var(--muted)}
+  .plain-list li::before{content:"";position:absolute;left:0;top:7px;width:6px;height:6px;background:var(--acid);transform:rotate(45deg);border-radius:1px}
+
+  section{position:relative;padding:clamp(64px,7vw,110px) clamp(24px,5vw,72px);border-bottom:1px solid var(--line);overflow:hidden;scroll-margin-top:10px}
+  section:nth-of-type(even){background:rgba(255,255,255,.014)}
+  .watermark{position:absolute;top:8px;right:8px;font:700 clamp(130px,17vw,230px)/.8 var(--disp);
+    color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.045);pointer-events:none;user-select:none;letter-spacing:-.05em}
+  .section-head{display:flex;align-items:flex-end;gap:26px;margin-bottom:48px;padding-bottom:24px;border-bottom:1px solid var(--line);position:relative;z-index:1}
+  .section-head .idx{font:700 12px var(--mono);letter-spacing:.24em;color:var(--acid);padding-bottom:8px;white-space:nowrap}
+  .section-head h2{font:700 clamp(38px,4.6vw,68px)/.96 var(--disp);letter-spacing:-.035em}
+  .sub-label{font:600 11px var(--mono);letter-spacing:.26em;text-transform:uppercase;color:var(--acid);
+    display:flex;align-items:center;gap:16px;margin:56px 0 20px}
+  .sub-label::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  /* animated conic frame */
+  .frame{position:relative;border-radius:26px;overflow:hidden;background:linear-gradient(165deg,#101019,#0a0a11 65%)}
+  .frame::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;
+    background:conic-gradient(from var(--a),transparent 0%,var(--c1,var(--acid)) 10%,transparent 24%,transparent 52%,var(--c2,var(--cyan)) 64%,transparent 78%);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;
+    animation:spin-a 7s linear infinite}
+  .frame>*{position:relative;z-index:1}
+  @keyframes spin-a{to{--a:360deg}}
+
+  /* ---------- hero ---------- */
+  header{position:relative;min-height:100vh;display:flex;flex-direction:column;border-bottom:1px solid var(--line);overflow:hidden}
+  header::before{content:"";position:absolute;inset:0;z-index:0;
+    background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+    background-size:54px 54px;
+    -webkit-mask-image:radial-gradient(ellipse at 32% 18%,black,transparent 72%);mask-image:radial-gradient(ellipse at 32% 18%,black,transparent 72%)}
+  #fx{position:absolute;inset:0;z-index:1;pointer-events:none}
+  .blob{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0}
+  .b1{width:540px;height:540px;top:-180px;right:-140px;background:radial-gradient(circle,rgba(139,123,255,.32),transparent 65%);animation:drift1 15s ease-in-out infinite}
+  .b2{width:480px;height:480px;bottom:-160px;left:-120px;background:radial-gradient(circle,rgba(215,255,63,.14),transparent 65%);animation:drift2 19s ease-in-out infinite}
+  .b3{width:300px;height:300px;top:38%;left:44%;background:radial-gradient(circle,rgba(77,227,255,.14),transparent 65%);animation:drift1 22s ease-in-out infinite reverse}
+  @keyframes drift1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-46px,36px) scale(1.12)}}
+  @keyframes drift2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(52px,-30px) scale(1.08)}}
+  .hero-inner{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;justify-content:center;gap:30px;
+    padding:clamp(48px,6vw,90px) clamp(24px,5vw,72px)}
+  .hero-eyebrow{display:inline-flex;align-items:center;gap:12px;font:600 11px var(--mono);letter-spacing:.3em;text-transform:uppercase;color:var(--muted)}
+  .hero-eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--acid);box-shadow:0 0 14px var(--acid);animation:pulse-dot 1.8s ease-in-out infinite}
+  @keyframes pulse-dot{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:.5}}
+  h1{font:700 clamp(54px,9.2vw,148px)/.92 var(--disp);letter-spacing:-.045em;text-transform:uppercase}
+  h1 .line{display:block;overflow:hidden;padding-bottom:.06em;margin-bottom:-.06em}
+  h1 .line-inner{display:block;transform:translateY(112%);transition:transform 1.1s cubic-bezier(.16,.8,.24,1) var(--d,0s)}
+  body.loaded h1 .line-inner{transform:none}
+  .outline{color:transparent;-webkit-text-stroke:2px var(--ink)}
+  .acid-dot{color:var(--acid);text-shadow:0 0 34px rgba(215,255,63,.55)}
+  .lede{max-width:640px;font-size:clamp(16px,1.5vw,21px);line-height:1.55;color:var(--muted)}
+  .hero-meta{display:flex;gap:14px;flex-wrap:wrap}
+  .hero-meta>div{min-width:180px;padding:16px 18px;border:1px solid var(--line);border-radius:14px;
+    background:rgba(255,255,255,.02);backdrop-filter:blur(6px);
+    transition:transform .3s,border-color .3s,box-shadow .3s}
+  .hero-meta>div:hover{transform:translateY(-4px);border-color:rgba(215,255,63,.4);box-shadow:0 12px 30px rgba(0,0,0,.35)}
+  .hero-meta .eyebrow{color:var(--faint);font-size:9.5px}
+  .hero-meta strong{display:block;margin-top:7px;font:500 12.5px var(--mono);font-weight:500;word-break:break-all;color:var(--ink)}
+  .hero-meta a{color:var(--acid);text-decoration:none}
+  .hero-meta a:hover{text-decoration:underline}
+  .h-fade{opacity:0;transform:translateY(22px);transition:opacity .9s ease var(--d,0s),transform .9s cubic-bezier(.16,.8,.24,1) var(--d,0s)}
+  body.loaded .h-fade{opacity:1;transform:none}
+  .scroll-hint{position:absolute;right:clamp(24px,5vw,72px);bottom:86px;z-index:3;display:flex;flex-direction:column;align-items:center;gap:10px;
+    font:600 9.5px var(--mono);letter-spacing:.34em;color:var(--faint);text-transform:uppercase;writing-mode:vertical-rl}
+  .scroll-hint::after{content:"";width:1px;height:52px;background:linear-gradient(var(--acid),transparent);animation:hint 1.8s ease-in-out infinite}
+  @keyframes hint{0%,100%{transform:scaleY(.4);transform-origin:top;opacity:.4}50%{transform:scaleY(1);opacity:1}}
+
+  .ticker{position:relative;z-index:2;border-top:1px solid var(--line);background:rgba(255,255,255,.015);overflow:hidden;padding:15px 0}
+  .ticker-track{display:flex;width:max-content;animation:ticker 28s linear infinite}
+  .ticker:hover .ticker-track{animation-play-state:paused}
+  .ticker span{font:600 11px var(--mono);letter-spacing:.24em;text-transform:uppercase;color:var(--muted);padding:0 26px;white-space:nowrap}
+  .ticker b{color:var(--acid);font-weight:700;padding-left:26px}
+  @keyframes ticker{to{transform:translateX(-50%)}}
+
+  /* ---------- diagnosis ---------- */
+  #diagnosis{background:radial-gradient(900px 500px at 85% 0%,rgba(139,123,255,.09),transparent 60%)}
+  .verdict{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:44px;padding:clamp(30px,4.5vw,58px);--c1:var(--amber);--c2:var(--violet)}
+  .verdict h2{font:700 clamp(36px,4.2vw,62px)/1 var(--disp);letter-spacing:-.035em;margin:16px 0 20px}
+  .verdict h2 em{font-style:normal;color:var(--amber);text-shadow:0 0 30px rgba(255,176,32,.35)}
+  .verdict .lede2{max-width:680px;color:var(--muted);font-size:16.5px;line-height:1.6}
+  .verdict .mini{margin-top:36px}
+  .verdict .mini .cell{padding:18px 20px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.02)}
+  .verdict .mini .eyebrow{color:var(--faint);font-size:9.5px;margin-bottom:9px}
+  .verdict .mini p{font-size:13.5px;line-height:1.55;color:#cfcdd6}
+  .score-col{display:grid;place-content:center;justify-items:center;gap:18px}
+  .score-wrap{position:relative;display:grid;place-items:center}
+  .ring{width:216px;height:216px;transform:rotate(-90deg)}
+  .ring circle{fill:none;stroke-width:10;stroke-linecap:round}
+  .ring-bg{stroke:rgba(255,255,255,.08)}
+  .ring-fg{stroke:url(#rg);filter:drop-shadow(0 0 12px rgba(215,255,63,.35))}
+  .score-value{position:absolute;text-align:center;font:700 62px/1 var(--disp);letter-spacing:-.05em}
+  .score-value small{display:block;margin-top:10px;font:600 9.5px var(--mono);letter-spacing:.3em;text-transform:uppercase;color:var(--muted)}
+  .coverage{font:500 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:99px;padding:8px 16px;background:rgba(255,255,255,.02)}
+  .coverage b{color:var(--acid);font-weight:700}
+
+  /* ---------- scorecard ---------- */
+  .diagnostics{display:grid;gap:12px;position:relative;z-index:1}
+  .dimension{display:grid;grid-template-columns:230px minmax(0,1fr) 90px;gap:26px;align-items:center;
+    padding:22px 24px;border:1px solid var(--line);border-radius:18px;background:var(--panel);
+    transition:transform .3s,border-color .3s,box-shadow .3s}
+  .dimension:hover{transform:translateX(6px);border-color:rgba(215,255,63,.25);box-shadow:0 14px 40px rgba(0,0,0,.4)}
+  .dimension-name{font:600 19px var(--disp);letter-spacing:-.015em}
+  .dim-meta{font:500 10.5px var(--mono);letter-spacing:.08em;color:var(--faint);margin-top:7px;text-transform:uppercase}
+  .s-strong{color:var(--green)}.s-weak{color:var(--red)}.s-mixed{color:var(--amber)}
+  .track{height:6px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden;margin-bottom:11px}
+  .fill{height:100%;width:0;border-radius:99px;background:var(--c);box-shadow:0 0 12px var(--c);
+    transition:width 1.3s cubic-bezier(.2,.8,.2,1) .2s}
+  .in .fill{width:var(--w)}
+  .dim-note{font-size:13.5px;line-height:1.55;color:var(--muted)}
+  .dim-note strong{color:var(--ink);font-weight:600}
+  .dim-note.next{margin-top:7px;color:var(--faint)}
+  .dim-note.next strong{color:var(--acid);font:600 10px var(--mono);letter-spacing:.14em;text-transform:uppercase}
+  .dim-score{text-align:right;font:700 36px var(--disp);letter-spacing:-.04em}
+  .dim-score small{font-size:16px;color:var(--faint);font-weight:500}
+
+  /* ---------- journey ---------- */
+  #journey{background:radial-gradient(800px 400px at 10% 100%,rgba(77,227,255,.05),transparent 60%)}
+  .journey{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(272px,1fr);gap:14px;overflow-x:auto;
+    padding:6px 4px 20px;scroll-snap-type:x proximity;cursor:grab;position:relative;z-index:1}
+  .journey.dragging{cursor:grabbing;user-select:none}
+  .journey::-webkit-scrollbar{height:8px}
+  .stage{position:relative;border:1px solid var(--line);border-radius:20px;padding:22px;background:var(--panel);
+    min-height:290px;scroll-snap-align:start;overflow:hidden;
+    transition:transform .35s cubic-bezier(.2,.8,.2,1),border-color .35s,box-shadow .35s}
+  .stage::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:var(--sc,var(--muted));box-shadow:0 0 14px var(--sc,var(--muted))}
+  .stage:hover{transform:translateY(-7px);border-color:rgba(255,255,255,.2);box-shadow:0 22px 48px rgba(0,0,0,.45)}
+  .st-pass{--sc:var(--green)}.st-friction{--sc:var(--amber)}.st-blocker{--sc:var(--red)}
+  .stage-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px}
+  .stage-num{font:700 11px var(--mono);letter-spacing:.2em;color:var(--faint)}
+  .state{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:99px;
+    font:700 9.5px var(--mono);letter-spacing:.16em;text-transform:uppercase;border:1px solid}
+  .state::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;animation:pulse-dot 1.8s ease-in-out infinite}
+  .state-pass{color:var(--green);background:rgba(61,220,151,.09);border-color:rgba(61,220,151,.3)}
+  .state-friction{color:var(--amber);background:rgba(255,176,32,.09);border-color:rgba(255,176,32,.3)}
+  .state-blocker{color:var(--red);background:rgba(255,82,82,.09);border-color:rgba(255,82,82,.32)}
+  .stage h3{font:600 21px var(--disp);letter-spacing:-.02em;margin-bottom:10px}
+  .stage p{font-size:13px;line-height:1.55;color:var(--muted)}
+  .stage p strong{color:var(--ink);font-weight:600}
+  .stage p+p{margin-top:11px}
+
+  /* ---------- blockers ---------- */
+  #blockers{background:radial-gradient(900px 500px at 90% 20%,rgba(255,82,82,.06),transparent 60%)}
+  #blockers .section-head .idx{color:var(--red)}
+  .blocker{position:relative;border-radius:24px;border:1px solid rgba(255,82,82,.28);overflow:hidden;
+    background:linear-gradient(160deg,rgba(255,82,82,.09),rgba(255,82,82,.015) 55%),#0c0a0e;
+    padding:40px 34px 34px;display:grid;grid-template-columns:1fr 1fr;gap:34px;
+    transition:transform .35s,box-shadow .35s}
+  .blocker:hover{transform:translateY(-4px);box-shadow:0 24px 60px rgba(255,82,82,.09)}
+  .blocker::before{content:"";position:absolute;top:0;left:0;height:5px;width:220%;
+    background:repeating-linear-gradient(-45deg,rgba(255,82,82,.9) 0 10px,transparent 10px 20px);
+    animation:slideX 1.3s linear infinite}
+  @keyframes slideX{to{transform:translateX(-28.28px)}}
+  .blocker+.blocker{margin-top:14px}
+  .b-tag{position:absolute;top:16px;right:20px;font:700 9.5px var(--mono);letter-spacing:.22em;color:var(--red);
+    border:1px solid rgba(255,82,82,.4);padding:6px 12px;border-radius:99px;background:rgba(255,82,82,.08)}
+  .blocker .eyebrow{color:rgba(255,130,130,.75)}
+  .blocker h3{font:600 clamp(22px,2.2vw,30px) var(--disp);letter-spacing:-.025em;margin:12px 0 14px}
+  .blocker p{font-size:14px;line-height:1.6;color:#c9b8b8}
+  .blocker p strong{color:#ffd9d9;font-weight:600}
+  .blocker p+p{margin-top:12px}
+
+  /* ---------- fixes ---------- */
+  .improvements{display:grid;gap:12px;position:relative;z-index:1}
+  .fix{display:grid;grid-template-columns:92px minmax(0,1fr) 250px;gap:26px;align-items:start;
+    padding:26px;border:1px solid var(--line);border-radius:20px;background:var(--panel);
+    transition:transform .3s,border-color .3s,box-shadow .3s}
+  .fix:hover{transform:translateX(7px);border-color:rgba(215,255,63,.24);box-shadow:0 16px 44px rgba(0,0,0,.4)}
+  .fix-num{font:700 46px/1 var(--disp);color:transparent;-webkit-text-stroke:1.5px rgba(255,255,255,.22);
+    transition:color .3s,-webkit-text-stroke .3s,text-shadow .3s}
+  .fix:hover .fix-num{color:var(--acid);-webkit-text-stroke:1.5px transparent;text-shadow:0 0 26px rgba(215,255,63,.45)}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+  .chip{padding:5px 10px;border:1px solid var(--line);border-radius:99px;font:600 9px var(--mono);
+    letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .c-crit{color:#ff7b7b;border-color:rgba(255,82,82,.45);background:rgba(255,82,82,.08)}
+  .c-high{color:#ff9a6e;border-color:rgba(255,92,51,.45);background:rgba(255,92,51,.08)}
+  .c-med{color:var(--amber);border-color:rgba(255,176,32,.4);background:rgba(255,176,32,.07)}
+  .fix h3{font:600 21px var(--disp);letter-spacing:-.02em;margin-bottom:8px}
+  .fix .fix-body>p{font-size:14px;color:var(--muted);line-height:1.55}
+  .fix-side{border-left:1px solid var(--line);padding-left:22px;font-size:12.5px;line-height:1.55;color:var(--muted)}
+  .fix-side strong{display:block;color:var(--acid);font:600 9px var(--mono);letter-spacing:.2em;text-transform:uppercase;margin-bottom:4px}
+  .fix-side p+p{margin-top:13px}
+
+  .rewrite{display:grid;grid-template-columns:1.05fr 1fr 46px 1fr;gap:12px;align-items:stretch}
+  .rw-ctx,.before,.after{border-radius:16px;padding:20px;border:1px solid var(--line)}
+  .rw-ctx{background:var(--panel)}
+  .rw-ctx .eyebrow{color:var(--muted);margin-bottom:10px}
+  .rw-ctx p{font-size:13px;color:var(--muted)}
+  .before{background:rgba(255,82,82,.05);border-color:rgba(255,82,82,.18)}
+  .before .eyebrow{color:#ff8a8a;margin-bottom:10px}
+  .before p{font-size:14.5px;color:#cfa9a9;line-height:1.5}
+  .after{background:rgba(61,220,151,.06);border-color:rgba(61,220,151,.22)}
+  .after .eyebrow{color:var(--green);margin-bottom:10px}
+  .after p{font-size:14.5px;color:#c4ecd9;line-height:1.5;font-weight:500}
+  .rw-arrow{display:grid;place-items:center;color:var(--acid);font-size:22px;transition:transform .3s;text-shadow:0 0 16px rgba(215,255,63,.5)}
+  .rewrite:hover .rw-arrow{transform:translateX(7px)}
+
+  /* ---------- plan ---------- */
+  #plan{background:radial-gradient(900px 500px at 8% 0%,rgba(139,123,255,.07),transparent 60%)}
+  .plan{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;position:relative;z-index:1}
+  .plan-card{display:flex;flex-direction:column;min-height:260px;border:1px solid var(--line);border-radius:20px;
+    padding:24px;background:var(--panel);transition:transform .35s,border-color .35s,box-shadow .35s}
+  .plan-card:hover{transform:translateY(-5px);border-color:rgba(139,123,255,.35);box-shadow:0 20px 48px rgba(0,0,0,.42)}
+  .plan-day{font:700 10.5px var(--mono);letter-spacing:.24em;text-transform:uppercase;color:var(--acid);margin-bottom:14px;
+    display:flex;align-items:center;gap:10px}
+  .plan-day::after{content:"";flex:1;height:1px;background:var(--line)}
+  .plan-card h3{font:600 19px var(--disp);letter-spacing:-.02em;margin-bottom:14px}
+  .plan-card .done{margin-top:auto;padding-top:16px;border-top:1px dashed var(--line);font-size:12px;line-height:1.5;color:var(--muted)}
+  .plan-card .done strong{color:var(--ink);font:600 9px var(--mono);letter-spacing:.18em;text-transform:uppercase;display:block;margin-bottom:4px}
+
+  /* ---------- retest ---------- */
+  .experiment{margin-top:14px;padding:clamp(28px,4vw,48px);--c1:var(--violet);--c2:var(--acid)}
+  .experiment .eyebrow{color:var(--violet)}
+  .experiment h3{font:700 clamp(26px,3.4vw,46px)/1.08 var(--disp);letter-spacing:-.03em;max-width:840px;margin:14px 0 28px}
+  .experiment .cell{padding:4px 0}
+  .experiment .cell strong{display:block;font:600 10px var(--mono);letter-spacing:.22em;text-transform:uppercase;color:var(--acid);margin-bottom:8px}
+  .experiment .cell p{font-size:13.5px;line-height:1.55;color:var(--muted)}
+  .note-card{margin-top:14px;border-style:dashed}
+  .source-list{display:grid;gap:10px;position:relative;z-index:1}
+  .source-list .card{display:grid;gap:6px}
+  .source-list strong{font:600 15px var(--disp);letter-spacing:-.01em}
+  .source-list .desc{font-size:13px;color:var(--muted);line-height:1.55}
+  .source-list a{font:500 12px var(--mono);color:var(--acid);text-decoration:none;word-break:break-all;transition:text-shadow .3s}
+  .source-list a:hover{text-shadow:0 0 16px rgba(215,255,63,.6);text-decoration:underline}
+  .source-list a::after{content:" ↗"}
+
+  footer{padding:34px clamp(24px,5vw,72px);font:400 11px var(--mono);letter-spacing:.05em;color:var(--faint);line-height:1.7;
+    display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+  footer b{color:var(--acid);font-weight:700}
+
+  /* ---------- responsive ---------- */
+  @media (max-width:1024px){
+    .layout{display:block}
+    aside{position:relative;height:auto;flex-direction:row;align-items:center;flex-wrap:wrap;gap:14px;padding:16px 20px}
+    nav{display:flex;overflow-x:auto;width:100%;order:3;padding-bottom:6px;gap:6px}
+    nav a{white-space:nowrap;flex-shrink:0}
+    .side-foot{display:none}
+    .scroll-hint{display:none}
+    .section-head{flex-direction:column;align-items:flex-start;gap:10px}
+    .span-3,.span-4,.span-5,.span-6,.span-7,.span-8{grid-column:span 12}
+    .verdict{grid-template-columns:1fr}
+    .dimension{grid-template-columns:1fr 70px}
+    .dim-top{grid-column:1;grid-row:1}
+    .dim-score{grid-column:2;grid-row:1}
+    .dim-mid{grid-column:1/-1;grid-row:2}
+    .fix{grid-template-columns:54px 1fr}
+    .fix-num{font-size:34px}
+    .fix-side{grid-column:2;border-left:none;padding-left:0;border-top:1px solid var(--line);padding-top:14px}
+    .rewrite{grid-template-columns:1fr}
+    .rw-arrow{transform:rotate(90deg);padding:4px 0}
+    .rewrite:hover .rw-arrow{transform:rotate(90deg) translateX(7px)}
+    .blocker{grid-template-columns:1fr;padding:36px 24px 26px}
+    .watermark{display:none}
+    h1{font-size:clamp(44px,13vw,90px)}
+  }
+  @media print{
+    aside,.cursor-dot,.cursor-ring,.grain,.progress,.preloader,#fx,.ticker,.scroll-hint,.blob{display:none!important}
+    .layout{display:block}
+    .reveal,.h-fade{opacity:1!important;transform:none!important}
+    h1 .line-inner{transform:none}
+    section,.card,.fix,.stage,.blocker,.plan-card,.dimension{break-inside:avoid}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    .reveal,.h-fade{opacity:1;transform:none}
+    h1 .line-inner{transform:none}
+    .preloader{display:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+<div class="progress" id="progress" aria-hidden="true"></div>
+<div class="cursor-dot" id="cDot" aria-hidden="true"></div>
+<div class="cursor-ring" id="cRing" aria-hidden="true"></div>
+
+<div class="preloader" id="preloader" aria-hidden="true">
+  <div class="pre-inner">
+    <div class="pre-logo">LA</div>
+    <div class="pre-bar"><div class="pre-fill" id="preFill"></div></div>
+    <div class="pre-num" id="preNum">00</div>
+  </div>
+</div>
+
+<div class="layout">
+  <aside>
+    <div class="brand">
+      <div class="mark">LA</div>
+      <div>
+        <div class="side-name">LaunchAudit</div>
+        <div class="side-sub">Sarvam AI</div>
+      </div>
+    </div>
+    <nav id="nav">
+      <a href="#diagnosis"><span>◆</span>Diagnosis</a>
+      <a href="#startup"><span>01</span>Reconstructed startup</a>
+      <a href="#scorecard"><span>02</span>Scorecard</a>
+      <a href="#journey"><span>03</span>Journey</a>
+      <a href="#blockers"><span>04</span>Blockers</a>
+      <a href="#fixes"><span>05</span>Improvements</a>
+      <a href="#plan"><span>06</span>Seven-day plan</a>
+      <a href="#retest"><span>07</span>Retest</a>
+    </nav>
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle color theme" aria-pressed="false"><span>Theme</span><span>◐</span></button>
+    <div class="side-foot"><b>2026-08-04T00:00:00+05:30</b><br>standard audit</div>
+  </aside>
+
+  <main>
+    <!-- ============ HERO ============ -->
+    <header>
+      <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+      <canvas id="fx" aria-hidden="true"></canvas>
+      <div class="hero-inner">
+        <div class="hero-eyebrow h-fade" style="--d:.15s">Launch-readiness diagnostic</div>
+        <h1 aria-label="Sarvam AI">
+          <span class="line"><span class="line-inner" style="--d:.25s">Sarvam</span></span>
+          <span class="line"><span class="line-inner outline" style="--d:.37s">AI</span></span>
+        </h1>
+        <p class="lede h-fade" style="--d:.62s">India-focused sovereign AI platform offering model APIs, multilingual voice agents, document digitisation, dubbing/content transformation, and enterprise workflow agents.</p>
+        <div class="hero-meta h-fade" style="--d:.74s">
+          <div><span class="eyebrow">Tested</span><strong><a href="https://www.sarvam.ai" rel="noreferrer">https://www.sarvam.ai</a></strong></div>
+          <div><span class="eyebrow">Mode</span><strong>standard</strong></div>
+          <div><span class="eyebrow">Generated</span><strong>2026-08-04T00:00:00+05:30</strong></div>
+        </div>
+      </div>
+      <div class="scroll-hint h-fade" style="--d:1s" aria-hidden="true">Scroll</div>
+      <div class="ticker" aria-hidden="true">
+        <div class="ticker-track">
+          <span>Launch-readiness diagnostic<b>✦</b></span><span>Readiness score 71/100<b>✦</b></span><span>0 critical blockers<b>✦</b></span><span>6 prioritized fixes<b>✦</b></span><span>7-day repair plan<b>✦</b></span><span>100% evidence coverage<b>✦</b></span>
+          <span>Launch-readiness diagnostic<b>✦</b></span><span>Readiness score 71/100<b>✦</b></span><span>0 critical blockers<b>✦</b></span><span>6 prioritized fixes<b>✦</b></span><span>7-day repair plan<b>✦</b></span><span>100% evidence coverage<b>✦</b></span>
+        </div>
+      </div>
+    </header>
+
+    <section id="diagnosis"><div class="watermark">00</div><div class="section-head"><div class="idx">00 / DIAGNOSIS</div><h2>Launch after critical fixes</h2></div><div class="frame verdict reveal"><div><div class="eyebrow">The call</div><h2><em>Fix the promise</em> before you amplify it.</h2><p class="lede2">Sarvam presents a credible, unusually complete India-focused AI platform with strong product breadth, developer documentation, enterprise proof, and visible trust infrastructure. Launch readiness is held back by contradictory pricing/credit information, a stale event banner, and an ambiguous sign-up destination that weakens the primary next step.</p><div class="grid mini"><div class="cell"><div class="eyebrow">Strongest asset</div><p>The combination of concrete product pages, an accessible API documentation journey, customer evidence, and a detailed Trust Center gives qualified buyers multiple ways to validate the platform.</p></div><div class="cell"><div class="eyebrow">Biggest risk</div><p>A buyer comparing the pricing page can see materially different bonus-credit and free-credit claims, while the main sign-up link redirects to indus.sarvam.ai rather than an obviously named general dashboard.</p></div><div class="cell span-12"><div class="eyebrow">Ready when</div><p>Recheck pricing and credit values across every pricing surface, replace or date-bound the Epoch banner, and make the primary sign-up destination explicitly match the intended onboarding experience on desktop and mobile.</p></div></div></div><div class="score-col"><div class="score-wrap"><svg class="ring" viewBox="0 0 100 100"><defs><linearGradient id="rg" x1="0" x2="1"><stop stop-color="#d7ff3f"/><stop offset="1" stop-color="#4de3ff"/></linearGradient></defs><circle class="ring-bg" cx="50" cy="50" r="41"/><circle class="ring-fg" cx="50" cy="50" r="41" stroke-dasharray="257.6" stroke-dashoffset="74.70400000000001"/></svg><div class="score-value">71<small>Readiness</small></div></div><div class="coverage"><b>100%</b> evidence coverage</div></div></div></section>
+
+    <section id="startup"><div class="watermark">01</div><div class="section-head"><div class="idx">01 / RECONSTRUCT</div><h2>What this startup appears to be</h2></div><div class="grid"><article class="card span-6 reveal spot"><div class="eyebrow">Audience</div><p>Observed: developers, enterprises, government teams, content teams, and regulated organisations. Inferred: teams that need Indian-language AI with India-based deployment and governance.</p></article><article class="card span-6 reveal spot"><div class="eyebrow">Problem</div><p>Observed: generic AI and OCR tools struggle with Indian languages, scripts, complex documents, and production governance. Inferred: organisations need to serve Indian-language users without giving up operational control.</p></article><article class="card span-4 reveal spot"><div class="eyebrow">Promise</div><p>Observed: build and deploy frontier-class, population-scale AI from India, with support for Indian languages, sovereign compute, and enterprise controls.</p></article><article class="card span-4 reveal spot"><div class="eyebrow">Mechanism</div><p>Observed: APIs and SDKs for speech, text, translation, document AI, and dubbing, plus managed products for voice agents, content transformation, document workflows, and enterprise agents.</p></article><article class="card span-4 reveal spot"><div class="eyebrow">Primary action</div><p>Sign up / Get Started, generally routed to dashboard.sarvam.ai; enterprise visitors can use Contact Us or Talk to Sales.</p></article><article class="card span-6 reveal spot"><div class="eyebrow">Current alternative</div><p>Observed: use separate model, speech, OCR, dubbing, or agent platforms; inferred: international AI APIs or specialist Indian-language vendors.</p></article><article class="card span-6 reveal"><div class="eyebrow">Evidence notes</div><ul class="plain-list"><li>Observed — Homepage hero: ‘AI for all from India’ and ‘Built on sovereign compute. Powered by frontier-class models.’</li><li>Observed — Homepage product surface: Text to Speech, Speech to Text, Voice Agents, Document Digitisation, and Dubbing.</li><li>Observed — Docs: production-ready APIs for transcription, translation, transliteration, text-to-speech, and conversational AI.</li><li>Observed — Trust Center: ISO 27001:2022 and SOC 2 Type II are presented as certified; ISO 42001 is presented as in progress.</li><li>Inferred — The strongest initial wedge is India-language infrastructure and enterprise deployment control, not a single narrowly defined product.</li></ul></article></div></section>
+
+    <section id="scorecard"><div class="watermark">02</div><div class="section-head"><div class="idx">02 / SCORECARD</div><h2>Where the launch signal is strong — and where it breaks</h2></div><div class="diagnostics"><article class="dimension reveal"><div class="dim-top"><div class="dimension-name">Positioning clarity</div><div class="dim-meta s-strong">15% weight · strong</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:80%;--c:var(--green)"></div></div><div class="dim-note"><strong>The homepage clearly states India focus, sovereign infrastructure, frontier models, and population-scale ambition, while product pages clarify individual offers.</strong> Homepage hero and product navigation; Studio, Akshar, Arya, and Voice Agents pages each have specific outcome-led headlines.</div><div class="dim-note next"><strong>Next</strong> Make the platform entry point more scannable by naming the two primary journeys—build with APIs versus buy an enterprise application—above the fold.</div></div><div class="dim-score">4<small>/5</small></div></article><article class="dimension reveal"><div class="dim-top"><div class="dimension-name">Audience relevance</div><div class="dim-meta s-strong">10% weight · strong</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:80%;--c:var(--green)"></div></div><div class="dim-note"><strong>Audience cues are visible for developers, enterprises, government, BFSI, content teams, and regulated organisations.</strong> Homepage labels ‘Enterprise | Government | Developers’; product pages list use cases such as BFSI, education, publishing, public records, and customer operations.</div><div class="dim-note next"><strong>Next</strong> Add a short role-based chooser or segmented CTA so visitors can self-select API, product, or enterprise deployment paths faster.</div></div><div class="dim-score">4<small>/5</small></div></article><article class="dimension reveal"><div class="dim-top"><div class="dimension-name">Conversion path</div><div class="dim-meta s-mixed">15% weight · good with friction</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:80%;--c:var(--green)"></div></div><div class="dim-note"><strong>Sign Up, Get Started, Try the API, Try Studio, and Contact Us CTAs are repeated and generally point to viable public destinations.</strong> Homepage and product pages expose multiple CTAs; contact form is visible; dashboard.sarvam.ai redirects to indus.sarvam.ai, creating destination ambiguity.</div><div class="dim-note next"><strong>Next</strong> Use a named destination such as ‘Open Sarvam Platform’ or route the CTA to the actual general onboarding page; state what happens after sign-up.</div></div><div class="dim-score">4<small>/5</small></div></article><article class="dimension reveal"><div class="dim-top"><div class="dimension-name">Product proof</div><div class="dim-meta s-strong">15% weight · strong</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:80%;--c:var(--green)"></div></div><div class="dim-note"><strong>Sarvam shows code, API scope, product-specific workflows, case-study outcomes, named customer testimony, demos/scenario language, and operational metrics.</strong> Homepage code sample and 10B+ tokens/&lt;100ms/99.9% claims; Tata Capital quote; Voice Agents, Studio, Akshar, and Arya feature details.</div><div class="dim-note next"><strong>Next</strong> Attach the strongest quantitative claims to named case studies, benchmarks, methodology, or date labels so visitors can distinguish proof from marketing claims.</div></div><div class="dim-score">4<small>/5</small></div></article><article class="dimension reveal"><div class="dim-top"><div class="dimension-name">Trust and risk</div><div class="dim-meta s-mixed">10% weight · material inconsistency</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:60%;--c:var(--amber)"></div></div><div class="dim-note"><strong>Trust content is unusually detailed, but the pricing page contains contradictory free-credit and bonus-credit statements.</strong> Pricing page says every plan starts with ₹1,000 free credits, then shows Starter ₹300 bonus, Pro ₹1,000/₹2,000 bonus, and Business ₹7,500/₹12,500 bonus in different sections; Trust Center lists certifications and requestable reports.</div><div class="dim-note next"><strong>Next</strong> Create one source of truth for credits, pricing, expiry, refunds, and billing; add last-updated dates and link the pricing table from docs and dashboard.</div></div><div class="dim-score">3<small>/5</small></div></article><article class="dimension reveal"><div class="dim-top"><div class="dimension-name">Experience quality</div><div class="dim-meta s-mixed">10% weight · promising but incompletely verifiable</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:60%;--c:var(--amber)"></div></div><div class="dim-note"><strong>Information hierarchy and navigation are strong in the public text surface, but responsive behavior, focus states, interaction feedback, and visual loading could not be verified because the integrated browser was unavailable.</strong> Rich page structure, repeated global navigation, product-specific sections, and accessible-looking form labels are visible in the public crawl; viewport-level inspection was unavailable.</div><div class="dim-note next"><strong>Next</strong> Run a real desktop/mobile QA pass covering nav menus, cards, language selectors, audio/demo controls, form errors, focus order, and overflow at 320px, 768px, and 1440px.</div></div><div class="dim-score">3<small>/5</small></div></article><article class="dimension reveal"><div class="dim-top"><div class="dimension-name">Technical surface</div><div class="dim-meta s-mixed">15% weight · good public coverage with verification gaps</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:60%;--c:var(--amber)"></div></div><div class="dim-note"><strong>Public product, docs, pricing, status, legal, and contact paths are discoverable; docs include quickstart, SDKs, API reference, errors, rate limits, and status links.</strong> Docs welcome page exposes quickstart and reference links; status page reports fully operational; API and product links resolve in the public crawl. Console errors, metadata/social cards, and real responsive rendering were not observable.</div><div class="dim-note next"><strong>Next</strong> Add automated link, metadata, console-error, and viewport checks to release QA; verify every dashboard and product subdomain redirect is intentional.</div></div><div class="dim-score">3<small>/5</small></div></article><article class="dimension reveal"><div class="dim-top"><div class="dimension-name">Launch operations</div><div class="dim-meta s-mixed">10% weight · needs cleanup</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:60%;--c:var(--amber)"></div></div><div class="dim-note"><strong>Pricing, support, security contact, status, documentation, and enterprise contact paths are present, but expectation-setting is weakened by stale campaign copy and unclear post-CTA behavior.</strong> Homepage says ‘Sarvam Epoch is happening July 30 and 31’ while the audit date is August 4, 2026; docs expose support paths; Trust Center states a two-business-day security response.</div><div class="dim-note next"><strong>Next</strong> Remove expired banners, publish onboarding and support expectations beside each CTA, and ensure pricing/support promises match across site, docs, and dashboard.</div></div><div class="dim-score">3<small>/5</small></div></article></div></section>
+
+    <section id="journey"><div class="watermark">03</div><div class="section-head"><div class="idx">03 / JOURNEY</div><h2>The primary visitor journey</h2></div><div class="journey"><article class="stage st-pass reveal"><div class="stage-top"><span class="stage-num">01</span><span class="state state-pass">Pass</span></div><h3>Arrival</h3><p>The hero names Sarvam as an India-focused sovereign AI platform and gives a clear high-level promise.</p><p><strong>Impact:</strong> A relevant visitor can orient within five seconds, though the platform breadth is broad.</p><p><strong>Next:</strong> Preserve the hero and add an explicit API-versus-enterprise choice.</p></article><article class="stage st-pass reveal"><div class="stage-top"><span class="stage-num">02</span><span class="state state-pass">Pass</span></div><h3>Comprehension</h3><p>Product categories, API examples, and product pages explain what can be built and who each product serves.</p><p><strong>Impact:</strong> Visitors can form a credible mental model, with some risk of category overload.</p><p><strong>Next:</strong> Use role-based navigation or a short ‘Choose your path’ module.</p></article><article class="stage st-pass reveal"><div class="stage-top"><span class="stage-num">03</span><span class="state state-pass">Pass</span></div><h3>Evidence</h3><p>The site provides code, docs, named products, case-study outcomes, customer testimony, product scenarios, and operational metrics.</p><p><strong>Impact:</strong> Qualified buyers have enough public material to continue evaluation.</p><p><strong>Next:</strong> Add methodology and source links for the largest performance and ROI claims.</p></article><article class="stage st-friction reveal"><div class="stage-top"><span class="stage-num">04</span><span class="state state-friction">Friction</span></div><h3>Risk reduction</h3><p>Trust Center, status page, pricing, deployment options, and legal links are public, but pricing/credit sections disagree and some security documents require request/NDA.</p><p><strong>Impact:</strong> Buyers may pause to reconcile cost or request assurance before trying the platform.</p><p><strong>Next:</strong> Resolve pricing contradictions and label which trust evidence is public versus request-only.</p></article><article class="stage st-friction reveal"><div class="stage-top"><span class="stage-num">05</span><span class="state state-friction">Friction</span></div><h3>Action</h3><p>CTAs are prominent, but the general sign-up link resolves from dashboard.sarvam.ai to indus.sarvam.ai, which is not self-explanatory as a general onboarding destination.</p><p><strong>Impact:</strong> A visitor may wonder whether they reached the intended platform or a separate product.</p><p><strong>Next:</strong> Align CTA label, URL, and destination naming; add a clear next-step sentence.</p></article><article class="stage st-friction reveal"><div class="stage-top"><span class="stage-num">06</span><span class="state state-friction">Friction</span></div><h3>Expectation</h3><p>Pricing describes plans and support, but the page has conflicting credit values; the homepage also carries an expired event message.</p><p><strong>Impact:</strong> Visitors cannot rely on the page as the final source of truth for cost or current availability.</p><p><strong>Next:</strong> Publish a dated, canonical pricing table and remove expired campaign copy.</p></article></div></section>
+
+    <section id="blockers"><div class="watermark">04</div><div class="section-head"><div class="idx">04 / BLOCKERS</div><h2>No critical blockers observed</h2></div><div class="card"><p>No observed issue currently meets the critical-blocker definition.</p></div></section>
+
+    <section id="fixes"><div class="watermark">05</div><div class="section-head"><div class="idx">05 / FIXES</div><h2>What to improve, in order</h2></div><div class="improvements"><article class="fix reveal"><div class="fix-num">01</div><div class="fix-body"><div class="chips"><span class="chip c-high">High</span><span class="chip">Small effort</span><span class="chip">High confidence</span></div><h3>Resolve pricing and credit contradictions</h3><p>Keep one canonical table with price, paid credits, bonus credits, total credits, expiry, rate limit, support, and effective date; remove conflicting summary copy.</p></div><div class="fix-side"><p><strong>Evidence</strong>The pricing page says all plans start with ₹1,000 free credits, while later sections show different bonus-credit amounts for Starter, Pro, and Business.</p><p><strong>Why it matters</strong>Developers and procurement teams may doubt the offer or delay signup.</p><p><strong>Validate</strong>Compare homepage, pricing page, docs pricing, and dashboard values against one approved source of truth.</p></div></article><article class="fix reveal"><div class="fix-num">02</div><div class="fix-body"><div class="chips"><span class="chip c-high">High</span><span class="chip">Small effort</span><span class="chip">High confidence</span></div><h3>Make the sign-up destination unambiguous</h3><p>Route to the general platform onboarding page or relabel the CTA as ‘Open Sarvam Indus’; add a short description of the next step.</p></div><div class="fix-side"><p><strong>Evidence</strong>The visible CTA is ‘Sign up’ to dashboard.sarvam.ai, but the public destination redirects to indus.sarvam.ai.</p><p><strong>Why it matters</strong>Visitors may interpret the redirect as a broken or product-specific journey.</p><p><strong>Validate</strong>Open every primary CTA from homepage, product pages, pricing, and docs; confirm destination title and first action match the label.</p></div></article><article class="fix reveal"><div class="fix-num">03</div><div class="fix-body"><div class="chips"><span class="chip c-high">High</span><span class="chip">Small effort</span><span class="chip">High confidence</span></div><h3>Remove or date-bound the Epoch banner</h3><p>Replace with an archive/recap link or hide the banner after the event end date using a scheduled flag.</p></div><div class="fix-side"><p><strong>Evidence</strong>The footer says ‘Sarvam Epoch is happening July 30 and 31’ during an audit dated August 4, 2026.</p><p><strong>Why it matters</strong>The company appears inattentive to currentness, especially to new visitors evaluating operational maturity.</p><p><strong>Validate</strong>Revisit the homepage after the event end date and confirm no present-tense campaign copy remains.</p></div></article><article class="fix reveal"><div class="fix-num">04</div><div class="fix-body"><div class="chips"><span class="chip c-med">Medium</span><span class="chip">Medium effort</span><span class="chip">High confidence</span></div><h3>Create a platform-path chooser</h3><p>Add three cards near the hero: ‘Build with APIs’, ‘Deploy an enterprise agent’, and ‘Transform content or documents’, each with audience, time-to-value, and CTA.</p></div><div class="fix-side"><p><strong>Evidence</strong>The site presents APIs, four named products, multiple model families, enterprise deployment, and several audiences in one global journey.</p><p><strong>Why it matters</strong>A visitor can understand Sarvam but still be unsure where to start.</p><p><strong>Validate</strong>Run a five-second test and ask visitors to identify their next step and intended product.</p></div></article><article class="fix reveal"><div class="fix-num">05</div><div class="fix-body"><div class="chips"><span class="chip c-med">Medium</span><span class="chip">Medium effort</span><span class="chip">Medium confidence</span></div><h3>Substantiate the strongest quantitative claims</h3><p>Pair each claim with a named customer, sample size or benchmark, timeframe, and linked case study or methodology note.</p></div><div class="fix-side"><p><strong>Evidence</strong>Pages use claims such as 2x sales conversion, 10x ROI, 114% better, 100M+ conversations, and &lt;24 hours to deploy without visible methodology on the inspected pages.</p><p><strong>Why it matters</strong>Sophisticated buyers may discount the claims as generic marketing.</p><p><strong>Validate</strong>Ask five target buyers which proof claims they trust and whether they can find supporting detail within one click.</p></div></article><article class="fix reveal"><div class="fix-num">06</div><div class="fix-body"><div class="chips"><span class="chip c-med">Medium</span><span class="chip">Medium effort</span><span class="chip">High confidence</span></div><h3>Run responsive and interaction QA</h3><p>Test 320px, 390px, 768px, and 1440px widths plus keyboard-only navigation and error recovery for contact/signup paths.</p></div><div class="fix-side"><p><strong>Evidence</strong>Responsive rendering, mobile nav, focus states, audio controls, form error states, and console behavior could not be verified in the available inspection surface.</p><p><strong>Why it matters</strong>A visually strong desktop journey could still fail on common mobile or keyboard paths.</p><p><strong>Validate</strong>Record a pass/fail matrix for each path and capture screenshots of any clipping, overlap, or unreachable control.</p></div></article></div></section>
+
+    <section id="plan"><div class="watermark">06</div><div class="section-head"><div class="idx">06 / REPAIR PLAN</div><h2>Seven days to a safer launch</h2></div><div class="plan"><article class="plan-card reveal"><div class="plan-day">Day 1</div><h3>Clarify and unblock</h3><ul class="plain-list"><li>Approve one canonical pricing and credit policy</li><li>Fix or relabel the sign-up destination</li><li>Remove or date-bound the Epoch banner</li><li>Add effective dates to pricing and event copy</li></ul><p class="done"><strong>Done when</strong>All public surfaces tell the same story about cost, current availability, and the first action.</p></article><article class="plan-card reveal"><div class="plan-day">Days 2–3</div><h3>Repair the primary journey</h3><ul class="plain-list"><li>Add API-versus-enterprise path chooser</li><li>Align CTA labels, URLs, and destination headings</li><li>Add post-sign-up expectation copy</li><li>Link docs pricing and quickstart from the relevant CTA</li></ul><p class="done"><strong>Done when</strong>A developer and an enterprise buyer can each reach the correct next step without interpreting a redirect.</p></article><article class="plan-card reveal"><div class="plan-day">Days 4–5</div><h3>Add proof and trust</h3><ul class="plain-list"><li>Attach methodology or named case studies to quantitative claims</li><li>Clarify public versus request-only trust evidence</li><li>Add a dated pricing FAQ covering credits, expiry, refunds, and invoices</li></ul><p class="done"><strong>Done when</strong>A qualified buyer can verify the top claims and answer basic procurement questions from public pages.</p></article><article class="plan-card reveal"><div class="plan-day">Day 6</div><h3>Verify responsive and technical surfaces</h3><ul class="plain-list"><li>Test 320px, 390px, 768px, and 1440px layouts</li><li>Run keyboard/focus and form-error checks</li><li>Run broken-link, redirect, metadata, social-preview, and console-error checks</li></ul><p class="done"><strong>Done when</strong>The primary journey passes on desktop/mobile and all intentional redirects are documented.</p></article><article class="plan-card reveal"><div class="plan-day">Day 7</div><h3>Retest and launch</h3><ul class="plain-list"><li>Repeat the five-second comprehension test</li><li>Recheck pricing against dashboard and docs</li><li>Verify expired campaign flags</li><li>Run one small CTA experiment with a measurable success signal</li></ul><p class="done"><strong>Done when</strong>No high-severity finding remains open and the next launch experiment has a baseline and owner.</p></article></div></section>
+
+    <section id="retest"><div class="watermark">07</div><div class="section-head"><div class="idx">07 / RETEST</div><h2>Retest, then make the smallest measurable move</h2></div><div class="grid"><article class="card span-6 reveal"><div class="eyebrow">Strengths to preserve</div><ul class="plain-list"><li>Clear India-first and sovereign positioning</li><li>Strong public breadth across APIs and applications</li><li>Useful developer documentation with quickstart, SDKs, reference, rate limits, errors, and status</li><li>Named customer testimony and case-study outcomes</li><li>Detailed Trust Center with certifications, controls, deployment options, and security contact</li></ul></article><article class="card span-6 reveal"><div class="eyebrow">Still unknown</div><ul class="plain-list"><li>Authenticated onboarding and actual account activation</li><li>Real conversion, activation, retention, satisfaction, and support data</li><li>Billing, cancellation, refunds, invoices, credit expiry, and quota behavior after signup</li><li>Production monitoring and incident response beyond public status/trust claims</li><li>Actual responsive layout, accessibility conformance, browser console behavior, and performance metrics</li><li>Security posture and data flows beyond public claims and requestable documents</li><li>Legal and regulatory compliance as a qualified audit matter</li><li>Unit economics and product-market fit</li></ul></article><article class="card span-6 reveal"><div class="eyebrow">Limits</div><ul class="plain-list"><li>The integrated browser was unavailable, so viewport-level screenshots, live interaction states, console errors, and actual keyboard behavior were not directly verified.</li><li>No forms were submitted, no account was created, and no authenticated or billing behavior was tested.</li><li>Public-web content can change after the audit date; observations are tied to the consulted pages and crawl date.</li></ul></article></div><div class="frame experiment reveal" style="margin-top:22px"><div class="eyebrow">Smallest measurable launch experiment</div><h3>A role-based path chooser will improve qualified visitors' ability to reach the right product and CTA.</h3><div class="grid"><div class="cell span-4"><strong>Change</strong><p>Add three hero-adjacent paths: Build with APIs, Deploy enterprise agents, and Transform content/documents, each with a named CTA.</p></div><div class="cell span-4"><strong>Measure</strong><p>CTA click-through to the intended destination and percentage of visitors who correctly identify their next step in a five-second comprehension test.</p></div><div class="cell span-4"><strong>Success signal</strong><p>At least 15% relative improvement in intended CTA clicks and at least 80% correct next-step identification, with no drop in contact-form completion.</p></div></div></div><div class="sub-label">Sources inspected</div><div class="source-list"><article class="card reveal"><strong>Sarvam AI homepage</strong><span class="desc">Hero, product catalog, API example, customer proof, trust signals, status/event banner, and global navigation inspected on 2026-08-04.</span><a href="https://www.sarvam.ai/" rel="noreferrer">https://www.sarvam.ai/</a></article><article class="card reveal"><strong>Sarvam Voice Agents</strong><span class="desc">Product promise, scenarios, metrics, integrations, enterprise controls, customer proof, and FAQ inspected.</span><a href="https://www.sarvam.ai/products/conversational-agents" rel="noreferrer">https://www.sarvam.ai/products/conversational-agents</a></article><article class="card reveal"><strong>Sarvam Studio</strong><span class="desc">Dubbing/content transformation promise, language support, workflow claims, audiences, CTA, and FAQ inspected.</span><a href="https://www.sarvam.ai/products/studio" rel="noreferrer">https://www.sarvam.ai/products/studio</a></article><article class="card reveal"><strong>Sarvam Akshar</strong><span class="desc">Document AI promise, OCR pain points, structured outputs, language coverage, access CTA, and free-start claim inspected.</span><a href="https://www.sarvam.ai/products/akshar" rel="noreferrer">https://www.sarvam.ai/products/akshar</a></article><article class="card reveal"><strong>Sarvam Arya</strong><span class="desc">Enterprise workflow-agent promise, scenario selector, deployment, observability, security, and proof claims inspected.</span><a href="https://www.sarvam.ai/products/arya" rel="noreferrer">https://www.sarvam.ai/products/arya</a></article><article class="card reveal"><strong>Sarvam API docs</strong><span class="desc">Quickstart, API scope, SDKs, references, rate limits, errors, status, support, and pricing links inspected.</span><a href="https://docs.sarvam.ai/api/getting-started/welcome" rel="noreferrer">https://docs.sarvam.ai/api/getting-started/welcome</a></article><article class="card reveal"><strong>Sarvam pricing</strong><span class="desc">Top summary, subscription plans, detailed API pricing, credits, support, FAQ, and CTA inspected.</span><a href="https://www.sarvam.ai/api-pricing" rel="noreferrer">https://www.sarvam.ai/api-pricing</a></article><article class="card reveal"><strong>Sarvam Trust Center</strong><span class="desc">Certifications, controls, deployment, data residency, requestable reports, incident response, and security contact inspected.</span><a href="https://www.sarvam.ai/trust-center" rel="noreferrer">https://www.sarvam.ai/trust-center</a></article><article class="card reveal"><strong>Sarvam About Us</strong><span class="desc">Company identity, founders, funding, mission, and contact/careers paths inspected.</span><a href="https://www.sarvam.ai/about-us" rel="noreferrer">https://www.sarvam.ai/about-us</a></article><article class="card reveal"><strong>Sarvam Contact</strong><span class="desc">Public enterprise contact form fields and alternate support/careers/press paths inspected without submission.</span><a href="https://www.sarvam.ai/contact-us" rel="noreferrer">https://www.sarvam.ai/contact-us</a></article><article class="card reveal"><strong>Sarvam status</strong><span class="desc">Public status page inspected; it reported fully operational on 2026-08-04.</span><a href="https://status.sarvam.ai/" rel="noreferrer">https://status.sarvam.ai/</a></article><article class="card reveal"><strong>Sarvam platform CTA destination</strong><span class="desc">Public CTA destination inspected; it redirected to https://indus.sarvam.ai/ without a readable public crawl body.</span><a href="https://dashboard.sarvam.ai/" rel="noreferrer">https://dashboard.sarvam.ai/</a></article><article class="card reveal"><strong>Sarvam Akshar app</strong><span class="desc">Public destination inspected; app shell exposed Home, Guide, How it Works, Settings, and Organisation without authenticated workflow testing.</span><a href="https://akshar.sarvam.ai/" rel="noreferrer">https://akshar.sarvam.ai/</a></article></div></section>
+
+    <footer><span>Generated with <b>LaunchAudit</b>.</span><span>Public evidence review · not proof of product-market fit, legal compliance, or future conversion.</span></footer>
+  </main>
+</div>
+<script>
+  (() => { const body=document.body, preloader=document.getElementById('preloader'), fill=document.getElementById('preFill'), num=document.getElementById('preNum'); let value=0; const timer=setInterval(()=>{value+=Math.ceil((100-value)/5);fill.style.width=value+'%';num.textContent=String(value).padStart(2,'0');if(value>=100){clearInterval(timer);setTimeout(()=>{preloader.classList.add('done');body.classList.add('loaded')},180)}},28); const reveal=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('in');reveal.unobserve(entry.target)}}),{threshold:.12}); document.querySelectorAll('.reveal').forEach(item=>reveal.observe(item)); const progress=document.getElementById('progress'); addEventListener('scroll',()=>{const max=document.documentElement.scrollHeight-innerHeight;progress.style.width=(scrollY/Math.max(max,1)*100)+'%'},{passive:true}); const theme=document.getElementById('themeToggle'); const apply=mode=>{body.dataset.theme=mode;theme.querySelector('span:last-child').textContent=mode==='light'?'☼':'◐'}; const saved=localStorage.getItem('launchaudit-theme'); apply(saved||(matchMedia('(prefers-color-scheme:light)').matches?'light':'dark')); theme.addEventListener('click',()=>{const next=body.dataset.theme==='light'?'dark':'light';localStorage.setItem('launchaudit-theme',next);apply(next)}); })();
+</script>
+</body>
+</html>

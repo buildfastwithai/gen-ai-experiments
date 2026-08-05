@@ -1,0 +1,4 @@
+interface:
+  display_name: "LaunchAudit"
+  short_description: "Audit a startup before launch"
+  default_prompt: "Use $launchaudit to audit this startup URL and create a launch-readiness report."

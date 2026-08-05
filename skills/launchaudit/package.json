@@ -1,0 +1,46 @@
+{
+  "name": "launchaudit",
+  "version": "0.1.5",
+  "description": "A Codex skill that audits startup websites and creates launch-readiness reports.",
+  "author": "Avi112005",
+  "type": "commonjs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Avi112005/launchaudit.git"
+  },
+  "homepage": "https://github.com/Avi112005/launchaudit#readme",
+  "bugs": {
+    "url": "https://github.com/Avi112005/launchaudit/issues"
+  },
+  "bin": {
+    "launchaudit": "scripts/install.js"
+  },
+  "files": [
+    "launchaudit",
+    "examples",
+    "scripts/install.js",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "pack:check": "npm pack --dry-run"
+  },
+  "keywords": [
+    "codex",
+    "skill",
+    "startup",
+    "saas",
+    "launch",
+    "audit",
+    "landing-page",
+    "conversion",
+    "readiness",
+    "founder"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
