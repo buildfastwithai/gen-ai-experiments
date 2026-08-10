@@ -1,0 +1,1705 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-09",
+  "mode": "standard",
+  "product": {
+    "name": "Sarvam AI",
+    "url": "https://www.sarvam.ai",
+    "summary": "India-focused full-stack AI platform offering production APIs for Indian-language speech, translation, transliteration, text-to-speech, conversational AI, document AI, and dubbing.",
+    "stage": "commercial API platform with public developer docs, free credits, paid usage plans, and enterprise/custom deployment motion",
+    "geography": "India-first, with potential global Indian-language use cases",
+    "currency": "INR",
+    "primary_user": "Product and engineering teams building multilingual voice, document, and conversational workflows",
+    "economic_buyer": "VP/Head of Engineering, CTO, product owner, or operations leader accountable for automation and localization outcomes",
+    "problem": "General-purpose AI and cloud APIs can be expensive, fragmented, or less reliable for Indian-language, code-mixed, speech, and document workflows.",
+    "core_outcome": "Ship Indian-language AI features faster with one API surface, local-language model specialization, transparent usage pricing, and support for production workloads.",
+    "delivery_type": "cloud APIs, developer tooling, dashboard/workbench, and custom enterprise/VPC/on-premise options",
+    "value_frequency": "per API request and recurring production workload",
+    "current_business_model": "pay-per-use API credits with tiered rate limits/support and custom enterprise plans",
+    "current_pricing": "public pay-per-use pricing in INR; ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹100 signup credits in current docs, plus Starter/Pro/Business packaging and enterprise custom pricing"
+  },
+  "facts": [
+    {
+      "claim": "Sarvam offers APIs for transcription, translation, transliteration, text-to-speech, conversational AI, and document AI tuned for Indian languages.",
+      "source_url": "https://docs.sarvam.ai/api/getting-started/welcome",
+      "checked_at": "2026-08-09"
+    },
+    {
+      "claim": "Sarvam publishes usage prices such as STT at ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹30/hour, STT with diarization at ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹45/hour, TTS Bulbul v3 at ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹30/10K characters, translation at ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹20/10K characters, and Vision at ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹0.5/page.",
+      "source_url": "https://www.sarvam.ai/api-pricing",
+      "checked_at": "2026-08-09"
+    },
+    {
+      "claim": "SarvamÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢s public plans include Starter pay-as-you-go, Pro at ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹10,000, Business at ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹50,000, rate limits, and different support levels.",
+      "source_url": "https://www.sarvam.ai/api-pricing",
+      "checked_at": "2026-08-09"
+    },
+    {
+      "claim": "Sarvam docs state that every new user receives ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹100 in free credits usable across APIs.",
+      "source_url": "https://docs.sarvam.ai/api/getting-started/ratelimits",
+      "checked_at": "2026-08-09"
+    },
+    {
+      "claim": "Sarvam Doc AI supports extraction and digitisation of multilingual documents into structured formats and targets BFSI, government, legal, HR, healthcare, and research workflows.",
+      "source_url": "https://docs.sarvam.ai/docai/getting-started/overview",
+      "checked_at": "2026-08-09"
+    },
+    {
+      "claim": "SarvamÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢s EULA references production software/API use, service tiers, usage limits, and enterprise deployment contexts.",
+      "source_url": "https://www.sarvam.ai/eula",
+      "checked_at": "2026-08-09"
+    }
+  ],
+  "sources": [
+    {
+      "title": "Sarvam AI homepage",
+      "url": "https://www.sarvam.ai",
+      "kind": "product",
+      "checked_at": "2026-08-09",
+      "note": "Company positioning and product surface."
+    },
+    {
+      "title": "Sarvam API pricing",
+      "url": "https://www.sarvam.ai/api-pricing",
+      "kind": "product",
+      "checked_at": "2026-08-09",
+      "note": "Public INR usage prices, credits, plan packaging, support, and rate limits."
+    },
+    {
+      "title": "Sarvam API docs welcome",
+      "url": "https://docs.sarvam.ai/api/getting-started/welcome",
+      "kind": "product",
+      "checked_at": "2026-08-09",
+      "note": "API categories, quickstart, SDKs, and Indian-language positioning."
+    },
+    {
+      "title": "Sarvam credits and rate limits",
+      "url": "https://docs.sarvam.ai/api/getting-started/ratelimits",
+      "kind": "product",
+      "checked_at": "2026-08-09",
+      "note": "Signup credits and plan/rate-limit documentation."
+    },
+    {
+      "title": "Sarvam Doc AI overview",
+      "url": "https://docs.sarvam.ai/docai/getting-started/overview",
+      "kind": "product",
+      "checked_at": "2026-08-09",
+      "note": "Document use cases and workflows."
+    },
+    {
+      "title": "Sarvam EULA",
+      "url": "https://www.sarvam.ai/eula",
+      "kind": "other",
+      "checked_at": "2026-08-09",
+      "note": "Production license and deployment context."
+    },
+    {
+      "title": "Google Cloud Speech-to-Text pricing",
+      "url": "https://cloud.google.com/speech-to-text/pricing",
+      "kind": "market",
+      "checked_at": "2026-08-09",
+      "note": "Official per-minute and dynamic-batch pricing; US list-price anchor."
+    },
+    {
+      "title": "Amazon Transcribe pricing",
+      "url": "https://aws.amazon.com/transcribe/pricing/",
+      "kind": "market",
+      "checked_at": "2026-08-09",
+      "note": "Official usage billing and 60-minute free tier; region-specific rates."
+    },
+    {
+      "title": "Deepgram pricing",
+      "url": "https://deepgram.com/pricing",
+      "kind": "market",
+      "checked_at": "2026-08-09",
+      "note": "Official speech API PAYG, credits, concurrency, and enterprise packaging."
+    },
+    {
+      "title": "Azure Speech pricing",
+      "url": "https://azure.microsoft.com/en-us/pricing/details/speech/",
+      "kind": "market",
+      "checked_at": "2026-08-09",
+      "note": "Official speech service capabilities, free tier, and regional pricing caveats."
+    },
+    {
+      "title": "Gemini API pricing",
+      "url": "https://ai.google.dev/gemini-api/docs/pricing",
+      "kind": "market",
+      "checked_at": "2026-08-09",
+      "note": "Official free/paid/enterprise packaging and token pricing."
+    }
+  ],
+  "competitors": [
+    {
+      "name": "Google Cloud Speech-to-Text",
+      "type": "direct/adjacent substitute",
+      "target_segment": "developers and enterprises already on Google Cloud",
+      "value_metric": "audio minutes and model/batch",
+      "checked_at": "2026-08-09",
+      "url": "https://cloud.google.com/speech-to-text/pricing",
+      "pricing_url": "https://cloud.google.com/speech-to-text/pricing",
+      "model": "per minute, with version/model/batch/channel variation",
+      "visible_pricing": "V2 standard starts at $0.016/min for first 500K minutes; dynamic batch $0.003/min",
+      "notes": "V1 includes 60 free minutes; Google Cloud new customers may receive credits"
+    },
+    {
+      "name": "Amazon Transcribe",
+      "type": "direct/adjacent substitute",
+      "target_segment": "AWS-native product and contact-center teams",
+      "value_metric": "audio seconds, with 15-second minimum request",
+      "checked_at": "2026-08-09",
+      "url": "https://aws.amazon.com/transcribe/pricing/",
+      "pricing_url": "https://aws.amazon.com/transcribe/pricing/",
+      "model": "pay-as-you-go by audio seconds/minutes, regional tiers",
+      "visible_pricing": "tiered regional pricing; official page exposes 60 free minutes/month for 12 months and quote/calculator for exact rate",
+      "notes": "60 minutes/month for 12 months"
+    },
+    {
+      "name": "Deepgram",
+      "type": "direct/adjacent substitute",
+      "target_segment": "developers and voice AI application teams",
+      "value_metric": "audio minutes, model, add-ons, concurrency",
+      "checked_at": "2026-08-09",
+      "url": "https://deepgram.com/pricing",
+      "pricing_url": "https://deepgram.com/pricing",
+      "model": "PAYG credits, growth prepay, enterprise",
+      "visible_pricing": "Nova-3 public prices shown around $0.0048/min monolingual and $0.0058/min multilingual on current page; $200 free credit",
+      "notes": "$200 free credit, no card required"
+    },
+    {
+      "name": "Azure Speech",
+      "type": "direct/adjacent substitute",
+      "target_segment": "Microsoft/Azure enterprise buyers",
+      "value_metric": "audio seconds, characters, region, feature tier",
+      "checked_at": "2026-08-09",
+      "url": "https://azure.microsoft.com/en-us/pricing/details/speech/",
+      "pricing_url": "https://azure.microsoft.com/en-us/pricing/details/speech/",
+      "model": "per second for speech and per character for TTS, tier and region dependent",
+      "visible_pricing": "Free F0 includes 5 audio hours/month for standard real-time transcription and translation; paid rate varies by region/agreement",
+      "notes": "5 audio hours/month F0 plus Azure free account offers"
+    },
+    {
+      "name": "Google Gemini API",
+      "type": "adjacent substitute",
+      "target_segment": "general-purpose AI developers and enterprise application teams",
+      "value_metric": "input/output/cached tokens and tool usage",
+      "checked_at": "2026-08-09",
+      "url": "https://ai.google.dev/gemini-api/docs/pricing",
+      "pricing_url": "https://ai.google.dev/gemini-api/docs/pricing",
+      "model": "free tier, paid token usage, batch/flex/priority, enterprise",
+      "visible_pricing": "varies by model; current pricing page shows free tier for some models and paid token rates",
+      "notes": "Google AI Studio free usage and model-dependent free tier"
+    }
+  ],
+  "strategy": {
+    "problem_evidence": [
+      "Public product/docs evidence shows a broad Indian-language API surface covering speech, translation, TTS, LLM, and document workflows; this supports a real product problem but not paid demand.",
+      "The API pricing page makes usage units explicit and includes rate-limit/support upgrades, indicating a commercial developer platform rather than a purely research product.",
+      "Doc AI documentation names concrete back-office workflows such as KYC, invoices, claims, land deeds, healthcare intake, and resumes; these are candidate pain areas to validate with buyers.",
+      "Inference: the strongest near-term wedge is not generic chat, but multilingual document and voice workflows where local language coverage and deployment constraints matter."
+    ],
+    "icp": {
+      "primary_segment": "Indian BFSI, government-service, and customer-support software companies shipping multilingual document or voice automation",
+      "user": "engineering/product teams integrating speech, translation, TTS, or document extraction APIs",
+      "buyer": "CTO, VP Engineering, Head of Product, or operations leader with a measurable automation/localization mandate",
+      "company_profile": "India-focused B2B software or services company with recurring multilingual volume, an API integration team, and a compliance/data-residency concern",
+      "buying_trigger": "a production launch, tender, contact-center localization project, KYC/document backlog, or failed generic-model accuracy test",
+      "qualification_signals": [
+        "At least 10,000 monthly documents, minutes, or localized characters",
+        "Indian-language or code-mixed quality is a launch blocker",
+        "Existing cloud/API budget and named technical owner",
+        "Needs SLA, support, VPC, or on-premise discussion"
+      ],
+      "anti_icp": [
+        "Consumers seeking a general chatbot",
+        "Teams with trivial English-only volume",
+        "One-off low-volume experiments with no deployment path",
+        "Buyers unwilling to share evaluation data or define acceptance criteria"
+      ],
+      "where_to_find": [
+        "BFSI and govtech product communities",
+        "India-focused developer and AI meetups",
+        "Cloud marketplace and systems-integrator partners",
+        "LinkedIn outreach to engineering/product leaders triggered by localization or automation launches",
+        "Sarvam docs, cookbook, and developer community"
+      ]
+    },
+    "market": {
+      "definition": "India-first production APIs for Indian-language speech, text, document, and conversational automation",
+      "trends": [
+        "API buyers prefer usage-based pricing for variable AI workloads",
+        "Enterprise buyers increasingly ask for support, rate limits, security, and deployment controls",
+        "Indian-language and code-mixed workflows are a specialization opportunity"
+      ],
+      "risks": [
+        "Hyperscalers can bundle speech/LLM features into existing cloud contracts",
+        "Model quality and pricing may change quickly",
+        "Public evidence does not establish eligible account counts or willingness to pay"
+      ],
+      "eligible_accounts": {
+        "value": null,
+        "status": "unknown",
+        "confidence": "low",
+        "basis": "No reliable public count of Indian companies with qualifying multilingual production volume was found in the supplied evidence.",
+        "source_url": ""
+      },
+      "serviceable_accounts": {
+        "value": null,
+        "status": "unknown",
+        "confidence": "low",
+        "basis": "Requires a sourced ICP account list and geography/vertical filter.",
+        "source_url": ""
+      },
+      "realistic_accounts_24m": {
+        "value": null,
+        "status": "unknown",
+        "confidence": "low",
+        "basis": "Requires evidence from pipeline capacity, sales cycle, and channel conversion.",
+        "source_url": ""
+      },
+      "annual_revenue_per_account": {
+        "value": 1200000,
+        "status": "assumption",
+        "confidence": "low",
+        "basis": "Working hypothesis: ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹100,000 monthly average production spend per account; validate against paid pilots and usage logs.",
+        "source_url": "https://www.sarvam.ai/api-pricing"
+      }
+    },
+    "positioning": {
+      "category": "India-first sovereign language AI infrastructure",
+      "alternatives": [
+        "Hyperscaler speech/translation/LLM APIs",
+        "Multiple point APIs stitched together",
+        "Self-hosted open models",
+        "Manual translation, transcription, and document processing"
+      ],
+      "differentiators": [
+        "Indian-language and code-mixed specialization",
+        "Unified API and credit wallet across language workflows",
+        "Public INR pricing and local support motion",
+        "Document and speech workflows plus custom enterprise deployment options"
+      ],
+      "statement": "For India-focused product and operations teams that need multilingual voice or document automation, Sarvam AI is the Indian-language AI platform that combines specialized models, a unified API surface, and production-oriented support so teams can launch localized workflows without stitching together multiple providers.",
+      "claim_to_test": "Qualified teams will choose Sarvam for a paid production pilot when it reduces integration complexity or improves acceptance-test accuracy versus their current cloud or open-model stack."
+    },
+    "go_to_market": {
+      "primary_channel": "targeted founder-led technical sales to high-volume BFSI/govtech/customer-support teams, paired with a benchmark-driven pilot",
+      "secondary_channel": "systems integrators, cloud partners, and developer-led cookbook/benchmark content",
+      "motion": "product-led evaluation into paid usage pilot, then enterprise expansion for rate limits, support, security, and deployment",
+      "message": "Evaluate your real Indian-language documents/audio against Sarvam and get to a production decision with transparent usage economics and a single integration surface.",
+      "initial_offer": "14-day or fixed-credit production pilot with one workflow, acceptance metrics, solution-engineer review, and a conversion path to Pro/Business credits or enterprise terms",
+      "funnel_assumptions": [
+        "50 named accounts contacted in first 30 days",
+        "20% reply or referral rate",
+        "8 qualified evaluations",
+        "4 pilots started",
+        "1-2 paid production conversions by day 90"
+      ],
+      "stop_conditions": [
+        "Fewer than 3 qualified evaluations from 50 targeted accounts: change vertical or trigger",
+        "Pilot accuracy/latency does not beat incumbent on agreed dataset: narrow use case or improve model/product",
+        "No paid conversion after 4 completed pilots: revisit buyer, packaging, or proof of ROI",
+        "Support burden exceeds gross profit on pilots: tighten scope and introduce paid implementation"
+      ]
+    },
+    "milestones": [
+      {
+        "period": "Days 1-30",
+        "outcome": "Validate one vertical/use case and secure qualified evaluations",
+        "metric": "8 qualified evaluations or 3 design partners",
+        "decision_gate": "Proceed only if buyers share data and a production acceptance criterion."
+      },
+      {
+        "period": "Days 31-60",
+        "outcome": "Run benchmarked pilots and package the winning workflow",
+        "metric": "4 pilots with measured quality, latency, and unit cost",
+        "decision_gate": "Prioritize the workflow with strongest buyer urgency and positive unit margin hypothesis."
+      },
+      {
+        "period": "Days 61-90",
+        "outcome": "Convert pilots to paid usage and document repeatable sales motion",
+        "metric": "1-2 paid conversions and a repeatable pilot-to-paid playbook",
+        "decision_gate": "Scale only if paid usage, margin, and support load meet thresholds."
+      }
+    ],
+    "readiness_scores": [
+      {
+        "dimension": "problem_evidence",
+        "raw_score": 3,
+        "evidence_strength": "partial",
+        "rationale": "Concrete public product/use-case evidence exists, but no supplied buyer interviews or purchase evidence.",
+        "evidence_urls": [
+          "https://docs.sarvam.ai/docai/getting-started/overview"
+        ]
+      },
+      {
+        "dimension": "icp_specificity",
+        "raw_score": 4,
+        "evidence_strength": "assumption-heavy",
+        "rationale": "A narrow vertical and buyer are proposed, but must be validated against pipeline and usage data.",
+        "evidence_urls": [
+          "https://docs.sarvam.ai/docai/getting-started/overview"
+        ]
+      },
+      {
+        "dimension": "reachable_market",
+        "raw_score": 2,
+        "evidence_strength": "unsupported",
+        "rationale": "Account counts and bottom-up market inputs are not publicly established in the evidence set.",
+        "evidence_urls": []
+      },
+      {
+        "dimension": "positioning",
+        "raw_score": 4,
+        "evidence_strength": "partial",
+        "rationale": "Specialization and unified surface are visible; comparative win rate remains unproven.",
+        "evidence_urls": [
+          "https://docs.sarvam.ai/api/getting-started/welcome"
+        ]
+      },
+      {
+        "dimension": "business_model_pricing",
+        "raw_score": 4,
+        "evidence_strength": "strong",
+        "rationale": "Public usage pricing, credits, rate limits, and enterprise path are visible; willingness to pay is not proven.",
+        "evidence_urls": [
+          "https://www.sarvam.ai/api-pricing"
+        ]
+      },
+      {
+        "dimension": "go_to_market",
+        "raw_score": 3,
+        "evidence_strength": "assumption-heavy",
+        "rationale": "A testable named-account pilot motion is specified, but channel conversion is unknown.",
+        "evidence_urls": [
+          "https://docs.sarvam.ai/api/getting-started/welcome"
+        ]
+      },
+      {
+        "dimension": "unit_economics",
+        "raw_score": 2,
+        "evidence_strength": "assumption-heavy",
+        "rationale": "Public price anchors exist, but internal variable cost, CAC, churn, and contribution are not supplied.",
+        "evidence_urls": [
+          "https://www.sarvam.ai/api-pricing"
+        ]
+      },
+      {
+        "dimension": "execution_readiness",
+        "raw_score": 4,
+        "evidence_strength": "partial",
+        "rationale": "Public docs and product surface support rapid pilots; commercial funnel evidence is missing.",
+        "evidence_urls": [
+          "https://docs.sarvam.ai/api/getting-started/welcome"
+        ]
+      }
+    ]
+  },
+  "business_model": {
+    "customer_segments": [
+      "BFSI and insurance automation teams",
+      "Government and govtech service providers",
+      "Customer-support and contact-center platforms",
+      "Developers building Indian-language products",
+      "Media/localization and document-processing businesses"
+    ],
+    "value_propositions": [
+      "Higher relevance for Indian-language and code-mixed workflows",
+      "One integration across speech, translation, TTS, chat, and documents",
+      "Transparent INR usage economics",
+      "Production support and deployment options for enterprise workloads"
+    ],
+    "channels": [
+      "Developer docs and cookbook",
+      "Founder-led technical sales",
+      "Systems integrators and cloud partners",
+      "Benchmarks and vertical pilots",
+      "Developer community"
+    ],
+    "customer_relationships": [
+      "Self-serve documentation and credits",
+      "Solution-engineer assisted pilots",
+      "Email/Slack support by plan",
+      "Enterprise account management"
+    ],
+    "revenue_streams": [
+      "API usage credits",
+      "Pro and Business prepaid credit plans",
+      "Enterprise volume commitments",
+      "Implementation and deployment services where justified",
+      "Custom private/VPC/on-premise contracts"
+    ],
+    "key_activities": [
+      "Model quality and inference operations",
+      "API reliability, docs, and SDKs",
+      "Benchmarking and pilot delivery",
+      "Enterprise security/deployment support",
+      "Developer and partner distribution"
+    ],
+    "key_resources": [
+      "Indic-language models and datasets",
+      "Inference infrastructure",
+      "API platform and usage telemetry",
+      "Research/engineering talent",
+      "Enterprise support and deployment capability"
+    ],
+    "key_partners": [
+      "Cloud infrastructure providers",
+      "Systems integrators",
+      "BFSI/govtech solution vendors",
+      "Developer communities and research institutions"
+    ],
+    "cost_structure": [
+      "GPU/inference and storage",
+      "Engineering and research",
+      "Support and solution engineering",
+      "Sales and partner development",
+      "Security, compliance, and deployment",
+      "Payment, tax, and regional operations"
+    ],
+    "advantages": [
+      "Indian-language specialization",
+      "Unified multi-modal API portfolio",
+      "Local market context and INR packaging",
+      "Potential sovereign/private deployment fit"
+    ],
+    "recommended_model": "Usage-based API credits with prepaid Pro/Business tiers and enterprise commitments; use paid pilots to prove recurring production volume.",
+    "why_now": "The public product surface already supports multiple production workflows and transparent usage billing; the next commercial leverage point is repeatable vertical conversion, not adding a broad consumer tier.",
+    "distribution_wedge": "Benchmark-led pilots for high-volume Indian-language document and voice workflows in BFSI/govtech/customer-support software.",
+    "north_star_metric": "Monthly gross profit from retained production accounts, with supporting measures of qualified pilots, paid conversion, usage volume, and support cost per account."
+  },
+  "monetization_candidates": [
+    {
+      "name": "Usage-based API credits with tiered support",
+      "model_type": "usage",
+      "rationale": "Matches variable model/inference cost and SarvamÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢s existing public offer.",
+      "strengths": [
+        "Value and cost track usage",
+        "Low-friction developer entry",
+        "Supports expansion with volume"
+      ],
+      "risks": [
+        "Revenue can be lumpy",
+        "Buyers may struggle to forecast spend",
+        "Free credits can create cost exposure"
+      ],
+      "evidence_urls": [
+        "https://www.sarvam.ai/api-pricing"
+      ],
+      "verdict": "PRIMARY"
+    },
+    {
+      "name": "Prepaid production commitments",
+      "model_type": "prepaid",
+      "rationale": "Convert successful pilots into predictable credits with rate-limit and support upgrades.",
+      "strengths": [
+        "Improves revenue predictability",
+        "Clear upgrade trigger",
+        "Funds capacity planning"
+      ],
+      "risks": [
+        "Requires trust and usage visibility",
+        "May create unused-credit objections"
+      ],
+      "evidence_urls": [
+        "https://www.sarvam.ai/api-pricing"
+      ],
+      "verdict": "ALTERNATIVE"
+    },
+    {
+      "name": "Platform subscription plus metered overage",
+      "model_type": "hybrid",
+      "rationale": "Could package governance, analytics, support, and workspace value above raw inference usage.",
+      "strengths": [
+        "Recurring base revenue",
+        "Makes enterprise controls billable",
+        "Better forecastability"
+      ],
+      "risks": [
+        "Can overcomplicate existing credit model",
+        "Must prove non-usage platform value"
+      ],
+      "evidence_urls": [
+        "https://docs.sarvam.ai/docai/getting-started/overview"
+      ],
+      "verdict": "TEST"
+    },
+    {
+      "name": "One-time implementation/license fee",
+      "model_type": "services",
+      "rationale": "Useful for private deployment, migration, or workflow integration, but not sufficient as the core model.",
+      "strengths": [
+        "Covers solution-engineering effort",
+        "Fits enterprise procurement",
+        "Can accelerate first contract"
+      ],
+      "risks": [
+        "Services-heavy delivery",
+        "Does not cover ongoing inference",
+        "Revenue is non-recurring"
+      ],
+      "evidence_urls": [
+        "https://www.sarvam.ai/eula"
+      ],
+      "verdict": "TEST"
+    },
+    {
+      "name": "Uncapped lifetime access",
+      "model_type": "lifetime",
+      "rationale": "Unsafe where inference, support, storage, and model operations remain recurring costs.",
+      "strengths": [
+        "Simple headline offer"
+      ],
+      "risks": [
+        "Uncapped variable cost",
+        "Support and model updates remain ongoing",
+        "Conflicts with usage economics"
+      ],
+      "evidence_urls": [
+        "https://www.sarvam.ai/terms-of-service"
+      ],
+      "verdict": "REJECT"
+    }
+  ],
+  "pricing": {
+    "recommended_model": "Usage-based credits with prepaid Pro/Business plans and enterprise volume commitments",
+    "alternative_model": "Platform subscription for governance/support plus metered API overage",
+    "currency": "INR",
+    "value_metric": "API usage units (audio hours, characters, pages, tokens) aggregated into universal credits, with rate limits/support as packaging levers",
+    "free_plan_decision": "Keep a constrained credit-based free entry point; cap abuse and avoid uncapped free inference.",
+    "free_plan_rationale": "Public docs already use free credits to reduce developer friction. The model should be credit-limited, rate-limited, and tied to evaluation rather than perpetual free production.",
+    "trial": "Fixed-credit or 14-day pilot, with one production workflow and explicit acceptance criteria.",
+    "annual_discount_percent": 15,
+    "lifetime_verdict": "NOT_RECOMMENDED",
+    "lifetime_rationale": "Ongoing inference, support, storage, and model operations make uncapped lifetime access economically unsafe.",
+    "pricing_confidence": "medium for public current packaging; low for willingness-to-pay and optimal margin",
+    "pricing_evidence": [
+      "Public Sarvam pricing shows ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹10,000 Pro and ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹50,000 Business packages with bonus credits, rate limits, and support differences.",
+      "Public API rates make usage the natural value metric; competitor pages also anchor speech and AI infrastructure to minutes, characters, pages, or tokens."
+    ],
+    "tiers": [
+      {
+        "name": "Developer",
+        "tier_type": "free",
+        "target_segment": "Developers evaluating a workflow",
+        "monthly_price": 0,
+        "annual_monthly_equivalent": 0,
+        "expected_paid_mix": 0,
+        "included": [
+          "ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹100 evaluation credits",
+          "Docs, SDKs, community support"
+        ],
+        "limits": "Rate-limited credits; no production SLA",
+        "upgrade_trigger": "Credits exhausted, higher rate limits, or production support needed"
+      },
+      {
+        "name": "Pro",
+        "tier_type": "paid",
+        "target_segment": "Startups and POCs",
+        "monthly_price": 10000,
+        "annual_monthly_equivalent": 8500,
+        "expected_paid_mix": 0.65,
+        "included": [
+          "Prepaid universal credits",
+          "Higher rate limit",
+          "Email support"
+        ],
+        "limits": "Usage is metered; credits/bonus subject to current commercial terms",
+        "upgrade_trigger": "Production usage, higher throughput, or solution support"
+      },
+      {
+        "name": "Business",
+        "tier_type": "paid",
+        "target_segment": "Production workloads",
+        "monthly_price": 50000,
+        "annual_monthly_equivalent": 42500,
+        "expected_paid_mix": 0.35,
+        "included": [
+          "Larger prepaid credit balance",
+          "High rate limit",
+          "Priority support / solutions engineering hypothesis"
+        ],
+        "limits": "Usage and support scope agreed by contract",
+        "upgrade_trigger": "Volume, SLA, security, or deployment requirements"
+      },
+      {
+        "name": "Enterprise",
+        "tier_type": "contact",
+        "target_segment": "Regulated/high-volume organizations",
+        "monthly_price": 100000,
+        "annual_monthly_equivalent": 85000,
+        "expected_paid_mix": 0,
+        "included": [
+          "Volume pricing",
+          "Custom rate limits",
+          "VPC/on-premise options",
+          "Security and deployment support"
+        ],
+        "limits": "Custom contract",
+        "upgrade_trigger": "Need for procurement, compliance, or dedicated deployment"
+      }
+    ],
+    "lifetime_constraints": [
+      "No uncapped lifetime access against recurring inference, storage, support, or model-update costs.",
+      "Any one-time deployment fee must exclude ongoing usage and support unless separately contracted."
+    ]
+  },
+  "financial_inputs": {
+    "opening_free_users": {
+      "value": 0,
+      "status": "assumption",
+      "confidence": "low",
+      "basis": "No private user count supplied; model starts from a clean cohort for testability.",
+      "source_url": ""
+    },
+    "opening_paid_customers": {
+      "value": 0,
+      "status": "assumption",
+      "confidence": "low",
+      "basis": "No private paid-customer count supplied; model starts from a clean cohort.",
+      "source_url": ""
+    },
+    "monthly_new_free_users": {
+      "value": 100,
+      "status": "assumption",
+      "confidence": "low",
+      "basis": "Placeholder for early targeted developer acquisition; replace with dashboard cohort data.",
+      "source_url": "https://docs.sarvam.ai/api/getting-started/welcome"
+    },
+    "free_to_paid_conversion_rate": {
+      "value": 0.03,
+      "status": "assumption",
+      "confidence": "low",
+      "basis": "Conservative early conversion hypothesis for credit-led developer evaluation; must be measured by cohort.",
+      "source_url": ""
+    },
+    "monthly_new_paid_customers_direct": {
+      "value": 1,
+      "status": "assumption",
+      "confidence": "low",
+      "basis": "Named-account pilot hypothesis; validate through sales pipeline.",
+      "source_url": ""
+    },
+    "monthly_paid_churn_rate": {
+      "value": 0.03,
+      "status": "assumption",
+      "confidence": "low",
+      "basis": "Placeholder for production account retention until cohort history exists.",
+      "source_url": ""
+    },
+    "monthly_arpu_override": {
+      "value": 0,
+      "status": "assumption",
+      "confidence": "medium",
+      "basis": "Zero means workbook uses weighted public/hypothesis tier ARPU rather than overriding it.",
+      "source_url": "https://www.sarvam.ai/api-pricing"
+    },
+    "variable_cost_per_paid_customer": {
+      "value": 2500,
+      "status": "assumption",
+      "confidence": "low",
+      "basis": "Placeholder blended inference/support cost per paid account; replace with account-level usage and infra allocation.",
+      "source_url": ""
+    },
+    "variable_cost_per_free_user": {
+      "value": 50,
+      "status": "assumption",
+      "confidence": "low",
+      "basis": "Placeholder expected credit/inference cost for an active free evaluator; enforce credit caps.",
+      "source_url": ""
+    },
+    "fixed_monthly_costs": {
+      "value": 1500000,
+      "status": "assumption",
+      "confidence": "low",
+      "basis": "Illustrative early commercial/product overhead; excludes full company cost allocation.",
+      "source_url": ""
+    },
+    "monthly_acquisition_spend": {
+      "value": 250000,
+      "status": "assumption",
+      "confidence": "low",
+      "basis": "Illustrative targeted pilot/content/partner spend; replace with approved budget.",
+      "source_url": ""
+    },
+    "one_time_revenue_per_new_paid": {
+      "value": 0,
+      "status": "assumption",
+      "confidence": "medium",
+      "basis": "Base model keeps implementation/setup revenue at zero to test recurring usage economics.",
+      "source_url": ""
+    },
+    "starting_cash": {
+      "value": 10000000,
+      "status": "assumption",
+      "confidence": "low",
+      "basis": "Illustrative opening cash only for runway visualization; not a claim about SarvamÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢s finances.",
+      "source_url": ""
+    }
+  },
+  "scenarios": [
+    {
+      "name": "conservative",
+      "new_free_users_multiplier": 0.7,
+      "conversion_multiplier": 0.7,
+      "new_paid_multiplier": 0.6,
+      "churn_multiplier": 1.4,
+      "arpu_multiplier": 0.9,
+      "variable_cost_multiplier": 1.2,
+      "fixed_cost_multiplier": 1.1,
+      "acquisition_spend_multiplier": 0.8
+    },
+    {
+      "name": "base",
+      "new_free_users_multiplier": 1.0,
+      "conversion_multiplier": 1.0,
+      "new_paid_multiplier": 1.0,
+      "churn_multiplier": 1.0,
+      "arpu_multiplier": 1.0,
+      "variable_cost_multiplier": 1.0,
+      "fixed_cost_multiplier": 1.0,
+      "acquisition_spend_multiplier": 1.0
+    },
+    {
+      "name": "optimistic",
+      "new_free_users_multiplier": 1.5,
+      "conversion_multiplier": 1.3,
+      "new_paid_multiplier": 1.5,
+      "churn_multiplier": 0.75,
+      "arpu_multiplier": 1.1,
+      "variable_cost_multiplier": 0.9,
+      "fixed_cost_multiplier": 1.0,
+      "acquisition_spend_multiplier": 1.3
+    }
+  ],
+  "risks": [
+    {
+      "risk": "Paid conversion from free credits is too low",
+      "likelihood": "high",
+      "impact": "high",
+      "mitigation": "Use fixed-credit pilots with a named production workflow and buyer acceptance metric.",
+      "validation": "Track cohort activation, evaluation completion, and paid conversion by use case."
+    },
+    {
+      "risk": "Hyperscaler bundling or lower prices compress differentiation",
+      "likelihood": "high",
+      "impact": "high",
+      "mitigation": "Sell accuracy, code-mix performance, deployment fit, and workflow outcomes rather than API price alone.",
+      "validation": "Benchmark against incumbent on real buyer data and record win/loss reasons."
+    },
+    {
+      "risk": "Free usage creates uncapped inference/support cost",
+      "likelihood": "medium",
+      "impact": "high",
+      "mitigation": "Keep free access credit-limited and rate-limited; charge for production support.",
+      "validation": "Review cost per activated free account and abuse rate weekly."
+    },
+    {
+      "risk": "Enterprise pilots become services-heavy",
+      "likelihood": "medium",
+      "impact": "medium",
+      "mitigation": "Standardize pilot scope, acceptance tests, and paid implementation boundaries.",
+      "validation": "Measure solution-engineer hours and gross profit per pilot."
+    },
+    {
+      "risk": "Model changes or quality gaps reduce trust",
+      "likelihood": "medium",
+      "impact": "high",
+      "mitigation": "Version models, publish changelog guidance, and maintain customer regression datasets.",
+      "validation": "Monitor acceptance metrics and production incident/churn reasons."
+    }
+  ],
+  "roadmap": [
+    {
+      "start_day": 1,
+      "end_day": 7,
+      "phase": "Days 1-30",
+      "objective": "Choose the first wedge",
+      "hypothesis": "BFSI/govtech document or voice workflows have urgent Indian-language pain and budget.",
+      "action": "Interview 10 target buyers and rank workflows by volume, urgency, and incumbent dissatisfaction.",
+      "deliverable": "ICP brief and ranked use-case scorecard",
+      "metric": "10 interviews; 5 qualified pain statements",
+      "decision_rule": "If fewer than 3 buyers name a near-term production trigger, change vertical or trigger.",
+      "owner": "Founder/GTÃƒÂÃ…â€œ"
+    },
+    {
+      "start_day": 5,
+      "end_day": 14,
+      "phase": "Days 1-30",
+      "objective": "Build the benchmark",
+      "hypothesis": "Sarvam can win on quality or workflow simplicity on real Indian-language data.",
+      "action": "Collect consented sample documents/audio and benchmark Sarvam against incumbent/open alternative.",
+      "deliverable": "Reproducible benchmark harness and report",
+      "metric": "At least 100 documents or 10 hours audio across target languages",
+      "decision_rule": "Continue only if one workflow shows a measurable win or materially lower integration cost.",
+      "owner": "Product/Engineering"
+    },
+    {
+      "start_day": 10,
+      "end_day": 21,
+      "phase": "Days 1-30",
+      "objective": "Package the pilot",
+      "hypothesis": "A fixed-credit, fixed-scope pilot will convert evaluation into paid production intent.",
+      "action": "Create pilot scope, acceptance criteria, pricing page/one-pager, and security FAQ.",
+      "deliverable": "Pilot offer and buyer-facing collateral",
+      "metric": "3 design partners accept evaluation plan",
+      "decision_rule": "If buyers reject paid conversion criteria, revise value metric and proof of ROI.",
+      "owner": "Founder/Product"
+    },
+    {
+      "start_day": 18,
+      "end_day": 30,
+      "phase": "Days 1-30",
+      "objective": "Fill the pipeline",
+      "hypothesis": "Targeted technical outreach beats broad awareness for the first wedge.",
+      "action": "Contact 50 named accounts through founder-led outreach, partners, and relevant communities.",
+      "deliverable": "Qualified pipeline with next steps",
+      "metric": "50 accounts; 8 qualified evaluations",
+      "decision_rule": "If reply/qualification is weak, switch trigger or partner source before adding spend.",
+      "owner": "Founder/Sales"
+    },
+    {
+      "start_day": 31,
+      "end_day": 45,
+      "phase": "Days 31-60",
+      "objective": "Run pilots",
+      "hypothesis": "The winning workflow can reach production acceptance within 2 weeks.",
+      "action": "Launch 4 scoped pilots with weekly technical and buyer reviews.",
+      "deliverable": "Pilot scorecards and implementation notes",
+      "metric": "4 pilots started; time-to-first-value under 7 days",
+      "decision_rule": "Stop pilots with no data owner, acceptance metric, or production sponsor.",
+      "owner": "Solutions/Engineering"
+    },
+    {
+      "start_day": 40,
+      "end_day": 55,
+      "phase": "Days 31-60",
+      "objective": "Validate economics",
+      "hypothesis": "Usage revenue covers variable inference and support costs at the proposed package.",
+      "action": "Instrument usage, infra cost, support hours, and outcome value by account.",
+      "deliverable": "Account-level gross-margin sheet and pricing readout",
+      "metric": "Cost and usage captured for all active pilots",
+      "decision_rule": "Do not scale a use case with negative contribution after support cost.",
+      "owner": "Finance/Operations"
+    },
+    {
+      "start_day": 46,
+      "end_day": 60,
+      "phase": "Days 31-60",
+      "objective": "Improve conversion",
+      "hypothesis": "Buyers pay for production confidence, rate limits, and supportÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Ânot raw model access alone.",
+      "action": "Test Pro/Business credit packages, annual discount, and paid implementation boundary.",
+      "deliverable": "Offer experiment results",
+      "metric": "At least 2 pricing conversations with concrete objections and one verbal commit",
+      "decision_rule": "Keep only packaging with clear upgrade trigger and acceptable margin hypothesis.",
+      "owner": "Founder/Sales"
+    },
+    {
+      "start_day": 61,
+      "end_day": 75,
+      "phase": "Days 61-90",
+      "objective": "Convert production accounts",
+      "hypothesis": "A successful pilot can convert to recurring usage within 30 days.",
+      "action": "Close pilots with production plan, contract path, usage forecast, and support scope.",
+      "deliverable": "Paid production contracts or documented loss reasons",
+      "metric": "1-2 paid conversions; 90-day usage forecast per account",
+      "decision_rule": "If zero conversions after 4 completed pilots, change ICP, offer, or proofÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Ânot just lead volume.",
+      "owner": "Founder/Sales"
+    },
+    {
+      "start_day": 70,
+      "end_day": 84,
+      "phase": "Days 61-90",
+      "objective": "Build repeatability",
+      "hypothesis": "A standard benchmark and pilot playbook can reduce sales/implementation effort.",
+      "action": "Document qualification, benchmark, security, pricing, and handoff steps; recruit one channel partner.",
+      "deliverable": "Pilot-to-paid playbook and partner brief",
+      "metric": "Second pilot delivered with 25% less internal effort",
+      "decision_rule": "Scale the channel only if partner-sourced opportunity reaches qualification threshold.",
+      "owner": "Growth/Operations"
+    },
+    {
+      "start_day": 80,
+      "end_day": 90,
+      "phase": "Days 61-90",
+      "objective": "Make the scale decision",
+      "hypothesis": "The winning wedge has enough conversion, margin, retention signal, and reachable pipeline to justify investment.",
+      "action": "Review funnel, usage gross profit, support load, churn signals, and model quality by segment.",
+      "deliverable": "90-day decision memo and next-quarter plan",
+      "metric": "Paid conversion, contribution margin, pipeline coverage, and pilot effort meet thresholds",
+      "decision_rule": "Scale only if contribution is positive and at least one repeatable acquisition path is evidenced.",
+      "owner": "Leadership"
+    }
+  ],
+  "limitations": [
+    "No private customer, revenue, usage, CAC, churn, support, infrastructure, cash, or pipeline data was supplied or inspected.",
+    "Market account counts are unknown; TAM/SAM/SOM should not be used until eligible account counts and annual revenue per account are sourced.",
+    "Financial model assumptions are illustrative and must be replaced with cohort, usage, infra allocation, and approved budget data.",
+    "Competitor prices vary by region, tier, model, channel count, batch mode, agreement, taxes, and currency; they are anchors, not willingness-to-pay evidence.",
+    "Model excludes taxes, payment fees, refunds, credits/bonus-credit breakage, contracts, data-transfer, storage, compliance, and regional pricing effects unless measured in inputs.",
+    "Public product and pricing pages can change; re-check before using the plan for a commercial decision.",
+    "The report does not establish demand, profitability, product-market fit, or a guaranteed conversion rate."
+  ],
+  "analysis_status": "PROVISIONAL",
+  "status_details": [
+    "opening_free_users",
+    "opening_paid_customers",
+    "monthly_new_free_users",
+    "free_to_paid_conversion_rate",
+    "monthly_new_paid_customers_direct",
+    "monthly_paid_churn_rate",
+    "monthly_arpu_override",
+    "variable_cost_per_paid_customer",
+    "variable_cost_per_free_user",
+    "fixed_monthly_costs",
+    "monthly_acquisition_spend",
+    "one_time_revenue_per_new_paid",
+    "starting_cash"
+  ],
+  "financial_verdict": "FRAGILE",
+  "verdict_reasons": [
+    "Base full-year operating profit is not positive."
+  ],
+  "weighted_tier_arpu": 24000.0,
+  "market_sizing": {
+    "tam": null,
+    "sam": null,
+    "som_24m": null
+  },
+  "readiness_breakdown": [
+    {
+      "dimension": "problem_evidence",
+      "raw_score": 3,
+      "evidence_strength": "partial",
+      "rationale": "Concrete public product/use-case evidence exists, but no supplied buyer interviews or purchase evidence.",
+      "evidence_urls": [
+        "https://docs.sarvam.ai/docai/getting-started/overview"
+      ],
+      "weight": 15,
+      "submitted_raw_score": 3,
+      "applied_raw_score": 3,
+      "evidence_multiplier": 0.75,
+      "weighted_score": 6.75,
+      "cap_reason": ""
+    },
+    {
+      "dimension": "icp_specificity",
+      "raw_score": 4,
+      "evidence_strength": "assumption-heavy",
+      "rationale": "A narrow vertical and buyer are proposed, but must be validated against pipeline and usage data.",
+      "evidence_urls": [
+        "https://docs.sarvam.ai/docai/getting-started/overview"
+      ],
+      "weight": 10,
+      "submitted_raw_score": 4,
+      "applied_raw_score": 4,
+      "evidence_multiplier": 0.5,
+      "weighted_score": 4.0,
+      "cap_reason": ""
+    },
+    {
+      "dimension": "reachable_market",
+      "raw_score": 2,
+      "evidence_strength": "unsupported",
+      "rationale": "Account counts and bottom-up market inputs are not publicly established in the evidence set.",
+      "evidence_urls": [],
+      "weight": 10,
+      "submitted_raw_score": 2,
+      "applied_raw_score": 2,
+      "evidence_multiplier": 0.25,
+      "weighted_score": 1.0,
+      "cap_reason": ""
+    },
+    {
+      "dimension": "positioning",
+      "raw_score": 4,
+      "evidence_strength": "partial",
+      "rationale": "Specialization and unified surface are visible; comparative win rate remains unproven.",
+      "evidence_urls": [
+        "https://docs.sarvam.ai/api/getting-started/welcome"
+      ],
+      "weight": 15,
+      "submitted_raw_score": 4,
+      "applied_raw_score": 4,
+      "evidence_multiplier": 0.75,
+      "weighted_score": 9.0,
+      "cap_reason": ""
+    },
+    {
+      "dimension": "business_model_pricing",
+      "raw_score": 4,
+      "evidence_strength": "strong",
+      "rationale": "Public usage pricing, credits, rate limits, and enterprise path are visible; willingness to pay is not proven.",
+      "evidence_urls": [
+        "https://www.sarvam.ai/api-pricing"
+      ],
+      "weight": 15,
+      "submitted_raw_score": 4,
+      "applied_raw_score": 3,
+      "evidence_multiplier": 1.0,
+      "weighted_score": 9.0,
+      "cap_reason": "No direct willingness-to-pay or transaction evidence was supplied."
+    },
+    {
+      "dimension": "go_to_market",
+      "raw_score": 3,
+      "evidence_strength": "assumption-heavy",
+      "rationale": "A testable named-account pilot motion is specified, but channel conversion is unknown.",
+      "evidence_urls": [
+        "https://docs.sarvam.ai/api/getting-started/welcome"
+      ],
+      "weight": 15,
+      "submitted_raw_score": 3,
+      "applied_raw_score": 2,
+      "evidence_multiplier": 0.5,
+      "weighted_score": 3.0,
+      "cap_reason": "No public evidence that the target buyer is reachable in the proposed channel."
+    },
+    {
+      "dimension": "unit_economics",
+      "raw_score": 2,
+      "evidence_strength": "assumption-heavy",
+      "rationale": "Public price anchors exist, but internal variable cost, CAC, churn, and contribution are not supplied.",
+      "evidence_urls": [
+        "https://www.sarvam.ai/api-pricing"
+      ],
+      "weight": 10,
+      "submitted_raw_score": 2,
+      "applied_raw_score": 2,
+      "evidence_multiplier": 0.5,
+      "weighted_score": 2.0,
+      "cap_reason": ""
+    },
+    {
+      "dimension": "execution_readiness",
+      "raw_score": 4,
+      "evidence_strength": "partial",
+      "rationale": "Public docs and product surface support rapid pilots; commercial funnel evidence is missing.",
+      "evidence_urls": [
+        "https://docs.sarvam.ai/api/getting-started/welcome"
+      ],
+      "weight": 10,
+      "submitted_raw_score": 4,
+      "applied_raw_score": 4,
+      "evidence_multiplier": 0.75,
+      "weighted_score": 6.0,
+      "cap_reason": ""
+    }
+  ],
+  "readiness_score": 40.8,
+  "readiness_label": "WEAK_EVIDENCE_VALIDATE_FIRST",
+  "scenario_summaries": [
+    {
+      "name": "conservative",
+      "arpu": 21600.0,
+      "monthly_contribution_per_paid_customer": 18600.0,
+      "gross_margin": 0.861111,
+      "blended_cac": 333333.33,
+      "cac_payback_months": 17.92,
+      "simplified_ltv": 442857.14,
+      "break_even_paid_customers": 88.71,
+      "full_year_revenue": 7727620.58,
+      "full_year_operating_profit": -15826826.66,
+      "month_12_operating_profit": -434706.37,
+      "ending_paid_customers": 84.4873,
+      "ending_cash": -5826826.66,
+      "months": [
+        {
+          "month": 1,
+          "opening_free": 0.0,
+          "new_free": 70.0,
+          "converted": 0.0,
+          "ending_free": 70.0,
+          "opening_paid": 0.0,
+          "new_paid": 0.6,
+          "churned": 0.0,
+          "ending_paid": 0.6,
+          "revenue": 6480.0,
+          "total_cost": 1853000.0,
+          "operating_profit": -1846520.0,
+          "ending_cash": 8153480.0
+        },
+        {
+          "month": 2,
+          "opening_free": 70.0,
+          "new_free": 70.0,
+          "converted": 1.47,
+          "ending_free": 138.53,
+          "opening_paid": 0.6,
+          "new_paid": 2.07,
+          "churned": 0.0252,
+          "ending_paid": 2.6448,
+          "revenue": 35043.84,
+          "total_cost": 1861123.1,
+          "operating_profit": -1826079.26,
+          "ending_cash": 6327400.74
+        },
+        {
+          "month": 3,
+          "opening_free": 138.53,
+          "new_free": 70.0,
+          "converted": 2.9091,
+          "ending_free": 205.6209,
+          "opening_paid": 2.6448,
+          "new_paid": 3.5091,
+          "churned": 0.1111,
+          "ending_paid": 6.0428,
+          "revenue": 93826.6,
+          "total_cost": 1873356.0,
+          "operating_profit": -1779529.4,
+          "ending_cash": 4547871.34
+        },
+        {
+          "month": 4,
+          "opening_free": 205.6209,
+          "new_free": 70.0,
+          "converted": 4.318,
+          "ending_free": 271.3028,
+          "opening_paid": 6.0428,
+          "new_paid": 4.918,
+          "churned": 0.2538,
+          "ending_paid": 10.7071,
+          "revenue": 180899.3,
+          "total_cost": 1889432.61,
+          "operating_profit": -1708533.31,
+          "ending_cash": 2839338.03
+        },
+        {
+          "month": 5,
+          "opening_free": 271.3028,
+          "new_free": 70.0,
+          "converted": 5.6974,
+          "ending_free": 335.6055,
+          "opening_paid": 10.7071,
+          "new_paid": 6.2974,
+          "churned": 0.4497,
+          "ending_paid": 16.5547,
+          "revenue": 294427.83,
+          "total_cost": 1909100.0,
+          "operating_profit": -1614672.18,
+          "ending_cash": 1224665.86
+        },
+        {
+          "month": 6,
+          "opening_free": 335.6055,
+          "new_free": 70.0,
+          "converted": 7.0477,
+          "ending_free": 398.5578,
+          "opening_paid": 16.5547,
+          "new_paid": 7.6477,
+          "churned": 0.6953,
+          "ending_paid": 23.5072,
+          "revenue": 432668.66,
+          "total_cost": 1932117.77,
+          "operating_profit": -1499449.1,
+          "ending_cash": -274783.25
+        },
+        {
+          "month": 7,
+          "opening_free": 398.5578,
+          "new_free": 70.0,
+          "converted": 8.3697,
+          "ending_free": 460.188,
+          "opening_paid": 23.5072,
+          "new_paid": 8.9697,
+          "churned": 0.9873,
+          "ending_paid": 31.4896,
+          "revenue": 593964.8,
+          "total_cost": 1958257.48,
+          "operating_profit": -1364292.69,
+          "ending_cash": -1639075.93
+        },
+        {
+          "month": 8,
+          "opening_free": 460.188,
+          "new_free": 70.0,
+          "converted": 9.6639,
+          "ending_free": 520.5241,
+          "opening_paid": 31.4896,
+          "new_paid": 10.2639,
+          "churned": 1.3226,
+          "ending_paid": 40.431,
+          "revenue": 776741.83,
+          "total_cost": 1987302.17,
+          "operating_profit": -1210560.35,
+          "ending_cash": -2849636.28
+        },
+        {
+          "month": 9,
+          "opening_free": 520.5241,
+          "new_free": 70.0,
+          "converted": 10.931,
+          "ending_free": 579.5931,
+          "opening_paid": 40.431,
+          "new_paid": 11.531,
+          "churned": 1.6981,
+          "ending_paid": 50.2639,
+          "revenue": 979504.18,
+          "total_cost": 2019045.76,
+          "operating_profit": -1039541.58,
+          "ending_cash": -3889177.86
+        },
+        {
+          "month": 10,
+          "opening_free": 579.5931,
+          "new_free": 70.0,
+          "converted": 12.1715,
+          "ending_free": 637.4216,
+          "opening_paid": 50.2639,
+          "new_paid": 12.7715,
+          "churned": 2.1111,
+          "ending_paid": 60.9242,
+          "revenue": 1200831.58,
+          "total_cost": 2053292.61,
+          "operating_profit": -852461.02,
+          "ending_cash": -4741638.89
+        },
+        {
+          "month": 11,
+          "opening_free": 637.4216,
+          "new_free": 70.0,
+          "converted": 13.3859,
+          "ending_free": 694.0358,
+          "opening_paid": 60.9242,
+          "new_paid": 13.9859,
+          "churned": 2.5588,
+          "ending_paid": 72.3513,
+          "revenue": 1439375.6,
+          "total_cost": 2089857.0,
+          "operating_profit": -650481.4,
+          "ending_cash": -5392120.29
+        },
+        {
+          "month": 12,
+          "opening_free": 694.0358,
+          "new_free": 70.0,
+          "converted": 14.5748,
+          "ending_free": 749.461,
+          "opening_paid": 72.3513,
+          "new_paid": 15.1748,
+          "churned": 3.0388,
+          "ending_paid": 84.4873,
+          "revenue": 1693856.36,
+          "total_cost": 2128562.73,
+          "operating_profit": -434706.37,
+          "ending_cash": -5826826.66
+        }
+      ]
+    },
+    {
+      "name": "base",
+      "arpu": 24000.0,
+      "monthly_contribution_per_paid_customer": 21500.0,
+      "gross_margin": 0.895833,
+      "blended_cac": 250000.0,
+      "cac_payback_months": 11.63,
+      "simplified_ltv": 716666.67,
+      "break_even_paid_customers": 69.77,
+      "full_year_revenue": 17352830.33,
+      "full_year_operating_profit": -5779393.52,
+      "month_12_operating_profit": 1637405.52,
+      "ending_paid_customers": 172.369,
+      "ending_cash": 4220606.46,
+      "months": [
+        {
+          "month": 1,
+          "opening_free": 0.0,
+          "new_free": 100.0,
+          "converted": 0.0,
+          "ending_free": 100.0,
+          "opening_paid": 0.0,
+          "new_paid": 1.0,
+          "churned": 0.0,
+          "ending_paid": 1.0,
+          "revenue": 12000.0,
+          "total_cost": 1753750.0,
+          "operating_profit": -1741750.0,
+          "ending_cash": 8258250.0
+        },
+        {
+          "month": 2,
+          "opening_free": 100.0,
+          "new_free": 100.0,
+          "converted": 3.0,
+          "ending_free": 197.0,
+          "opening_paid": 1.0,
+          "new_paid": 4.0,
+          "churned": 0.03,
+          "ending_paid": 4.97,
+          "revenue": 71640.0,
+          "total_cost": 1764887.5,
+          "operating_profit": -1693247.5,
+          "ending_cash": 6565002.5
+        },
+        {
+          "month": 3,
+          "opening_free": 197.0,
+          "new_free": 100.0,
+          "converted": 5.91,
+          "ending_free": 291.09,
+          "opening_paid": 4.97,
+          "new_paid": 6.91,
+          "churned": 0.1491,
+          "ending_paid": 11.7309,
+          "revenue": 200410.8,
+          "total_cost": 1783078.38,
+          "operating_profit": -1582667.57,
+          "ending_cash": 4982334.92
+        },
+        {
+          "month": 4,
+          "opening_free": 291.09,
+          "new_free": 100.0,
+          "converted": 8.7327,
+          "ending_free": 382.3573,
+          "opening_paid": 11.7309,
+          "new_paid": 9.7327,
+          "churned": 0.3519,
+          "ending_paid": 21.1117,
+          "revenue": 394110.88,
+          "total_cost": 1807889.4,
+          "operating_profit": -1413778.52,
+          "ending_cash": 3568556.4
+        },
+        {
+          "month": 5,
+          "opening_free": 382.3573,
+          "new_free": 100.0,
+          "converted": 11.4707,
+          "ending_free": 470.8866,
+          "opening_paid": 21.1117,
+          "new_paid": 12.4707,
+          "churned": 0.6334,
+          "ending_paid": 32.949,
+          "revenue": 648728.58,
+          "total_cost": 1838906.99,
+          "operating_profit": -1190178.41,
+          "ending_cash": 2378377.99
+        },
+        {
+          "month": 6,
+          "opening_free": 470.8866,
+          "new_free": 100.0,
+          "converted": 14.1266,
+          "ending_free": 556.76,
+          "opening_paid": 32.949,
+          "new_paid": 15.1266,
+          "churned": 0.9885,
+          "ending_paid": 47.0872,
+          "revenue": 960434.52,
+          "total_cost": 1875736.43,
+          "operating_profit": -915301.91,
+          "ending_cash": 1463076.08
+        },
+        {
+          "month": 7,
+          "opening_free": 556.76,
+          "new_free": 100.0,
+          "converted": 16.7028,
+          "ending_free": 640.0572,
+          "opening_paid": 47.0872,
+          "new_paid": 17.7028,
+          "churned": 1.4126,
+          "ending_paid": 63.3774,
+          "revenue": 1325574.25,
+          "total_cost": 1918001.08,
+          "operating_profit": -592426.83,
+          "ending_cash": 870649.25
+        },
+        {
+          "month": 8,
+          "opening_free": 640.0572,
+          "new_free": 100.0,
+          "converted": 19.2017,
+          "ending_free": 720.8555,
+          "opening_paid": 63.3774,
+          "new_paid": 20.2017,
+          "churned": 1.9013,
+          "ending_paid": 81.6777,
+          "revenue": 1740661.2,
+          "total_cost": 1965341.69,
+          "operating_profit": -224680.49,
+          "ending_cash": 645968.75
+        },
+        {
+          "month": 9,
+          "opening_free": 720.8555,
+          "new_free": 100.0,
+          "converted": 21.6257,
+          "ending_free": 799.2298,
+          "opening_paid": 81.6777,
+          "new_paid": 22.6257,
+          "churned": 2.4503,
+          "ending_paid": 101.8531,
+          "revenue": 2202369.92,
+          "total_cost": 2017415.66,
+          "operating_profit": 184954.25,
+          "ending_cash": 830923.01
+        },
+        {
+          "month": 10,
+          "opening_free": 799.2298,
+          "new_free": 100.0,
+          "converted": 23.9769,
+          "ending_free": 875.2529,
+          "opening_paid": 101.8531,
+          "new_paid": 24.9769,
+          "churned": 3.0556,
+          "ending_paid": 123.7744,
+          "revenue": 2707529.52,
+          "total_cost": 2073896.39,
+          "operating_profit": 633633.13,
+          "ending_cash": 1464556.13
+        },
+        {
+          "month": 11,
+          "opening_free": 875.2529,
+          "new_free": 100.0,
+          "converted": 26.2576,
+          "ending_free": 948.9953,
+          "opening_paid": 123.7744,
+          "new_paid": 27.2576,
+          "churned": 3.7132,
+          "ending_paid": 147.3187,
+          "revenue": 3253117.41,
+          "total_cost": 2134472.6,
+          "operating_profit": 1118644.81,
+          "ending_cash": 2583200.94
+        },
+        {
+          "month": 12,
+          "opening_free": 948.9953,
+          "new_free": 100.0,
+          "converted": 28.4699,
+          "ending_free": 1020.5255,
+          "opening_paid": 147.3187,
+          "new_paid": 29.4699,
+          "churned": 4.4196,
+          "ending_paid": 172.369,
+          "revenue": 3836253.25,
+          "total_cost": 2198847.73,
+          "operating_profit": 1637405.52,
+          "ending_cash": 4220606.46
+        }
+      ]
+    },
+    {
+      "name": "optimistic",
+      "arpu": 26400.0,
+      "monthly_contribution_per_paid_customer": 24150.0,
+      "gross_margin": 0.914773,
+      "blended_cac": 216666.67,
+      "cac_payback_months": 8.97,
+      "simplified_ltv": 1073333.33,
+      "break_even_paid_customers": 62.11,
+      "full_year_revenue": 36406320.45,
+      "full_year_operating_profit": 10978296.26,
+      "month_12_operating_profit": 5515584.09,
+      "ending_paid_customers": 330.7414,
+      "ending_cash": 20978296.26,
+      "months": [
+        {
+          "month": 1,
+          "opening_free": 0.0,
+          "new_free": 150.0,
+          "converted": 0.0,
+          "ending_free": 150.0,
+          "opening_paid": 0.0,
+          "new_paid": 1.5,
+          "churned": 0.0,
+          "ending_paid": 1.5,
+          "revenue": 19800.0,
+          "total_cost": 1830062.5,
+          "operating_profit": -1810262.5,
+          "ending_cash": 8189737.5
+        },
+        {
+          "month": 2,
+          "opening_free": 150.0,
+          "new_free": 150.0,
+          "converted": 5.85,
+          "ending_free": 294.15,
+          "opening_paid": 1.5,
+          "new_paid": 7.35,
+          "churned": 0.0338,
+          "ending_paid": 8.8163,
+          "revenue": 136174.5,
+          "total_cost": 1846599.16,
+          "operating_profit": -1710424.66,
+          "ending_cash": 6479312.84
+        },
+        {
+          "month": 3,
+          "opening_free": 294.15,
+          "new_free": 150.0,
+          "converted": 11.4718,
+          "ending_free": 432.6781,
+          "opening_paid": 8.8163,
+          "new_paid": 12.9718,
+          "churned": 0.1984,
+          "ending_paid": 21.5897,
+          "revenue": 401358.99,
+          "total_cost": 1875560.37,
+          "operating_profit": -1474201.37,
+          "ending_cash": 5005111.47
+        },
+        {
+          "month": 4,
+          "opening_free": 432.6781,
+          "new_free": 150.0,
+          "converted": 16.8744,
+          "ending_free": 565.8037,
+          "opening_paid": 21.5897,
+          "new_paid": 18.3744,
+          "churned": 0.4858,
+          "ending_paid": 39.4784,
+          "revenue": 806099.55,
+          "total_cost": 1916167.51,
+          "operating_profit": -1110067.96,
+          "ending_cash": 3895043.51
+        },
+        {
+          "month": 5,
+          "opening_free": 565.8037,
+          "new_free": 150.0,
+          "converted": 22.0663,
+          "ending_free": 693.7374,
+          "opening_paid": 39.4784,
+          "new_paid": 23.5663,
+          "churned": 0.8883,
+          "ending_paid": 62.1565,
+          "revenue": 1341580.77,
+          "total_cost": 1967678.94,
+          "operating_profit": -626098.18,
+          "ending_cash": 3268945.33
+        },
+        {
+          "month": 6,
+          "opening_free": 693.7374,
+          "new_free": 150.0,
+          "converted": 27.0558,
+          "ending_free": 816.6816,
+          "opening_paid": 62.1565,
+          "new_paid": 28.5558,
+          "churned": 1.3985,
+          "ending_paid": 89.3137,
+          "revenue": 1999406.94,
+          "total_cost": 2029388.43,
+          "operating_profit": -29981.49,
+          "ending_cash": 3238963.84
+        },
+        {
+          "month": 7,
+          "opening_free": 816.6816,
+          "new_free": 150.0,
+          "converted": 31.8506,
+          "ending_free": 934.831,
+          "opening_paid": 89.3137,
+          "new_paid": 33.3506,
+          "churned": 2.0096,
+          "ending_paid": 120.6548,
+          "revenue": 2771583.96,
+          "total_cost": 2100623.58,
+          "operating_profit": 670960.38,
+          "ending_cash": 3909924.23
+        },
+        {
+          "month": 8,
+          "opening_free": 934.831,
+          "new_free": 150.0,
+          "converted": 36.4584,
+          "ending_free": 1048.3726,
+          "opening_paid": 120.6548,
+          "new_paid": 37.9584,
+          "churned": 2.7147,
+          "ending_paid": 155.8984,
+          "revenue": 3650502.02,
+          "total_cost": 2180744.41,
+          "operating_profit": 1469757.6,
+          "ending_cash": 5379681.83
+        },
+        {
+          "month": 9,
+          "opening_free": 1048.3726,
+          "new_free": 150.0,
+          "converted": 40.8865,
+          "ending_free": 1157.4861,
+          "opening_paid": 155.8984,
+          "new_paid": 42.3865,
+          "churned": 3.5077,
+          "ending_paid": 194.7772,
+          "revenue": 4628918.95,
+          "total_cost": 2269141.96,
+          "operating_profit": 2359776.99,
+          "ending_cash": 7739458.82
+        },
+        {
+          "month": 10,
+          "opening_free": 1157.4861,
+          "new_free": 150.0,
+          "converted": 45.142,
+          "ending_free": 1262.3441,
+          "opening_paid": 194.7772,
+          "new_paid": 46.642,
+          "churned": 4.3825,
+          "ending_paid": 237.0367,
+          "revenue": 5699944.32,
+          "total_cost": 2365236.89,
+          "operating_profit": 3334707.44,
+          "ending_cash": 11074166.26
+        },
+        {
+          "month": 11,
+          "opening_free": 1262.3441,
+          "new_free": 150.0,
+          "converted": 49.2314,
+          "ending_free": 1363.1127,
+          "opening_paid": 237.0367,
+          "new_paid": 50.7314,
+          "churned": 5.3333,
+          "ending_paid": 282.4348,
+          "revenue": 6857024.16,
+          "total_cost": 2468478.25,
+          "operating_profit": 4388545.92,
+          "ending_cash": 15462712.17
+        },
+        {
+          "month": 12,
+          "opening_free": 1363.1127,
+          "new_free": 150.0,
+          "converted": 53.1614,
+          "ending_free": 1459.9513,
+          "opening_paid": 282.4348,
+          "new_paid": 54.6614,
+          "churned": 6.3548,
+          "ending_paid": 330.7414,
+          "revenue": 8093926.29,
+          "total_cost": 2578342.2,
+          "operating_profit": 5515584.09,
+          "ending_cash": 20978296.26
+        }
+      ]
+    }
+  ],
+  "key_metrics": {
+    "name": "base",
+    "arpu": 24000.0,
+    "monthly_contribution_per_paid_customer": 21500.0,
+    "gross_margin": 0.895833,
+    "blended_cac": 250000.0,
+    "cac_payback_months": 11.63,
+    "simplified_ltv": 716666.67,
+    "break_even_paid_customers": 69.77,
+    "full_year_revenue": 17352830.33,
+    "full_year_operating_profit": -5779393.52,
+    "month_12_operating_profit": 1637405.52,
+    "ending_paid_customers": 172.369,
+    "ending_cash": 4220606.46
+  },
+  "quality_warnings": [
+    "The forecast uses visible assumptions that must be replaced with measured data.",
+    "No direct demand or transaction evidence is included.",
+    "The first go-to-market channel lacks direct reachability evidence."
+  ],
+  "prepared_at": "2026-08-09T12:50:49+00:00"
+}

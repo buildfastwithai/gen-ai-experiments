@@ -1,0 +1,4 @@
+interface:
+  display_name: "StartupBlueprint"
+  short_description: "Turn a startup into an evidence-backed business"
+  default_prompt: "Use $startupblueprint to turn this startup into an evidence-backed business plan and financial model."

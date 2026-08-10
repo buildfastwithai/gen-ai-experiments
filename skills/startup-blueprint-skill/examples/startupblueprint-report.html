@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='14' fill='%2306060a'/%3E%3Cpath d='M20 16v30h20' fill='none' stroke='%23d7ff3f' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M33 46l9-28 11 28M37 36h10' fill='none' stroke='%234de3ff' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<title>Sarvam AI · StartupBlueprint</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#06060a;
+    --bg-2:#0b0b12;
+    --panel:rgba(255,255,255,.028);
+    --line:rgba(255,255,255,.09);
+    --ink:#f3f1ea;
+    --muted:#9794a2;
+    --faint:#6d6a78;
+    --acid:#d7ff3f;
+    --cyan:#4de3ff;
+    --violet:#8b7bff;
+    --orange:#ff5c33;
+    --green:#3ddc97;
+    --amber:#ffb020;
+    --red:#ff5252;
+    --mono:"JetBrains Mono",ui-monospace,monospace;
+    --disp:"Space Grotesk",Inter,sans-serif;
+    --body:"Inter",system-ui,sans-serif;
+  }
+  body[data-theme="light"]{--bg:#f4f6fb;--bg-2:#e9edf7;--panel:rgba(255,255,255,.86);--line:rgba(17,21,42,.12);--ink:#11152a;--muted:#5e6982;--faint:#7b849a;--acid:#5d7200;--cyan:#087e9c;--violet:#6558d9;--orange:#db4728;--green:#087c58;--amber:#9a6500;--red:#bb3232}
+  body[data-theme="light"] aside{background:linear-gradient(180deg,#fff,#e9edff);color:var(--ink);border-color:var(--line)}
+  body[data-theme="light"] nav a{color:var(--muted)} body[data-theme="light"] nav a:hover{color:var(--ink);background:rgba(17,21,42,.06)}
+  body[data-theme="light"] .blocker{color:var(--ink);background:linear-gradient(160deg,rgba(255,82,82,.08),rgba(255,255,255,.8)),#fff;border-color:rgba(187,50,50,.3)}
+  body[data-theme="light"] .blocker h3,body[data-theme="light"] .blocker p strong{color:var(--ink)} body[data-theme="light"] .blocker p{color:#596174}
+  body[data-theme="light"] .card>p,body[data-theme="light"] .plain-list li,body[data-theme="light"] .stage p,body[data-theme="light"] .fix .fix-body>p,body[data-theme="light"] .plan-card p,body[data-theme="light"] .table-wrap td{color:#4f5b74}
+  body[data-theme="light"] .fix-num{color:var(--acid);-webkit-text-stroke:0;text-shadow:none}
+  body[data-theme="light"] .verdict h2,body[data-theme="light"] .verdict .lede2,body[data-theme="light"] .verdict .mini p,body[data-theme="light"] .verdict .score-value{color:#fff}
+  body[data-theme="light"] .experiment{color:#fff;background:linear-gradient(135deg,#171b35,#43358b)}
+  body[data-theme="light"] .experiment h3,body[data-theme="light"] .experiment .cell p{color:#fff}
+  .theme-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;margin-top:auto;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.04);color:var(--muted);font:600 10px var(--mono);letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
+  @property --a{syntax:'<angle>';initial-value:0deg;inherits:false}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:var(--body);line-height:1.5;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  }
+  ::selection{background:var(--acid);color:#0a0a0a}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:#23232d;border-radius:99px;border:2px solid var(--bg)}
+  ::-webkit-scrollbar-thumb:hover{background:var(--acid)}
+  a{color:inherit}
+  h1,h2,h3,p{margin:0}
+  ul{margin:0}
+
+  .grain{position:fixed;inset:-60%;width:220%;height:220%;pointer-events:none;z-index:2000;opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.7'/%3E%3C/svg%3E");
+    animation:grain 7s steps(8) infinite}
+  @keyframes grain{0%,100%{transform:translate(0,0)}20%{transform:translate(-4%,3%)}40%{transform:translate(3%,-4%)}60%{transform:translate(-3%,-2%)}80%{transform:translate(4%,3%)}}
+  .progress{position:fixed;top:0;left:0;height:2px;width:0;z-index:1500;
+    background:linear-gradient(90deg,var(--acid),var(--cyan));box-shadow:0 0 14px rgba(215,255,63,.55)}
+
+  .cursor-dot,.cursor-ring{position:fixed;top:0;left:0;pointer-events:none;z-index:3000;border-radius:50%}
+  .cursor-dot{width:6px;height:6px;background:var(--acid);margin:-3px 0 0 -3px}
+  .cursor-ring{width:34px;height:34px;border:1px solid rgba(215,255,63,.45);margin:-17px 0 0 -17px;
+    transition:width .25s,height .25s,margin .25s,border-color .25s,background .25s}
+  body.c-hover .cursor-ring{width:58px;height:58px;margin:-29px 0 0 -29px;border-color:var(--acid);background:rgba(215,255,63,.06)}
+  @media (hover:none),(pointer:coarse){.cursor-dot,.cursor-ring{display:none}}
+
+  .preloader{position:fixed;inset:0;background:var(--bg);z-index:5000;display:grid;place-items:center;
+    transition:transform .85s cubic-bezier(.75,0,.2,1)}
+  .preloader.done{transform:translateY(-101%)}
+  .pre-inner{display:grid;justify-items:center;gap:20px}
+  .pre-logo{font:700 44px var(--disp);letter-spacing:-.04em;color:var(--acid);text-shadow:0 0 40px rgba(215,255,63,.4)}
+  .pre-bar{width:190px;height:2px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden}
+  .pre-fill{height:100%;width:0;background:linear-gradient(90deg,var(--acid),var(--cyan))}
+  .pre-num{font:500 11px var(--mono);letter-spacing:.35em;color:var(--muted)}
+
+  .layout{display:grid;grid-template-columns:266px minmax(0,1fr);min-height:100vh}
+  main{min-width:0}
+
+  aside{position:sticky;top:0;height:100vh;padding:30px 22px;display:flex;flex-direction:column;gap:26px;
+    border-right:1px solid var(--line);background:rgba(9,9,15,.72);backdrop-filter:blur(14px);z-index:60}
+  .brand{display:flex;align-items:center;gap:14px}
+  .mark{width:46px;height:46px;border-radius:13px;background:var(--acid);color:#0a0a0a;display:grid;place-items:center;
+    font:700 15px var(--disp);letter-spacing:-.02em;flex-shrink:0;
+    box-shadow:0 0 0 1px rgba(215,255,63,.35),0 0 32px rgba(215,255,63,.22);
+    transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+  .mark:hover{transform:rotate(-8deg) scale(1.07)}
+  .side-name{font:700 17px var(--disp);letter-spacing:-.02em}
+  .side-sub{font:500 10px var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-top:5px}
+  nav{display:grid;gap:3px}
+  nav a{display:flex;align-items:baseline;gap:12px;padding:9px 12px;border-radius:10px;text-decoration:none;
+    color:var(--muted);font:500 11.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;
+    transition:color .25s,background .25s,transform .25s}
+  nav a span{font-size:9.5px;color:var(--faint);transition:color .25s;min-width:16px}
+  nav a:hover{color:var(--ink);background:rgba(255,255,255,.045);transform:translateX(5px)}
+  nav a.active{color:var(--acid);background:rgba(215,255,63,.07)}
+  nav a.active span{color:var(--acid)}
+  .side-foot{margin-top:auto;font:400 10.5px var(--mono);letter-spacing:.06em;color:var(--faint);line-height:1.7;
+    border-top:1px solid var(--line);padding-top:18px}
+  .side-foot b{color:var(--muted);font-weight:500}
+
+  .eyebrow{font:600 10.5px var(--mono);letter-spacing:.24em;text-transform:uppercase;color:var(--acid)}
+  .reveal{opacity:0;transform:translateY(28px);
+    transition:opacity .85s ease var(--d,0s),transform .85s cubic-bezier(.16,.8,.24,1) var(--d,0s)}
+  .reveal.in{opacity:1;transform:none}
+  .grid>.reveal:nth-child(2),.diagnostics>.reveal:nth-child(2),.journey>.reveal:nth-child(2),.improvements>.reveal:nth-child(2),.plan>.reveal:nth-child(2),.source-list>.reveal:nth-child(2){--d:.06s}
+  .grid>.reveal:nth-child(3),.diagnostics>.reveal:nth-child(3),.journey>.reveal:nth-child(3),.improvements>.reveal:nth-child(3),.plan>.reveal:nth-child(3),.source-list>.reveal:nth-child(3){--d:.12s}
+  .grid>.reveal:nth-child(4),.diagnostics>.reveal:nth-child(4),.journey>.reveal:nth-child(4),.improvements>.reveal:nth-child(4),.plan>.reveal:nth-child(4),.source-list>.reveal:nth-child(4){--d:.18s}
+  .grid>.reveal:nth-child(5),.diagnostics>.reveal:nth-child(5),.journey>.reveal:nth-child(5),.improvements>.reveal:nth-child(5),.plan>.reveal:nth-child(5),.source-list>.reveal:nth-child(5){--d:.24s}
+  .grid>.reveal:nth-child(6),.diagnostics>.reveal:nth-child(6),.journey>.reveal:nth-child(6),.improvements>.reveal:nth-child(6),.source-list>.reveal:nth-child(6){--d:.3s}
+  .grid>.reveal:nth-child(7),.diagnostics>.reveal:nth-child(7),.improvements>.reveal:nth-child(7),.source-list>.reveal:nth-child(7){--d:.36s}
+  .diagnostics>.reveal:nth-child(8),.improvements>.reveal:nth-child(8){--d:.42s}
+
+  .spot{position:relative;overflow:hidden}
+  .spot::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .4s;
+    background:radial-gradient(340px circle at var(--mx,50%) var(--my,50%),rgba(215,255,63,.07),transparent 65%)}
+  .spot:hover::before{opacity:1}
+  .spot>*{position:relative;z-index:1}
+
+  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+  .span-3{grid-column:span 3}.span-4{grid-column:span 4}.span-5{grid-column:span 5}
+  .span-6{grid-column:span 6}.span-7{grid-column:span 7}.span-8{grid-column:span 8}.span-12{grid-column:span 12}
+
+  .card{position:relative;border:1px solid var(--line);border-radius:20px;padding:24px;background:var(--panel);
+    transition:transform .35s cubic-bezier(.2,.8,.2,1),border-color .35s,box-shadow .35s}
+  .card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.2);box-shadow:0 18px 44px rgba(0,0,0,.4)}
+  .card>.eyebrow{color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:9px}
+  .card>.eyebrow::before{content:"";width:6px;height:6px;background:var(--acid);transform:rotate(45deg);flex-shrink:0}
+  .card p{font-size:15px;line-height:1.6;color:#cfcdd6}
+  .card ul{list-style:none;padding:0;display:grid;gap:9px;margin-top:14px}
+  .card ul li{position:relative;padding-left:18px;font-size:13.5px;line-height:1.55;color:var(--muted)}
+  .card ul li::before{content:"";position:absolute;left:0;top:7px;width:6px;height:6px;background:var(--acid);transform:rotate(45deg);border-radius:1px}
+  .card.risk{border-left:4px solid var(--orange)}
+
+  .plain-list{list-style:none;padding:0;display:grid;gap:9px}
+  .plain-list li{position:relative;padding-left:18px;font-size:13.5px;line-height:1.55;color:var(--muted)}
+  .plain-list li::before{content:"";position:absolute;left:0;top:7px;width:6px;height:6px;background:var(--acid);transform:rotate(45deg);border-radius:1px}
+
+  section{position:relative;padding:clamp(64px,7vw,110px) clamp(24px,5vw,72px);border-bottom:1px solid var(--line);overflow:hidden;scroll-margin-top:10px}
+  section:nth-of-type(even){background:rgba(255,255,255,.014)}
+  .watermark{position:absolute;top:8px;right:8px;font:700 clamp(130px,17vw,230px)/.8 var(--disp);
+    color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.045);pointer-events:none;user-select:none;letter-spacing:-.05em}
+  .section-head{display:flex;align-items:flex-end;gap:26px;margin-bottom:48px;padding-bottom:24px;border-bottom:1px solid var(--line);position:relative;z-index:1}
+  .section-head .idx{font:700 12px var(--mono);letter-spacing:.24em;color:var(--acid);padding-bottom:8px;white-space:nowrap}
+  .section-head h2{font:700 clamp(38px,4.6vw,68px)/.96 var(--disp);letter-spacing:-.035em}
+  .sub-label{font:600 11px var(--mono);letter-spacing:.26em;text-transform:uppercase;color:var(--acid);
+    display:flex;align-items:center;gap:16px;margin:56px 0 20px}
+  .sub-label::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  .frame{position:relative;border-radius:26px;overflow:hidden;background:linear-gradient(165deg,#101019,#0a0a11 65%)}
+  .frame::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;
+    background:conic-gradient(from var(--a),transparent 0%,var(--c1,var(--acid)) 10%,transparent 24%,transparent 52%,var(--c2,var(--cyan)) 64%,transparent 78%);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;
+    animation:spin-a 7s linear infinite}
+  .frame>*{position:relative;z-index:1}
+  @keyframes spin-a{to{--a:360deg}}
+
+  header{position:relative;min-height:100vh;display:flex;flex-direction:column;border-bottom:1px solid var(--line);overflow:hidden}
+  header::before{content:"";position:absolute;inset:0;z-index:0;
+    background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+    background-size:54px 54px;
+    -webkit-mask-image:radial-gradient(ellipse at 32% 18%,black,transparent 72%);mask-image:radial-gradient(ellipse at 32% 18%,black,transparent 72%)}
+  #fx{position:absolute;inset:0;z-index:1;pointer-events:none}
+  .blob{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0}
+  .b1{width:540px;height:540px;top:-180px;right:-140px;background:radial-gradient(circle,rgba(139,123,255,.32),transparent 65%);animation:drift1 15s ease-in-out infinite}
+  .b2{width:480px;height:480px;bottom:-160px;left:-120px;background:radial-gradient(circle,rgba(215,255,63,.14),transparent 65%);animation:drift2 19s ease-in-out infinite}
+  .b3{width:300px;height:300px;top:38%;left:44%;background:radial-gradient(circle,rgba(77,227,255,.14),transparent 65%);animation:drift1 22s ease-in-out infinite reverse}
+  @keyframes drift1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-46px,36px) scale(1.12)}}
+  @keyframes drift2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(52px,-30px) scale(1.08)}}
+  .hero-inner{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;justify-content:center;gap:30px;
+    padding:clamp(48px,6vw,90px) clamp(24px,5vw,72px)}
+  .hero-eyebrow{display:inline-flex;align-items:center;gap:12px;font:600 11px var(--mono);letter-spacing:.3em;text-transform:uppercase;color:var(--muted)}
+  .hero-eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--acid);box-shadow:0 0 14px var(--acid);animation:pulse-dot 1.8s ease-in-out infinite}
+  @keyframes pulse-dot{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:.5}}
+  h1{font:700 clamp(54px,9.2vw,148px)/.92 var(--disp);letter-spacing:-.045em;text-transform:uppercase}
+  h1 .line{display:block;overflow:hidden;padding-bottom:.06em;margin-bottom:-.06em}
+  h1 .line-inner{display:block;transform:translateY(112%);transition:transform 1.1s cubic-bezier(.16,.8,.24,1) var(--d,0s)}
+  body.loaded h1 .line-inner{transform:none}
+  .outline{color:transparent;-webkit-text-stroke:2px var(--ink)}
+  .acid-dot{color:var(--acid);text-shadow:0 0 34px rgba(215,255,63,.55)}
+  .lede{max-width:640px;font-size:clamp(16px,1.5vw,21px);line-height:1.55;color:var(--muted)}
+  .hero-meta{display:flex;gap:14px;flex-wrap:wrap}
+  .hero-meta>div{min-width:180px;padding:16px 18px;border:1px solid var(--line);border-radius:14px;
+    background:rgba(255,255,255,.02);backdrop-filter:blur(6px);
+    transition:transform .3s,border-color .3s,box-shadow .3s}
+  .hero-meta>div:hover{transform:translateY(-4px);border-color:rgba(215,255,63,.4);box-shadow:0 12px 30px rgba(0,0,0,.35)}
+  .hero-meta .eyebrow{color:var(--faint);font-size:9.5px}
+  .hero-meta strong{display:block;margin-top:7px;font:500 12.5px var(--mono);font-weight:500;word-break:break-all;color:var(--ink)}
+  .hero-meta a{color:var(--acid);text-decoration:none}
+  .hero-meta a:hover{text-decoration:underline}
+  .h-fade{opacity:0;transform:translateY(22px);transition:opacity .9s ease var(--d,0s),transform .9s cubic-bezier(.16,.8,.24,1) var(--d,0s)}
+  body.loaded .h-fade{opacity:1;transform:none}
+  .scroll-hint{position:absolute;right:clamp(24px,5vw,72px);bottom:86px;z-index:3;display:flex;flex-direction:column;align-items:center;gap:10px;
+    font:600 9.5px var(--mono);letter-spacing:.34em;color:var(--faint);text-transform:uppercase;writing-mode:vertical-rl}
+  .scroll-hint::after{content:"";width:1px;height:52px;background:linear-gradient(var(--acid),transparent);animation:hint 1.8s ease-in-out infinite}
+  @keyframes hint{0%,100%{transform:scaleY(.4);transform-origin:top;opacity:.4}50%{transform:scaleY(1);opacity:1}}
+
+  .ticker{position:relative;z-index:2;border-top:1px solid var(--line);background:rgba(255,255,255,.015);overflow:hidden;padding:15px 0}
+  .ticker-track{display:flex;width:max-content;animation:ticker 28s linear infinite}
+  .ticker:hover .ticker-track{animation-play-state:paused}
+  .ticker span{font:600 11px var(--mono);letter-spacing:.24em;text-transform:uppercase;color:var(--muted);padding:0 26px;white-space:nowrap}
+  .ticker b{color:var(--acid);font-weight:700;padding-left:26px}
+  @keyframes ticker{to{transform:translateX(-50%)}}
+
+  #decision{background:radial-gradient(900px 500px at 85% 0%,rgba(139,123,255,.09),transparent 60%)}
+  .verdict{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:44px;padding:clamp(30px,4.5vw,58px);--c1:var(--amber);--c2:var(--violet)}
+  .verdict h2{font:700 clamp(36px,4.2vw,62px)/1 var(--disp);letter-spacing:-.035em;margin:16px 0 20px}
+  .verdict h2 em{font-style:normal;color:var(--amber);text-shadow:0 0 30px rgba(255,176,32,.35)}
+  .verdict .lede2{max-width:680px;color:var(--muted);font-size:16.5px;line-height:1.6}
+  .verdict .mini{margin-top:36px}
+  .verdict .mini .cell{padding:18px 20px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.02)}
+  .verdict .mini .eyebrow{color:var(--faint);font-size:9.5px;margin-bottom:9px}
+  .verdict .mini p{font-size:13.5px;line-height:1.55;color:#cfcdd6}
+  .verdict .mini .cell strong{display:block;margin-top:8px;font:500 13px var(--mono);color:var(--ink)}
+  .verdict .lede2 strong{color:var(--ink);font-weight:600}
+  .score-col{display:grid;place-content:center;justify-items:center;gap:18px}
+  .score-wrap{position:relative;display:grid;place-items:center}
+  .ring{width:216px;height:216px;transform:rotate(-90deg)}
+  .ring circle{fill:none;stroke-width:10;stroke-linecap:round}
+  .ring-bg{stroke:rgba(255,255,255,.08)}
+  .ring-fg{stroke:url(#rg);filter:drop-shadow(0 0 12px rgba(215,255,63,.35))}
+  .score-value{position:absolute;text-align:center;font:700 62px/1 var(--disp);letter-spacing:-.05em}
+  .score-value small{display:block;margin-top:10px;font:600 9.5px var(--mono);letter-spacing:.3em;text-transform:uppercase;color:var(--muted)}
+  .coverage{font:500 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:99px;padding:8px 16px;background:rgba(255,255,255,.02)}
+  .coverage b{color:var(--acid);font-weight:700}
+
+  .plan{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;position:relative;z-index:1}
+  .plan-card{display:flex;flex-direction:column;min-height:220px;border:1px solid var(--line);border-radius:20px;
+    padding:24px;background:var(--panel);transition:transform .35s,border-color .35s,box-shadow .35s}
+  .plan-card:hover{transform:translateY(-5px);border-color:rgba(139,123,255,.35);box-shadow:0 20px 48px rgba(0,0,0,.42)}
+  .plan-day{font:700 10.5px var(--mono);letter-spacing:.24em;text-transform:uppercase;color:var(--acid);margin-bottom:14px;
+    display:flex;align-items:center;gap:10px}
+  .plan-day::after{content:"";flex:1;height:1px;background:var(--line)}
+  .plan-card h3{font:600 19px var(--disp);letter-spacing:-.02em;margin-bottom:8px}
+  .plan-card p{font-size:14px;line-height:1.55;color:var(--muted);margin-top:8px}
+  .plan-card strong{font:700 34px var(--disp);letter-spacing:-.04em;display:block;margin:4px 0 8px}
+  .plan-card strong small{font-size:14px;color:var(--faint);font-weight:500;margin-left:2px}
+  .plan-card .done{margin-top:auto;padding-top:16px;border-top:1px dashed var(--line);font-size:12px;line-height:1.5;color:var(--muted)}
+  .plan-card .done strong{color:var(--ink);font:600 9px var(--mono);letter-spacing:.18em;text-transform:uppercase;display:block;margin-bottom:4px;font-size:9px}
+
+  .improvements{display:grid;gap:12px;position:relative;z-index:1}
+  .fix{display:grid;grid-template-columns:92px minmax(0,1fr);gap:26px;align-items:start;
+    padding:26px;border:1px solid var(--line);border-radius:20px;background:var(--panel);
+    transition:transform .3s,border-color .3s,box-shadow .3s}
+  .fix:hover{transform:translateX(7px);border-color:rgba(215,255,63,.24);box-shadow:0 16px 44px rgba(0,0,0,.4)}
+  .fix-num{font:700 46px/1 var(--disp);color:transparent;-webkit-text-stroke:1.5px rgba(255,255,255,.22);
+    transition:color .3s,-webkit-text-stroke .3s,text-shadow .3s}
+  .fix:hover .fix-num{color:var(--acid);-webkit-text-stroke:1.5px transparent;text-shadow:0 0 26px rgba(215,255,63,.45)}
+  .fix h3{font:600 21px var(--disp);letter-spacing:-.02em;margin-bottom:8px}
+  .fix .fix-body>p{font-size:14px;color:var(--muted);line-height:1.55}
+  .fix .eyebrow{font:600 10.5px var(--mono);letter-spacing:.24em;text-transform:uppercase;color:var(--acid);margin-bottom:12px;display:block}
+
+  .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:18px;background:var(--panel);margin-top:18px}
+  table{width:100%;border-collapse:collapse;min-width:620px}
+  th,td{padding:14px 16px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+  th{color:var(--muted);background:rgba(255,255,255,.04);font:600 10px var(--mono);letter-spacing:.12em;text-transform:uppercase}
+  tr:last-child td{border-bottom:0}
+  td{font-size:14px;color:var(--muted)}
+
+  .experiment{margin-top:14px;padding:clamp(28px,4vw,48px);--c1:var(--violet);--c2:var(--acid)}
+  .experiment .eyebrow{color:var(--violet)}
+  .experiment h3{font:700 clamp(26px,3.4vw,46px)/1.08 var(--disp);letter-spacing:-.03em;max-width:840px;margin:14px 0 28px}
+  .experiment .cell{padding:4px 0}
+  .experiment .cell strong{display:block;font:600 10px var(--mono);letter-spacing:.22em;text-transform:uppercase;color:var(--acid);margin-bottom:8px}
+  .experiment .cell p{font-size:13.5px;line-height:1.55;color:var(--muted)}
+  .source-list{display:grid;gap:10px;position:relative;z-index:1}
+  .source-list .card{display:grid;gap:6px}
+  .source-list strong{font:600 15px var(--disp);letter-spacing:-.01em}
+  .source-list .desc{font-size:13px;color:var(--muted);line-height:1.55}
+  .source-list a{font:500 12px var(--mono);color:var(--acid);text-decoration:none;word-break:break-all;transition:text-shadow .3s}
+  .source-list a:hover{text-shadow:0 0 16px rgba(215,255,63,.6);text-decoration:underline}
+  .source-list a::after{content:" ↗"}
+
+  footer{padding:34px clamp(24px,5vw,72px);font:400 11px var(--mono);letter-spacing:.05em;color:var(--faint);line-height:1.7;
+    display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+  footer b{color:var(--acid);font-weight:700}
+
+  @media (max-width:1024px){
+    .layout{display:block}
+    aside{position:relative;height:auto;flex-direction:row;align-items:center;flex-wrap:wrap;gap:14px;padding:16px 20px}
+    nav{display:flex;overflow-x:auto;width:100%;order:3;padding-bottom:6px;gap:6px}
+    nav a{white-space:nowrap;flex-shrink:0}
+    .side-foot{display:none}
+    .scroll-hint{display:none}
+    .section-head{flex-direction:column;align-items:flex-start;gap:10px}
+    .span-3,.span-4,.span-5,.span-6,.span-7,.span-8{grid-column:span 12}
+    .verdict{grid-template-columns:1fr}
+    .fix{grid-template-columns:54px 1fr}
+    .fix-num{font-size:34px}
+    .watermark{display:none}
+    h1{font-size:clamp(44px,13vw,90px)}
+  }
+  @media print{
+    aside,.cursor-dot,.cursor-ring,.grain,.progress,.preloader,#fx,.ticker,.scroll-hint,.blob{display:none!important}
+    .layout{display:block}
+    .reveal,.h-fade{opacity:1!important;transform:none!important}
+    h1 .line-inner{transform:none}
+    section,.card,.fix,.plan-card{break-inside:avoid}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    .reveal,.h-fade{opacity:1;transform:none}
+    h1 .line-inner{transform:none}
+    .preloader{display:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+<div class="progress" id="progress" aria-hidden="true"></div>
+<div class="cursor-dot" id="cDot" aria-hidden="true"></div>
+<div class="cursor-ring" id="cRing" aria-hidden="true"></div>
+
+<div class="preloader" id="preloader" aria-hidden="true">
+  <div class="pre-inner">
+    <div class="pre-logo">SB</div>
+    <div class="pre-bar"><div class="pre-fill" id="preFill"></div></div>
+    <div class="pre-num" id="preNum">00</div>
+  </div>
+</div>
+
+<div class="layout">
+  <aside>
+    <div class="brand">
+      <div class="mark">SB</div>
+      <div>
+        <div class="side-name">StartupBlueprint</div>
+        <div class="side-sub">Business design system</div>
+      </div>
+    </div>
+    <nav id="nav">
+      <a href="#decision"><span>◆</span>Decision</a>
+      <a href="#market"><span>01</span>Market</a>
+      <a href="#model"><span>02</span>Business model</a>
+      <a href="#pricing"><span>03</span>Pricing</a>
+      <a href="#economics"><span>04</span>Economics</a>
+      <a href="#roadmap"><span>05</span>90-day roadmap</a>
+      <a href="#evidence"><span>06</span>Evidence</a>
+    </nav>
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle color theme" aria-pressed="false"><span>Theme</span><span>◐</span></button>
+    <div class="side-foot"><b>2026-08-09</b><br>standard mode</div>
+  </aside>
+
+  <main>
+    <header>
+      <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+      <canvas id="fx" aria-hidden="true"></canvas>
+      <div class="hero-inner">
+        <div class="hero-eyebrow h-fade" style="--d:.15s">Startup blueprint · decision report</div>
+        <h1 aria-label="Sarvam AI">
+          <span class="line"><span class="line-inner" style="--d:.25s">Sarvam</span></span>
+          <span class="line"><span class="line-inner outline" style="--d:.37s">AI</span></span>
+        </h1>
+        <p class="lede h-fade" style="--d:.62s">India-focused full-stack AI platform offering production APIs for Indian-language speech, translation, transliteration, text-to-speech, conversational AI, document AI, and dubbing.</p>
+        <div class="hero-meta h-fade" style="--d:.74s">
+          <div><span class="eyebrow">Stage</span><strong>commercial API platform with public developer docs, free credits, paid usage plans, and enterprise/custom deployment motion</strong></div>
+          <div><span class="eyebrow">Primary buyer</span><strong>VP/Head of Engineering, CTO, product owner, or operations leader accountable for automation and localization outcomes</strong></div>
+          <div><span class="eyebrow">Source</span><strong>https://www.sarvam.ai</strong></div>
+        </div>
+      </div>
+      <div class="scroll-hint h-fade" style="--d:1s" aria-hidden="true">Scroll</div>
+      <div class="ticker" aria-hidden="true">
+        <div class="ticker-track">
+          <span>Startup blueprint · decision report<b>✦</b></span><span>Readiness 40.8/100<b>✦</b></span><span>WEAK_EVIDENCE_VALIDATE_FIRST<b>✦</b></span><span>Primary model: usage-based credits<b>✦</b></span>
+          <span>Startup blueprint · decision report<b>✦</b></span><span>Readiness 40.8/100<b>✦</b></span><span>WEAK_EVIDENCE_VALIDATE_FIRST<b>✦</b></span><span>Primary model: usage-based credits<b>✦</b></span>
+        </div>
+      </div>
+    </header>
+
+    <section id="decision"><div class="watermark">00</div><div class="section-head"><div class="idx">00 / DECISION</div><h2>Executive decision</h2></div><div class="frame verdict reveal"><div><span class="eyebrow">Executive decision</span><h2>WEAK_EVIDENCE_VALIDATE_FIRST</h2><p class="lede2">Use <strong>Usage-based credits with prepaid Pro/Business plans and enterprise volume commitments</strong> as the primary model, led by <strong>Pro</strong> at <strong>₹10,000/month</strong> as a testable price hypothesis. The current model is <strong>PROVISIONAL</strong> and the base financial verdict is <strong>FRAGILE</strong>.</p><div class="grid mini"><div class="cell"><span class="eyebrow">First channel</span><strong>targeted founder-led technical sales to high-volume BFSI/govtech/customer-support teams, paired with a benchmark-driven pilot</strong></div><div class="cell"><span class="eyebrow">Break-even</span><strong>69.8</strong></div><div class="cell"><span class="eyebrow">Base revenue</span><strong>₹17,352,830.33</strong></div><div class="cell"><span class="eyebrow">Primary model</span><strong>Usage-based API credits with tiered support</strong></div></div></div><div class="score-col"><div class="score-wrap"><svg class="ring" viewBox="0 0 100 100"><defs><linearGradient id="rg" x1="0" x2="1"><stop stop-color="#d7ff3f"></stop><stop offset="1" stop-color="#4de3ff"></stop></linearGradient></defs><circle class="ring-bg" cx="50" cy="50" r="41"></circle><circle class="ring-fg" cx="50" cy="50" r="41" stroke-dasharray="257.6" stroke-dashoffset="152.5"></circle></svg><div class="score-value">40.8<small>Readiness</small></div></div></div></div></section>
+
+    <section id="market"><div class="watermark">01</div><div class="section-head"><div class="idx">01 / MARKET</div><h2>Who this is for, and why now</h2></div><div class="grid"><article class="card reveal span-6"><span class="eyebrow">Core problem</span><p>General-purpose AI and cloud APIs can be expensive, fragmented, or less reliable for Indian-language, code-mixed, speech, and document workflows.</p></article><article class="card reveal span-6"><span class="eyebrow">Promised outcome</span><p>Ship Indian-language AI features faster with one API surface, local-language model specialization, transparent usage pricing, and support for production workloads.</p></article><article class="card reveal span-4"><span class="eyebrow">Ideal customer</span><p>Indian BFSI, government-service, and customer-support software companies shipping multilingual document or voice automation</p></article><article class="card reveal span-4"><span class="eyebrow">Buying trigger</span><p>a production launch, tender, contact-center localization project, KYC/document backlog, or failed generic-model accuracy test</p></article><article class="card reveal span-4"><span class="eyebrow">Positioning</span><p>For India-focused product and operations teams that need multilingual voice or document automation, Sarvam AI is the Indian-language AI platform that combines specialized models, a unified API surface, and production-oriented support so teams can launch localized workflows without stitching together multiple providers.</p></article></div><div class="grid" style="margin-top:14px"><article class="card reveal span-6"><span class="eyebrow">Qualification signals</span><ul><li>At least 10,000 monthly documents, minutes, or localized characters</li><li>Indian-language or code-mixed quality is a launch blocker</li><li>Existing cloud/API budget and named technical owner</li><li>Needs SLA, support, VPC, or on-premise discussion</li></ul></article><article class="card reveal span-6"><span class="eyebrow">Where to find them</span><ul><li>BFSI and govtech product communities</li><li>India-focused developer and AI meetups</li><li>Cloud marketplace and systems-integrator partners</li><li>LinkedIn outreach to engineering/product leaders triggered by localization or automation launches</li><li>Sarvam docs, cookbook, and developer community</li></ul></article></div></section>
+
+    <section id="model"><div class="watermark">02</div><div class="section-head"><div class="idx">02 / MODEL</div><h2>Build the business around one sharp wedge</h2></div><div class="grid"><article class="card reveal span-4"><span class="eyebrow">Recommended model</span><p>Usage-based API credits with prepaid Pro/Business tiers and enterprise commitments; use paid pilots to prove recurring production volume.</p></article><article class="card reveal span-4"><span class="eyebrow">Distribution wedge</span><p>Benchmark-led pilots for high-volume Indian-language document and voice workflows in BFSI/govtech/customer-support software.</p></article><article class="card reveal span-4"><span class="eyebrow">North-star metric</span><p>Monthly gross profit from retained production accounts, with supporting measures of qualified pilots, paid conversion, usage volume, and support cost per account.</p></article></div><div class="card" style="margin-top:14px"><span class="eyebrow">Go-to-market message</span><h3>Evaluate your real Indian-language documents/audio against Sarvam and get to a production decision with transparent usage economics and a single integration surface.</h3><p>14-day or fixed-credit production pilot with one workflow, acceptance metrics, solution-engineer review, and a conversion path to Pro/Business credits or enterprise terms</p></div></section>
+
+    <section id="pricing"><div class="watermark">03</div><div class="section-head"><div class="idx">03 / PRICING</div><h2>Pricing that can survive contact with reality</h2></div><div class="plan"><article class="plan-card reveal"><span class="plan-day">Developer</span><strong>₹0<small>/month</small></strong><p>Rate-limited credits; no production SLA</p><span class="done"><strong>Trigger</strong> Upgrade: Credits exhausted, higher rate limits, or production support needed</span></article><article class="plan-card reveal"><span class="plan-day">Pro</span><strong>₹10,000<small>/month</small></strong><p>Usage is metered; credits/bonus subject to current commercial terms</p><span class="done"><strong>Trigger</strong> Upgrade: Production usage, higher throughput, or solution support</span></article><article class="plan-card reveal"><span class="plan-day">Business</span><strong>₹50,000<small>/month</small></strong><p>Usage and support scope agreed by contract</p><span class="done"><strong>Trigger</strong> Upgrade: Volume, SLA, security, or deployment requirements</span></article><article class="plan-card reveal"><span class="plan-day">Enterprise</span><strong>₹100,000<small>/month</small></strong><p>Custom contract</p><span class="done"><strong>Trigger</strong> Upgrade: Need for procurement, compliance, or dedicated deployment</span></article></div><div class="table-wrap" style="margin-top:18px"><table><thead><tr><th>Candidate</th><th>Type</th><th>Decision</th><th>Rationale</th></tr></thead><tbody><tr><td>Usage-based API credits with tiered support</td><td>usage</td><td>PRIMARY</td><td>Matches variable model/inference cost and Sarvam's existing public offer.</td></tr><tr><td>Prepaid production commitments</td><td>prepaid</td><td>ALTERNATIVE</td><td>Convert successful pilots into predictable credits with rate-limit and support upgrades.</td></tr><tr><td>Platform subscription plus metered overage</td><td>hybrid</td><td>TEST</td><td>Could package governance, analytics, support, and workspace value above raw inference usage.</td></tr><tr><td>One-time implementation/license fee</td><td>services</td><td>TEST</td><td>Useful for private deployment, migration, or workflow integration, but not sufficient as the core model.</td></tr><tr><td>Uncapped lifetime access</td><td>lifetime</td><td>REJECT</td><td>Unsafe where inference, support, storage, and model operations remain recurring costs.</td></tr></tbody></table></div></section>
+
+    <section id="economics"><div class="watermark">04</div><div class="section-head"><div class="idx">04 / ECONOMICS</div><h2>Numbers to watch before scaling</h2></div><div class="grid"><article class="card reveal span-4"><span class="eyebrow">Effective ARPU</span><p>₹24,000</p></article><article class="card reveal span-4"><span class="eyebrow">Contribution / paid customer</span><p>₹21,500</p></article><article class="card reveal span-4"><span class="eyebrow">CAC payback</span><p>11.6 months</p></article><article class="card reveal span-4"><span class="eyebrow">Simplified LTV</span><p>₹716,666.67</p></article><article class="card reveal span-4"><span class="eyebrow">Gross margin</span><p>89.6%</p></article><article class="card reveal span-4"><span class="eyebrow">12-month operating profit</span><p>₹-5,779,393.52</p></article></div><div class="table-wrap" style="margin-top:18px"><table><thead><tr><th>Scenario</th><th>Revenue</th><th>Operating profit</th><th>Ending paid</th></tr></thead><tbody><tr><td>Conservative</td><td>₹7,727,620.58</td><td>₹-15,826,826.66</td><td>84.5</td></tr><tr><td>Base</td><td>₹17,352,830.33</td><td>₹-5,779,393.52</td><td>172.4</td></tr><tr><td>Optimistic</td><td>₹36,406,320.45</td><td>₹10,978,296.26</td><td>330.7</td></tr></tbody></table></div></section>
+
+    <section id="roadmap"><div class="watermark">05</div><div class="section-head"><div class="idx">05 / ROADMAP</div><h2>A 90-day path from hypothesis to evidence</h2></div><div class="roadmap"><article class="fix reveal"><div class="fix-num">01</div><div class="fix-body"><div><span class="eyebrow">Days 1–7 · Days 1-30</span><h3>Choose the first wedge</h3><p>Interview 10 target buyers and rank workflows by volume, urgency, and incumbent dissatisfaction.</p><p class=""><strong>Metric</strong>10 interviews; 5 qualified pain statements</p></div></div></article><article class="fix reveal"><div class="fix-num">02</div><div class="fix-body"><div><span class="eyebrow">Days 5–14 · Days 1-30</span><h3>Build the benchmark</h3><p>Collect consented sample documents/audio and benchmark Sarvam against incumbent/open alternative.</p><p class=""><strong>Metric</strong>At least 100 documents or 10 hours audio across target languages</p></div></div></article><article class="fix reveal"><div class="fix-num">03</div><div class="fix-body"><div><span class="eyebrow">Days 10–21 · Days 1-30</span><h3>Package the pilot</h3><p>Create pilot scope, acceptance criteria, pricing page/one-pager, and security FAQ.</p><p class=""><strong>Metric</strong>3 design partners accept evaluation plan</p></div></div></article><article class="fix reveal"><div class="fix-num">04</div><div class="fix-body"><div><span class="eyebrow">Days 18–30 · Days 1-30</span><h3>Fill the pipeline</h3><p>Contact 50 named accounts through founder-led outreach, partners, and relevant communities.</p><p class=""><strong>Metric</strong>50 accounts; 8 qualified evaluations</p></div></div></article><article class="fix reveal"><div class="fix-num">05</div><div class="fix-body"><div><span class="eyebrow">Days 31–45 · Days 31-60</span><h3>Run pilots</h3><p>Launch 4 scoped pilots with weekly technical and buyer reviews.</p><p class=""><strong>Metric</strong>4 pilots started; time-to-first-value under 7 days</p></div></div></article><article class="fix reveal"><div class="fix-num">06</div><div class="fix-body"><div><span class="eyebrow">Days 40–55 · Days 31-60</span><h3>Validate economics</h3><p>Instrument usage, infra cost, support hours, and outcome value by account.</p><p class=""><strong>Metric</strong>Cost and usage captured for all active pilots</p></div></div></article><article class="fix reveal"><div class="fix-num">07</div><div class="fix-body"><div><span class="eyebrow">Days 46–60 · Days 31-60</span><h3>Improve conversion</h3><p>Test Pro/Business credit packages, annual discount, and paid implementation boundary.</p><p class=""><strong>Metric</strong>At least 2 pricing conversations with concrete objections and one verbal commit</p></div></div></article><article class="fix reveal"><div class="fix-num">08</div><div class="fix-body"><div><span class="eyebrow">Days 61–75 · Days 61-90</span><h3>Convert production accounts</h3><p>Close pilots with production plan, contract path, usage forecast, and support scope.</p><p class=""><strong>Metric</strong>1-2 paid conversions; 90-day usage forecast per account</p></div></div></article><article class="fix reveal"><div class="fix-num">09</div><div class="fix-body"><div><span class="eyebrow">Days 70–84 · Days 61-90</span><h3>Build repeatability</h3><p>Document qualification, benchmark, security, pricing, and handoff steps; recruit one channel partner.</p><p class=""><strong>Metric</strong>Second pilot delivered with 25% less internal effort</p></div></div></article><article class="fix reveal"><div class="fix-num">10</div><div class="fix-body"><div><span class="eyebrow">Days 80–90 · Days 61-90</span><h3>Make the scale decision</h3><p>Review funnel, usage gross profit, support load, churn signals, and model quality by segment.</p><p class=""><strong>Metric</strong>Paid conversion, contribution margin, pipeline coverage, and pilot effort meet thresholds</p></div></div></article></div></section>
+
+    <section id="evidence"><div class="watermark">06</div><div class="section-head"><div class="idx">06 / EVIDENCE</div><h2>Evidence, gaps, and decision gates</h2></div><div class="table-wrap"><table><thead><tr><th>Dimension</th><th>Applied score</th><th>Evidence</th><th>Gap or cap</th></tr></thead><tbody><tr><td>Problem Evidence</td><td>3/5</td><td>partial</td><td>Not supplied</td></tr><tr><td>Icp Specificity</td><td>4/5</td><td>assumption-heavy</td><td>Not supplied</td></tr><tr><td>Reachable Market</td><td>2/5</td><td>unsupported</td><td>Not supplied</td></tr><tr><td>Positioning</td><td>4/5</td><td>partial</td><td>Not supplied</td></tr><tr><td>Business Model Pricing</td><td>3/5</td><td>strong</td><td>No direct willingness-to-pay or transaction evidence was supplied.</td></tr><tr><td>Go To Market</td><td>2/5</td><td>assumption-heavy</td><td>No public evidence that the target buyer is reachable in the proposed channel.</td></tr><tr><td>Unit Economics</td><td>2/5</td><td>assumption-heavy</td><td>Not supplied</td></tr><tr><td>Execution Readiness</td><td>4/5</td><td>partial</td><td>Not supplied</td></tr></tbody></table></div><div class="grid" style="margin-top:14px"><article class="card reveal span-6 risk"><span class="eyebrow">Risks to validate</span><ul><li><strong>Paid conversion from free credits is too low</strong> — Use fixed-credit pilots with a named production workflow and buyer acceptance metric.</li><li><strong>Hyperscaler bundling or lower prices compress differentiation</strong> — Sell accuracy, code-mix performance, deployment fit, and workflow outcomes rather than API price alone.</li><li><strong>Free usage creates uncapped inference/support cost</strong> — Keep free access credit-limited and rate-limited; charge for production support.</li><li><strong>Enterprise pilots become services-heavy</strong> — Standardize pilot scope, acceptance tests, and paid implementation boundaries.</li><li><strong>Model changes or quality gaps reduce trust</strong> — Version models, publish changelog guidance, and maintain customer regression datasets.</li></ul></article><article class="card reveal span-6"><span class="eyebrow">Market sizing snapshot</span><p>TAM Unknown · SAM Unknown · 24-month SOM Unknown</p><p style="margin-top:12px">India-first production APIs for Indian-language speech, text, document, and conversational automation</p></article></div><div class="source-list" style="margin-top:18px"><div class="card reveal"><strong>Sarvam AI homepage</strong> · product<br/><span>Company positioning and product surface.</span></div><div class="card reveal"><strong>Sarvam API pricing</strong> · product<br/><span>Public INR usage prices, credits, plan packaging, support, and rate limits.</span></div><div class="card reveal"><strong>Sarvam API docs welcome</strong> · product<br/><span>API categories, quickstart, SDKs, and Indian-language positioning.</span></div><div class="card reveal"><strong>Sarvam credits and rate limits</strong> · product<br/><span>Signup credits and plan/rate-limit documentation.</span></div><div class="card reveal"><strong>Sarvam Doc AI overview</strong> · product<br/><span>Document use cases and workflows.</span></div><div class="card reveal"><strong>Sarvam EULA</strong> · other<br/><span>Production license and deployment context.</span></div><div class="card reveal"><strong>Google Cloud Speech-to-Text pricing</strong> · market<br/><span>Official per-minute and dynamic-batch pricing; US list-price anchor.</span></div><div class="card reveal"><strong>Amazon Transcribe pricing</strong> · market<br/><span>Official usage billing and 60-minute free tier; region-specific rates.</span></div><div class="card reveal"><strong>Deepgram pricing</strong> · market<br/><span>Official speech API PAYG, credits, concurrency, and enterprise packaging.</span></div><div class="card reveal"><strong>Azure Speech pricing</strong> · market<br/><span>Official speech service capabilities, free tier, and regional pricing caveats.</span></div><div class="card reveal"><strong>Gemini API pricing</strong> · market<br/><span>Official free/paid/enterprise packaging and token pricing.</span></div></div></section>
+
+    <footer><span>Generated by <b>StartupBlueprint</b>.</span><span>Decision aid built from public evidence and labeled assumptions.</span></footer>
+  </main>
+</div>
+<script>
+  (() => { const body=document.body, preloader=document.getElementById('preloader'), fill=document.getElementById('preFill'), num=document.getElementById('preNum'); let value=0; const timer=setInterval(()=>{value+=Math.ceil((100-value)/5);fill.style.width=value+'%';num.textContent=String(value).padStart(2,'0');if(value>=100){clearInterval(timer);setTimeout(()=>{preloader.classList.add('done');body.classList.add('loaded')},180)}},28); const reveal=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('in');reveal.unobserve(entry.target)}}),{threshold:.12}); document.querySelectorAll('.reveal').forEach(item=>reveal.observe(item)); const progress=document.getElementById('progress'); addEventListener('scroll',()=>{const max=document.documentElement.scrollHeight-innerHeight;progress.style.width=(scrollY/Math.max(max,1)*100)+'%'},{passive:true}); const theme=document.getElementById('themeToggle'); const apply=mode=>{body.dataset.theme=mode;theme.querySelector('span:last-child').textContent=mode==='light'?'☼':'◐'}; const saved=localStorage.getItem('startupblueprint-theme'); apply(saved||(matchMedia('(prefers-color-scheme:light)').matches?'light':'dark')); theme.addEventListener('click',()=>{const next=body.dataset.theme==='light'?'dark':'light';localStorage.setItem('startupblueprint-theme',next);apply(next)}); document.querySelectorAll('.card, .plan-card, .fix').forEach((item)=>{item.addEventListener('pointermove',(event)=>{const box=item.getBoundingClientRect();item.style.setProperty('--mx',(event.clientX-box.left)+'px');item.style.setProperty('--my',(event.clientY-box.top)+'px');});}); })();
+</script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+{
+  "name": "startupblueprint",
+  "version": "0.1.2",
+  "description": "A Codex skill that turns a startup URL or idea into an evidence-backed business plan, pricing strategy, financial model, and 90-day roadmap.",
+  "license": "MIT",
+  "author": "Build Fast with AI",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Avi112005/startupblueprint.git"
+  },
+  "homepage": "https://github.com/Avi112005/startupblueprint#readme",
+  "bugs": {
+    "url": "https://github.com/Avi112005/startupblueprint/issues"
+  },
+  "bin": {
+    "startupblueprint": "scripts/install.js"
+  },
+  "files": [
+    "startupblueprint",
+    "scripts/install.js",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "python3 -m unittest discover -s tests -v"
+  },
+  "keywords": [
+    "codex",
+    "skill",
+    "startup",
+    "business-plan",
+    "saas",
+    "pricing",
+    "financial-model",
+    "go-to-market",
+    "founder",
+    "roadmap"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}
