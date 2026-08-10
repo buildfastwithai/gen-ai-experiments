@@ -1,0 +1,13 @@
+{
+  "name": "nango-pr-reviewer",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A Nango-powered GitHub pull request reviewer with optional Notion and Slack integrations",
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
