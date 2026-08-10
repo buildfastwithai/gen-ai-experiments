@@ -1,0 +1,1903 @@
+<!doctype html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#170d08">
+  <meta name="description" content="यादों की कैसेट — a cinematic 90s Bollywood music player.">
+  <title>यादों की कैसेट — 90s Bollywood Radio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Rozha+One&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #1b100b;
+      --ink-soft: #2d1c14;
+      --cream: #f3e3bd;
+      --paper: #dcc59a;
+      --mustard: #d9a23a;
+      --mustard-light: #f3c96a;
+      --brick: #8e3025;
+      --brick-dark: #5c1b18;
+      --green: #2e493b;
+      --white: #fff7e6;
+      --muted: rgba(255, 241, 211, .67);
+      --line: rgba(245, 221, 171, .23);
+      --shadow: 0 24px 70px rgba(0, 0, 0, .45);
+      --player-h: 112px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--ink);
+    }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background: #170d08;
+      color: var(--white);
+      font-family: "Noto Sans Devanagari", system-ui, sans-serif;
+    }
+
+    button,
+    input { font: inherit; }
+
+    button { color: inherit; }
+
+    button:focus-visible,
+    input:focus-visible {
+      outline: 3px solid var(--mustard-light);
+      outline-offset: 4px;
+    }
+
+    .skip-link {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 100;
+      transform: translateY(-150%);
+      padding: 10px 14px;
+      background: var(--cream);
+      color: var(--ink);
+      font-weight: 700;
+      transition: transform .2s ease;
+    }
+
+    .skip-link:focus { transform: translateY(0); }
+
+    .world {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      background: linear-gradient(145deg, #1b0f09, #46301e 52%, #170d08);
+    }
+
+    .world video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      filter: saturate(.78) sepia(.18) contrast(1.08) brightness(.7);
+      transform: scale(1.015);
+      transition: filter 1s ease, transform 12s ease;
+    }
+
+    body.started .world video {
+      filter: saturate(.76) sepia(.22) contrast(1.08) brightness(.7);
+      transform: scale(1.055);
+    }
+
+    .world::before,
+    .world::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .world::before {
+      z-index: 1;
+      background:
+        linear-gradient(180deg, rgba(18, 10, 6, .55) 0%, transparent 26%, transparent 55%, rgba(15, 7, 4, .74) 100%),
+        radial-gradient(circle at 50% 38%, transparent 18%, rgba(12, 5, 3, .18) 60%, rgba(12, 5, 3, .82) 120%);
+    }
+
+    .world::after {
+      z-index: 2;
+      opacity: .23;
+      background-image:
+        repeating-radial-gradient(circle at 20% 30%, rgba(255,255,255,.22) 0 1px, transparent 1px 4px),
+        repeating-linear-gradient(93deg, transparent 0 8px, rgba(0,0,0,.12) 9px 10px);
+      background-size: 9px 9px, 57px 57px;
+      mix-blend-mode: soft-light;
+      animation: grain .32s steps(2) infinite;
+    }
+
+    @keyframes grain {
+      0% { transform: translate3d(0, 0, 0); }
+      25% { transform: translate3d(-.6%, .7%, 0); }
+      50% { transform: translate3d(.5%, -.5%, 0); }
+      75% { transform: translate3d(.6%, .4%, 0); }
+      100% { transform: translate3d(-.4%, -.6%, 0); }
+    }
+
+    .topbar {
+      position: fixed;
+      inset: 0 0 auto;
+      z-index: 40;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: clamp(18px, 3vw, 34px) clamp(18px, 4.2vw, 68px);
+      pointer-events: none;
+    }
+
+    .brand,
+    .topbar-actions { pointer-events: auto; }
+
+    .brand {
+      color: var(--cream);
+      text-decoration: none;
+      text-shadow: 0 2px 12px rgba(0,0,0,.55);
+    }
+
+    .brand-main {
+      display: block;
+      font-family: "Rozha One", serif;
+      font-size: clamp(24px, 2.15vw, 36px);
+      line-height: .9;
+      letter-spacing: .01em;
+    }
+
+    .brand-sub {
+      display: block;
+      margin-top: 7px;
+      color: var(--muted);
+      font-family: "DM Mono", monospace;
+      font-size: 9px;
+      letter-spacing: .32em;
+      text-transform: uppercase;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      color: rgba(255, 238, 204, .78);
+      font-family: "DM Mono", monospace;
+      font-size: 10px;
+      letter-spacing: .25em;
+      text-transform: uppercase;
+    }
+
+    .topbar-actions .dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--mustard-light);
+      box-shadow: 0 0 11px var(--mustard-light);
+    }
+
+    .video-toggle {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      margin-left: 4px;
+      border: 1px solid rgba(255, 238, 204, .28);
+      border-radius: 50%;
+      background: rgba(24, 13, 8, .28);
+      backdrop-filter: blur(9px);
+      cursor: pointer;
+      transition: background .2s ease, border-color .2s ease, transform .2s ease;
+    }
+
+    .video-toggle:hover {
+      transform: translateY(-2px);
+      border-color: var(--mustard-light);
+      background: rgba(24, 13, 8, .65);
+    }
+
+    main {
+      position: relative;
+      z-index: 5;
+    }
+
+    .hero {
+      position: relative;
+      display: grid;
+      min-height: 100svh;
+      place-items: center;
+      padding: 118px 24px 100px;
+      text-align: center;
+      transition: opacity .7s ease, transform .9s cubic-bezier(.22,.75,.2,1);
+    }
+
+    body.started .hero {
+      opacity: 0;
+      transform: translateY(-8vh) scale(.98);
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      width: min(980px, 100%);
+      margin-top: -2vh;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 0 23px;
+      color: rgba(255, 238, 204, .72);
+      font-family: "DM Mono", monospace;
+      font-size: clamp(9px, .8vw, 12px);
+      letter-spacing: .3em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before,
+    .eyebrow::after {
+      content: "";
+      width: clamp(28px, 4vw, 62px);
+      height: 1px;
+      background: currentColor;
+      opacity: .5;
+    }
+
+    .hero h1 {
+      max-width: 1000px;
+      margin: 0 auto;
+      color: var(--cream);
+      font-family: "Rozha One", serif;
+      font-size: clamp(54px, 7.3vw, 118px);
+      font-weight: 400;
+      line-height: .86;
+      letter-spacing: -.015em;
+      text-wrap: balance;
+      text-shadow: 0 4px 26px rgba(0,0,0,.48), 0 1px 0 rgba(255,255,255,.22);
+    }
+
+    .hero h1 em {
+      color: var(--mustard-light);
+      font-style: normal;
+    }
+
+    .hero-copy {
+      max-width: 560px;
+      margin: 26px auto 0;
+      color: rgba(255, 243, 217, .8);
+      font-size: clamp(15px, 1.35vw, 20px);
+      line-height: 1.7;
+      text-shadow: 0 2px 12px rgba(0,0,0,.55);
+      text-wrap: balance;
+    }
+
+    .start-button {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 15px;
+      margin-top: 34px;
+      padding: 15px 23px 13px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 237, 198, .74);
+      background: linear-gradient(180deg, #e9b74c 0%, #c78622 100%);
+      box-shadow: 0 8px 0 #6c2b14, 0 17px 38px rgba(0,0,0,.36), inset 0 1px rgba(255,255,255,.45);
+      color: #23130b;
+      cursor: pointer;
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: .02em;
+      transform: translateY(0);
+      transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+    }
+
+    .start-button::after {
+      content: "";
+      position: absolute;
+      top: -60%;
+      left: -38%;
+      width: 26%;
+      height: 220%;
+      background: rgba(255,255,255,.38);
+      transform: rotate(18deg);
+      transition: left .55s ease;
+    }
+
+    .start-button:hover {
+      filter: saturate(1.12) brightness(1.06);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 0 #6c2b14, 0 20px 40px rgba(0,0,0,.4), inset 0 1px rgba(255,255,255,.45);
+    }
+
+    .start-button:hover::after { left: 122%; }
+
+    .start-button:active {
+      transform: translateY(7px);
+      box-shadow: 0 2px 0 #6c2b14, 0 8px 20px rgba(0,0,0,.34);
+    }
+
+    .start-button .tape-icon {
+      display: grid;
+      place-items: center;
+      width: 37px;
+      height: 25px;
+      border: 2px solid currentColor;
+      border-radius: 3px;
+      font-family: "DM Mono", monospace;
+      font-size: 12px;
+      letter-spacing: 3px;
+      line-height: 1;
+    }
+
+    .headphone-note {
+      margin: 24px 0 0;
+      color: rgba(255, 240, 210, .5);
+      font-family: "DM Mono", monospace;
+      font-size: 9px;
+      letter-spacing: .23em;
+      text-transform: uppercase;
+    }
+
+    .hero-footer {
+      position: absolute;
+      bottom: 25px;
+      left: 50%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: rgba(255, 239, 207, .55);
+      font-family: "DM Mono", monospace;
+      font-size: 9px;
+      letter-spacing: .24em;
+      text-transform: uppercase;
+      transform: translateX(-50%);
+    }
+
+    .hero-footer::before {
+      content: "";
+      width: 26px;
+      height: 1px;
+      background: currentColor;
+    }
+
+    .experience {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      min-height: 100svh;
+      align-items: center;
+      padding: 116px clamp(18px, 4.2vw, 68px) calc(var(--player-h) + 36px);
+      visibility: hidden;
+      opacity: 0;
+      transform: translateY(60px);
+      transition: opacity .75s .35s ease, transform .9s .25s cubic-bezier(.2,.78,.2,1), visibility 0s 1.1s;
+    }
+
+    body.started .experience {
+      position: relative;
+      visibility: visible;
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity .75s .35s ease, transform .9s .25s cubic-bezier(.2,.78,.2,1), visibility 0s;
+    }
+
+    .experience-shell {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(330px, .66fr);
+      gap: clamp(18px, 2.8vw, 44px);
+      width: min(1280px, 100%);
+      margin: auto;
+    }
+
+    .deck {
+      position: relative;
+      min-width: 0;
+      padding: clamp(18px, 2.4vw, 34px);
+      border: 1px solid rgba(255, 243, 218, .28);
+      background: linear-gradient(145deg, rgba(31, 21, 16, .48), rgba(12, 9, 7, .36));
+      box-shadow: var(--shadow), inset 0 1px rgba(255,255,255,.12);
+      backdrop-filter: blur(24px) saturate(.9);
+    }
+
+    .deck::before,
+    .deck::after {
+      content: "+";
+      position: absolute;
+      color: rgba(238, 207, 151, .38);
+      font-family: "DM Mono", monospace;
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .deck::before { top: 9px; left: 11px; }
+    .deck::after { right: 11px; bottom: 9px; }
+
+    .deck-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 4px 3px 19px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .deck-label {
+      color: var(--muted);
+      font-family: "DM Mono", monospace;
+      font-size: 9px;
+      letter-spacing: .3em;
+      text-transform: uppercase;
+    }
+
+    .deck-title {
+      margin: 4px 0 0;
+      color: var(--cream);
+      font-family: "Rozha One", serif;
+      font-size: clamp(28px, 3vw, 44px);
+      font-weight: 400;
+      line-height: 1;
+    }
+
+    .side-stamp {
+      flex: 0 0 auto;
+      padding: 8px 11px 6px;
+      border: 1px solid rgba(239, 202, 128, .52);
+      color: var(--mustard-light);
+      font-family: "DM Mono", monospace;
+      font-size: 9px;
+      letter-spacing: .22em;
+      line-height: 1.3;
+      text-align: center;
+      text-transform: uppercase;
+      transform: rotate(2deg);
+    }
+
+    .video-frame {
+      position: relative;
+      margin-top: clamp(18px, 2.4vw, 30px);
+      padding: 14px;
+      border: 1px solid rgba(255, 244, 220, .22);
+      background: rgba(10, 8, 7, .34);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.06), inset 0 0 45px rgba(0,0,0,.42);
+      backdrop-filter: blur(14px);
+    }
+
+    .video-window {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background:
+        linear-gradient(rgba(34,18,12,.3), rgba(34,18,12,.55)),
+        radial-gradient(circle at 50% 45%, #6c4a2c, #160d08 70%);
+    }
+
+    .video-window > div {
+      width: 100%;
+      height: 100%;
+    }
+
+    .audio-element { display: none; }
+
+    .audio-stage {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: clamp(16px, 3vw, 36px);
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 48%, rgba(255, 232, 194, .12), transparent 38%),
+        linear-gradient(145deg, rgba(255,255,255,.07), rgba(8,7,6,.24) 72%);
+      backdrop-filter: blur(18px);
+    }
+
+    .audio-stage::before {
+      content: "";
+      position: absolute;
+      inset: -30%;
+      background: repeating-conic-gradient(from 8deg, rgba(255,255,255,.025) 0 2deg, transparent 2deg 9deg);
+      animation: stage-drift 18s linear infinite;
+    }
+
+    @keyframes stage-drift { to { transform: rotate(360deg); } }
+
+    .stage-cassette {
+      position: relative;
+      z-index: 1;
+      width: min(470px, 76%);
+      aspect-ratio: 1.7;
+      padding: clamp(14px, 2.2vw, 24px);
+      border: 1px solid rgba(255, 244, 220, .44);
+      border-radius: 13px;
+      background: linear-gradient(150deg, rgba(255,255,255,.16), rgba(255,255,255,.035));
+      box-shadow: 0 24px 45px rgba(0,0,0,.34), inset 0 1px rgba(255,255,255,.24);
+      color: var(--cream);
+      backdrop-filter: blur(18px) saturate(.8);
+      transform: rotate(-1.5deg);
+    }
+
+    .stage-label {
+      height: 35%;
+      padding: 8px 13px;
+      border: 1px solid rgba(255, 244, 220, .22);
+      background: rgba(9, 8, 7, .2);
+      text-align: center;
+    }
+
+    .stage-label small {
+      display: block;
+      font-family: "DM Mono", monospace;
+      font-size: clamp(6px, .65vw, 9px);
+      letter-spacing: .2em;
+      text-transform: uppercase;
+    }
+
+    .stage-label strong {
+      display: block;
+      margin-top: 4px;
+      overflow: hidden;
+      font-family: "Rozha One", serif;
+      font-size: clamp(16px, 2vw, 30px);
+      font-weight: 400;
+      line-height: 1;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .stage-window {
+      position: absolute;
+      top: 48%;
+      left: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 57%;
+      height: 29%;
+      padding: 0 10%;
+      border: 1px solid rgba(255, 244, 220, .3);
+      border-radius: 999px;
+      background: rgba(8,7,6,.28);
+      transform: translate(-50%, -50%);
+    }
+
+    .stage-reel {
+      width: clamp(27px, 4.3vw, 57px);
+      aspect-ratio: 1;
+      border: clamp(5px, .8vw, 9px) dotted rgba(255, 238, 205, .72);
+      border-radius: 50%;
+      background: rgba(255,255,255,.08);
+    }
+
+    .is-playing .stage-reel { animation: reel-stage 1.4s linear infinite; }
+    .is-playing .stage-reel:last-child { animation-duration: 1.05s; }
+    @keyframes reel-stage { to { transform: rotate(360deg); } }
+
+    .stage-footer {
+      position: absolute;
+      inset: auto 0 9%;
+      font-family: "DM Mono", monospace;
+      font-size: clamp(6px, .7vw, 9px);
+      letter-spacing: .2em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .preview-badge {
+      position: absolute;
+      right: 14px;
+      bottom: 12px;
+      z-index: 2;
+      color: rgba(255,237,200,.58);
+      font-family: "DM Mono", monospace;
+      font-size: 7px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    .video-window::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      border: 1px solid rgba(255,255,255,.07);
+      background: repeating-linear-gradient(0deg, rgba(255,255,255,.025) 0 1px, transparent 1px 4px);
+      pointer-events: none;
+      mix-blend-mode: screen;
+    }
+
+    .audio-cover {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      display: grid;
+      place-items: center;
+      padding: 28px;
+      background: linear-gradient(140deg, rgba(24,18,15,.5), rgba(8,7,6,.3));
+      backdrop-filter: blur(18px);
+      text-align: center;
+      transition: opacity .45s ease, visibility .45s ease;
+      cursor: pointer;
+    }
+
+    .audio-cover.hidden {
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .cover-cassette {
+      position: relative;
+      width: min(300px, 75%);
+      aspect-ratio: 1.65;
+      padding: 18px;
+      border: 1px solid rgba(255, 244, 220, .48);
+      border-radius: 10px;
+      background: linear-gradient(155deg, rgba(255,255,255,.17), rgba(255,255,255,.04));
+      box-shadow: 0 18px 35px rgba(0,0,0,.28), inset 0 1px rgba(255,255,255,.22);
+      color: var(--cream);
+      backdrop-filter: blur(16px);
+      transform: rotate(-2deg);
+    }
+
+    .cover-cassette::before,
+    .cover-cassette::after {
+      content: "";
+      position: absolute;
+      top: 49%;
+      width: 35px;
+      height: 35px;
+      border: 7px dotted rgba(255, 238, 205, .68);
+      border-radius: 50%;
+      background: rgba(255,255,255,.08);
+      transform: translateY(-50%);
+    }
+
+    .cover-cassette::before { left: 22%; }
+    .cover-cassette::after { right: 22%; }
+
+    .cover-cassette span {
+      display: block;
+      padding-bottom: 7px;
+      border-bottom: 1px solid rgba(255,244,220,.3);
+      font-family: "DM Mono", monospace;
+      font-size: clamp(11px, 1.2vw, 16px);
+      font-weight: 500;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .cover-action {
+      position: relative;
+      z-index: 4;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 18px;
+      color: var(--cream);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .05em;
+    }
+
+    .cover-action i {
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border: 1px solid currentColor;
+      border-radius: 50%;
+      font-family: system-ui, sans-serif;
+      font-style: normal;
+    }
+
+    .deck-meta {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: end;
+      gap: 20px;
+      margin-top: 18px;
+      padding: 0 3px;
+    }
+
+    .now-label {
+      margin: 0;
+      color: var(--mustard-light);
+      font-family: "DM Mono", monospace;
+      font-size: 9px;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+    }
+
+    .now-title {
+      margin: 6px 0 2px;
+      overflow: hidden;
+      color: var(--cream);
+      font-family: "Rozha One", serif;
+      font-size: clamp(26px, 3.2vw, 45px);
+      font-weight: 400;
+      line-height: .96;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .now-subtitle {
+      margin: 0;
+      overflow: hidden;
+      color: var(--muted);
+      font-family: "DM Mono", monospace;
+      font-size: 10px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .full-song-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 9px;
+      color: var(--mustard-light);
+      font-family: "DM Mono", monospace;
+      font-size: 8px;
+      letter-spacing: .12em;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
+    .full-song-link:hover { text-decoration: underline; }
+
+    .signal {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 33px;
+      padding-bottom: 3px;
+    }
+
+    .signal span {
+      width: 3px;
+      height: 22%;
+      background: var(--mustard-light);
+      opacity: .35;
+      transform-origin: bottom;
+    }
+
+    .is-playing .signal span {
+      opacity: .82;
+      animation: meter .72s ease-in-out infinite alternate;
+    }
+
+    .signal span:nth-child(2) { animation-delay: -.32s; }
+    .signal span:nth-child(3) { animation-delay: -.55s; }
+    .signal span:nth-child(4) { animation-delay: -.15s; }
+    .signal span:nth-child(5) { animation-delay: -.44s; }
+    .signal span:nth-child(6) { animation-delay: -.25s; }
+    .signal span:nth-child(7) { animation-delay: -.63s; }
+
+    @keyframes meter {
+      from { transform: scaleY(.35); }
+      to { transform: scaleY(1.4); }
+    }
+
+    .playlist-panel {
+      align-self: stretch;
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid rgba(255, 243, 218, .28);
+      background: linear-gradient(155deg, rgba(35, 25, 20, .5), rgba(10, 8, 7, .35));
+      box-shadow: var(--shadow);
+      color: var(--cream);
+      backdrop-filter: blur(24px) saturate(.9);
+      transform: rotate(.25deg);
+    }
+
+    .playlist-head {
+      position: relative;
+      padding: 24px 26px 18px;
+      border-bottom: 1px solid rgba(255, 243, 218, .2);
+    }
+
+    .playlist-head::after {
+      content: "SIDE A";
+      position: absolute;
+      top: 20px;
+      right: 22px;
+      padding: 5px 8px 3px;
+      border: 1px solid rgba(255, 220, 155, .45);
+      color: var(--mustard-light);
+      font-family: "DM Mono", monospace;
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: .18em;
+      transform: rotate(3deg);
+    }
+
+    .playlist-kicker {
+      margin: 0;
+      color: rgba(255, 240, 210, .58);
+      font-family: "DM Mono", monospace;
+      font-size: 9px;
+      letter-spacing: .25em;
+      text-transform: uppercase;
+    }
+
+    .playlist-head h2 {
+      margin: 3px 0 0;
+      color: var(--cream);
+      font-family: "Rozha One", serif;
+      font-size: clamp(34px, 3.4vw, 50px);
+      font-weight: 400;
+      line-height: 1;
+    }
+
+    .playlist-head p:last-child {
+      margin: 8px 0 0;
+      color: rgba(255, 240, 210, .62);
+      font-size: 12px;
+    }
+
+    .track-list {
+      margin: 0;
+      padding: 0 26px 20px;
+      list-style: none;
+    }
+
+    .track {
+      border-bottom: 1px dashed rgba(255, 240, 210, .2);
+    }
+
+    .track button {
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      padding: 14px 7px 12px;
+      border: 0;
+      background: transparent;
+      color: var(--cream);
+      text-align: left;
+      cursor: pointer;
+      transition: background .18s ease, transform .18s ease;
+    }
+
+    .track button:hover {
+      background: rgba(255, 255, 255, .08);
+      transform: translateX(3px);
+    }
+
+    .track.active button {
+      background: rgba(217, 162, 58, .13);
+    }
+
+    .track-number {
+      color: rgba(255, 240, 210, .46);
+      font-family: "DM Mono", monospace;
+      font-size: 10px;
+    }
+
+    .track.active .track-number {
+      color: var(--mustard-light);
+      font-weight: 500;
+    }
+
+    .track-name {
+      display: block;
+      overflow: hidden;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.32;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .track-info {
+      display: block;
+      margin-top: 2px;
+      overflow: hidden;
+      color: rgba(255, 240, 210, .56);
+      font-family: "DM Mono", monospace;
+      font-size: 8px;
+      letter-spacing: .02em;
+      line-height: 1.35;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .track-duration {
+      color: rgba(255, 240, 210, .56);
+      font-family: "DM Mono", monospace;
+      font-size: 9px;
+    }
+
+    .track.active .track-duration::before {
+      content: "▶ ";
+      color: var(--mustard-light);
+    }
+
+    .playlist-note {
+      margin: 0 26px 22px;
+      padding-top: 11px;
+      border-top: 1px solid rgba(255,240,210,.16);
+      color: rgba(255,240,210,.47);
+      font-family: "DM Mono", monospace;
+      font-size: 8px;
+      line-height: 1.5;
+    }
+
+    .mobile-playlist-button { display: none; }
+
+    .player-bar {
+      position: fixed;
+      inset: auto 0 0;
+      z-index: 55;
+      min-height: var(--player-h);
+      padding: 14px max(20px, env(safe-area-inset-right)) calc(14px + env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
+      border-top: 1px solid rgba(244, 219, 168, .32);
+      background: linear-gradient(180deg, rgba(31, 23, 19, .58), rgba(10, 8, 7, .5));
+      box-shadow: 0 -18px 55px rgba(0,0,0,.42);
+      backdrop-filter: blur(26px) saturate(.9);
+      opacity: 0;
+      transform: translateY(110%);
+      transition: opacity .5s .6s ease, transform .7s .55s cubic-bezier(.16,.8,.24,1);
+      pointer-events: none;
+    }
+
+    body.started .player-bar {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .player-grid {
+      display: grid;
+      grid-template-columns: minmax(240px, .8fr) minmax(360px, 1.2fr) minmax(180px, .58fr);
+      align-items: center;
+      gap: clamp(18px, 3vw, 54px);
+      width: min(1500px, 100%);
+      margin: auto;
+    }
+
+    .mini-now {
+      display: grid;
+      grid-template-columns: 48px minmax(0, 1fr);
+      align-items: center;
+      gap: 13px;
+      min-width: 0;
+    }
+
+    .mini-tape {
+      position: relative;
+      width: 48px;
+      height: 36px;
+      border: 1px solid rgba(255, 244, 220, .38);
+      border-radius: 4px;
+      background: linear-gradient(145deg, rgba(255,255,255,.14), rgba(255,255,255,.035));
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,.06);
+      backdrop-filter: blur(10px);
+    }
+
+    .mini-tape::before,
+    .mini-tape::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      width: 11px;
+      height: 11px;
+      border: 3px dotted rgba(255, 238, 205, .65);
+      border-radius: 50%;
+      transform: translateY(-50%);
+    }
+
+    .mini-tape::before { left: 8px; }
+    .mini-tape::after { right: 8px; }
+
+    .is-playing .mini-tape::before,
+    .is-playing .mini-tape::after { animation: reel 1.1s linear infinite; }
+
+    @keyframes reel { to { transform: translateY(-50%) rotate(360deg); } }
+
+    .mini-kicker {
+      margin: 0 0 2px;
+      color: var(--mustard-light);
+      font-family: "DM Mono", monospace;
+      font-size: 8px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+    }
+
+    .mini-title {
+      margin: 0;
+      overflow: hidden;
+      color: var(--cream);
+      font-size: 14px;
+      font-weight: 700;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .mini-artist {
+      margin: 2px 0 0;
+      overflow: hidden;
+      color: var(--muted);
+      font-family: "DM Mono", monospace;
+      font-size: 8px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .transport { min-width: 0; }
+
+    .transport-buttons {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 13px;
+    }
+
+    .control-button {
+      display: grid;
+      place-items: center;
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      border: 1px solid rgba(245, 218, 164, .27);
+      border-radius: 50%;
+      background: rgba(255,255,255,.025);
+      color: var(--cream);
+      font-family: system-ui, sans-serif;
+      font-size: 12px;
+      cursor: pointer;
+      transition: border-color .2s ease, background .2s ease, transform .2s ease;
+    }
+
+    .control-button:hover {
+      border-color: var(--mustard-light);
+      background: rgba(220, 165, 57, .12);
+      transform: translateY(-2px);
+    }
+
+    .control-button.primary {
+      width: 47px;
+      height: 47px;
+      border-color: rgba(255,244,220,.5);
+      background: rgba(255,255,255,.1);
+      box-shadow: 0 4px 0 rgba(0,0,0,.34), inset 0 1px rgba(255,255,255,.18);
+      color: var(--mustard-light);
+      backdrop-filter: blur(12px);
+      font-size: 15px;
+    }
+
+    .control-button.primary:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 rgba(0,0,0,.34);
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr) 34px;
+      align-items: center;
+      gap: 9px;
+      margin-top: 8px;
+    }
+
+    .time {
+      color: rgba(255,237,201,.57);
+      font-family: "DM Mono", monospace;
+      font-size: 8px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .time:last-child { text-align: right; }
+
+    .range {
+      width: 100%;
+      height: 3px;
+      margin: 0;
+      appearance: none;
+      border: 0;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--mustard) var(--progress, 0%), rgba(255,255,255,.17) var(--progress, 0%));
+      cursor: pointer;
+    }
+
+    .range::-webkit-slider-thumb {
+      width: 11px;
+      height: 11px;
+      appearance: none;
+      border: 2px solid var(--ink);
+      border-radius: 50%;
+      background: var(--mustard-light);
+      box-shadow: 0 0 0 1px var(--mustard-light);
+    }
+
+    .range::-moz-range-thumb {
+      width: 8px;
+      height: 8px;
+      border: 2px solid var(--ink);
+      border-radius: 50%;
+      background: var(--mustard-light);
+      box-shadow: 0 0 0 1px var(--mustard-light);
+    }
+
+    .volume-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 11px;
+    }
+
+    .volume-icon {
+      color: rgba(255,239,207,.65);
+      font-family: system-ui, sans-serif;
+      font-size: 14px;
+    }
+
+    .volume-range { max-width: 96px; }
+
+    .playlist-trigger {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      margin-left: 5px;
+      border: 1px solid rgba(245,218,164,.28);
+      background: transparent;
+      color: var(--cream);
+      cursor: pointer;
+      font-family: "DM Mono", monospace;
+      font-size: 13px;
+    }
+
+    #mobileBarPlaylist { display: none; }
+
+    .drawer-shade {
+      position: fixed;
+      inset: 0;
+      z-index: 70;
+      visibility: hidden;
+      opacity: 0;
+      background: rgba(10,6,4,.7);
+      backdrop-filter: blur(6px);
+      transition: opacity .3s ease, visibility 0s .3s;
+    }
+
+    .drawer-shade.open {
+      visibility: visible;
+      opacity: 1;
+      transition: opacity .3s ease, visibility 0s;
+    }
+
+    .drawer {
+      position: absolute;
+      inset: 0 0 0 auto;
+      width: min(430px, 91vw);
+      height: 100%;
+      overflow-y: auto;
+      background: rgba(18, 14, 12, .72);
+      color: var(--cream);
+      backdrop-filter: blur(28px) saturate(.9);
+      transform: translateX(100%);
+      transition: transform .45s cubic-bezier(.18,.8,.24,1);
+    }
+
+    .drawer-shade.open .drawer { transform: translateX(0); }
+
+    .drawer .playlist-panel {
+      min-height: 100%;
+      border: 0;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .drawer-close {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      z-index: 3;
+      width: 38px;
+      height: 38px;
+      border: 1px solid rgba(255,244,220,.34);
+      border-radius: 50%;
+      background: rgba(255,255,255,.08);
+      color: var(--cream);
+      cursor: pointer;
+      font-family: system-ui, sans-serif;
+    }
+
+    .status-toast {
+      position: fixed;
+      right: 22px;
+      bottom: calc(var(--player-h) + 20px);
+      z-index: 80;
+      max-width: min(360px, calc(100vw - 44px));
+      padding: 10px 13px;
+      border: 1px solid rgba(244,216,161,.28);
+      background: rgba(24,13,8,.9);
+      color: var(--cream);
+      font-family: "DM Mono", monospace;
+      font-size: 9px;
+      line-height: 1.5;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity .25s ease, transform .25s ease;
+      pointer-events: none;
+    }
+
+    .status-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 980px) {
+      :root { --player-h: 126px; }
+
+      .experience {
+        align-items: start;
+        padding-top: 106px;
+      }
+
+      .experience-shell {
+        grid-template-columns: minmax(0, 1fr);
+        width: min(760px, 100%);
+      }
+
+      .playlist-panel.desktop { display: none; }
+
+      .mobile-playlist-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 18px;
+        padding: 10px 12px 9px;
+        border: 1px solid rgba(245,218,164,.33);
+        background: rgba(255,255,255,.03);
+        color: var(--cream);
+        cursor: pointer;
+        font-family: "DM Mono", monospace;
+        font-size: 9px;
+        letter-spacing: .15em;
+        text-transform: uppercase;
+      }
+
+      .player-grid {
+        grid-template-columns: minmax(0, .8fr) minmax(330px, 1.35fr);
+      }
+
+      .volume-wrap { display: none; }
+    }
+
+    @media (max-width: 680px) {
+      :root { --player-h: 148px; }
+
+      .topbar {
+        padding: 18px;
+      }
+
+      .brand-main { font-size: 27px; }
+      .brand-sub { display: none; }
+      .topbar-actions > span:not(.dot) { display: none; }
+
+      .hero {
+        padding: 96px 18px 88px;
+      }
+
+      .hero-inner { margin-top: -5vh; }
+
+      .eyebrow {
+        margin-bottom: 18px;
+        letter-spacing: .2em;
+      }
+
+      .eyebrow::before,
+      .eyebrow::after { width: 22px; }
+
+      .hero h1 {
+        font-size: clamp(49px, 16vw, 76px);
+        line-height: .9;
+      }
+
+      .hero-copy {
+        margin-top: 20px;
+        font-size: 14px;
+        line-height: 1.65;
+      }
+
+      .start-button {
+        margin-top: 28px;
+        padding: 13px 17px 11px;
+        font-size: 15px;
+      }
+
+      .headphone-note { margin-top: 21px; }
+
+      .experience {
+        padding: 88px 12px calc(var(--player-h) + 22px);
+      }
+
+      .deck {
+        padding: 16px 13px 20px;
+      }
+
+      .deck-header {
+        padding: 4px 4px 14px;
+      }
+
+      .deck-title { font-size: 29px; }
+
+      .side-stamp {
+        padding: 6px 7px 4px;
+        font-size: 7px;
+      }
+
+      .video-frame {
+        margin-top: 15px;
+        padding: 8px;
+      }
+
+      .audio-cover { padding: 12px; }
+      .cover-cassette { width: min(250px, 75%); padding: 12px; }
+      .cover-cassette::before,
+      .cover-cassette::after {
+        width: 25px;
+        height: 25px;
+        border-width: 5px;
+      }
+
+      .cover-action {
+        margin-top: 11px;
+        font-size: 11px;
+      }
+
+      .cover-action i {
+        width: 25px;
+        height: 25px;
+      }
+
+      .deck-meta {
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      .now-title {
+        font-size: 28px;
+      }
+
+      .signal { height: 27px; }
+
+      .player-bar {
+        padding: 11px 14px calc(11px + env(safe-area-inset-bottom));
+      }
+
+      .player-grid {
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 8px 12px;
+      }
+
+      .mini-now {
+        grid-column: 1;
+        grid-row: 1;
+        grid-template-columns: 39px minmax(0, 1fr);
+        gap: 10px;
+      }
+
+      .mini-tape {
+        width: 39px;
+        height: 30px;
+      }
+
+      .mini-tape::before,
+      .mini-tape::after {
+        width: 8px;
+        height: 8px;
+        border-width: 2px;
+      }
+
+      .mini-tape::before { left: 7px; }
+      .mini-tape::after { right: 7px; }
+
+      .playlist-trigger {
+        grid-column: 2;
+        grid-row: 1;
+        width: 36px;
+        height: 36px;
+      }
+
+      #mobileBarPlaylist { display: grid; }
+
+      .transport {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        align-items: center;
+        gap: 12px;
+      }
+
+      .transport-buttons { gap: 8px; }
+
+      .control-button {
+        width: 32px;
+        height: 32px;
+      }
+
+      .control-button.primary {
+        width: 40px;
+        height: 40px;
+      }
+
+      .timeline {
+        grid-template-columns: 27px minmax(0, 1fr) 27px;
+        margin: 0;
+      }
+
+      .status-toast {
+        right: 12px;
+        bottom: calc(var(--player-h) + 12px);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+
+      .world video { transform: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#experience">प्लेयर पर जाएँ</a>
+
+  <div class="world" aria-hidden="true">
+    <video id="heroVideo" autoplay muted loop playsinline preload="auto">
+      <source src="assets/hero-bg.mp4" type="video/mp4">
+    </video>
+  </div>
+
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="यादों की कैसेट — मुख्य पृष्ठ">
+      <span class="brand-main">यादों की कैसेट</span>
+      <span class="brand-sub">90s Bollywood Radio</span>
+    </a>
+    <div class="topbar-actions">
+      <span>Bombay</span><span class="dot"></span><span>1997</span>
+      <button class="video-toggle" id="videoToggle" type="button" aria-label="पृष्ठभूमि वीडियो रोकें" title="पृष्ठभूमि वीडियो रोकें">Ⅱ</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="heroTitle">
+      <div class="hero-inner">
+        <p class="eyebrow">एक रात • एक कैसेट • बहुत सी यादें</p>
+        <h1 id="heroTitle">कुछ गाने <em>पुराने</em><br>नहीं होते।</h1>
+        <p class="hero-copy">जब धुन बजती है, वक़्त पीछे मुड़ जाता है। अपनी खिड़की वाली सीट चुनिए—और नब्बे के दशक में लौट चलिए।</p>
+        <button class="start-button" id="startButton" type="button">
+          <span class="tape-icon" aria-hidden="true">●●</span>
+          <span>कैसेट चलाएँ</span>
+        </button>
+        <p class="headphone-note">✦ headphones recommended ✦</p>
+      </div>
+      <div class="hero-footer">Side A तैयार है</div>
+    </section>
+
+    <section class="experience" id="experience" aria-label="90s Bollywood music player">
+      <div class="experience-shell">
+        <article class="deck" id="deck">
+          <div class="deck-header">
+            <div>
+              <span class="deck-label">Yaadon Ki Cassette • Stereo</span>
+              <h2 class="deck-title">रात की फरमाइश</h2>
+            </div>
+            <span class="side-stamp">Side A<br>90s only</span>
+          </div>
+
+          <div class="video-frame">
+            <div class="video-window">
+              <audio class="audio-element" id="audioPlayer" preload="metadata"></audio>
+              <div class="audio-stage" aria-hidden="true">
+                <div class="stage-cassette">
+                  <div class="stage-label">
+                    <small>Yaadon Ki Cassette • Side A</small>
+                    <strong id="stageTitle">Pehla Nasha</strong>
+                  </div>
+                  <div class="stage-window">
+                    <span class="stage-reel"></span>
+                    <span class="stage-reel"></span>
+                  </div>
+                  <span class="stage-footer">High fidelity • Bombay 1997</span>
+                </div>
+                <span class="preview-badge">30 sec preview • Apple Music</span>
+              </div>
+              <button class="audio-cover" id="audioCover" type="button" aria-label="चुना हुआ गाना चलाएँ">
+                <span>
+                  <span class="cover-cassette"><span>Yaadon — Side A</span></span>
+                  <span class="cover-action"><i aria-hidden="true">▶</i>गाना चलाने के लिए दबाएँ</span>
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <div class="deck-meta">
+            <div>
+              <p class="now-label">अब बज रहा है • Track <span id="trackNumber">01</span></p>
+              <h3 class="now-title" id="nowTitle">Pehla Nasha</h3>
+              <p class="now-subtitle" id="nowSubtitle">Udit Narayan & Sadhana Sargam • 1992</p>
+              <a class="full-song-link" id="fullSongLink" href="https://www.youtube.com/watch?v=SBfPs-PMGTA" target="_blank" rel="noopener">पूरा गाना YouTube पर ↗</a>
+            </div>
+            <div class="signal" aria-hidden="true">
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+
+          <button class="mobile-playlist-button" id="mobilePlaylistButton" type="button">☰ गानों का पिटारा खोलें</button>
+        </article>
+
+        <aside class="playlist-panel desktop" aria-labelledby="playlistTitle">
+          <div class="playlist-head">
+            <p class="playlist-kicker">Cassette booklet • 06 tracks</p>
+            <h2 id="playlistTitle">गानों का पिटारा</h2>
+            <p>धूल भरी सड़क • धीमी हवा • पुराने ख़त</p>
+          </div>
+          <ol class="track-list" id="trackList"></ol>
+          <p class="playlist-note">30-SECOND PREVIEWS VIA APPLE MUSIC • पूरा गाना अलग लिंक में खुलेगा।</p>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <section class="player-bar" aria-label="संगीत नियंत्रण">
+    <div class="player-grid">
+      <div class="mini-now">
+        <span class="mini-tape" aria-hidden="true"></span>
+        <div>
+          <p class="mini-kicker">Now playing • Side A</p>
+          <p class="mini-title" id="miniTitle">Pehla Nasha</p>
+          <p class="mini-artist" id="miniArtist">Udit Narayan & Sadhana Sargam</p>
+        </div>
+      </div>
+
+      <div class="transport">
+        <div class="transport-buttons">
+          <button class="control-button" id="prevButton" type="button" aria-label="पिछला गाना" title="पिछला गाना">❮</button>
+          <button class="control-button primary" id="playButton" type="button" aria-label="चलाएँ" title="चलाएँ">▶</button>
+          <button class="control-button" id="nextButton" type="button" aria-label="अगला गाना" title="अगला गाना">❯</button>
+        </div>
+        <div class="timeline">
+          <span class="time" id="currentTime">0:00</span>
+          <input class="range" id="progressRange" type="range" min="0" max="100" value="0" step="0.1" aria-label="गाने की प्रगति">
+          <span class="time" id="totalTime">0:00</span>
+        </div>
+      </div>
+
+      <div class="volume-wrap">
+        <span class="volume-icon" aria-hidden="true">◖))</span>
+        <input class="range volume-range" id="volumeRange" type="range" min="0" max="100" value="78" aria-label="आवाज़">
+        <button class="playlist-trigger" id="playlistTrigger" type="button" aria-label="प्लेलिस्ट खोलें" title="प्लेलिस्ट खोलें">☰</button>
+      </div>
+      <button class="playlist-trigger" id="mobileBarPlaylist" type="button" aria-label="प्लेलिस्ट खोलें" title="प्लेलिस्ट खोलें">☰</button>
+    </div>
+  </section>
+
+  <div class="drawer-shade" id="drawerShade" aria-hidden="true">
+    <div class="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+      <button class="drawer-close" id="drawerClose" type="button" aria-label="प्लेलिस्ट बंद करें">×</button>
+      <aside class="playlist-panel">
+        <div class="playlist-head">
+          <p class="playlist-kicker">Cassette booklet • 06 tracks</p>
+          <h2 id="drawerTitle">गानों का पिटारा</h2>
+          <p>धूल भरी सड़क • धीमी हवा • पुराने ख़त</p>
+        </div>
+        <ol class="track-list" id="drawerTrackList"></ol>
+        <p class="playlist-note">30-SECOND PREVIEWS VIA APPLE MUSIC • पूरा गाना अलग लिंक में खुलेगा।</p>
+      </aside>
+    </div>
+  </div>
+
+  <div class="status-toast" id="statusToast" role="status" aria-live="polite"></div>
+
+  <script>
+    const songs = [
+      {
+        title: "Pehla Nasha",
+        artist: "Udit Narayan & Sadhana Sargam",
+        film: "Jo Jeeta Wohi Sikandar",
+        year: "1992",
+        duration: "0:30",
+        previewUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/3c/41/d6/3c41d678-54cd-bc22-bb66-928c4e584f54/mzaf_11991940136628253012.plus.aac.p.m4a",
+        youtubeUrl: "https://www.youtube.com/watch?v=SBfPs-PMGTA"
+      },
+      {
+        title: "Tujhe Dekha To",
+        artist: "Kumar Sanu & Lata Mangeshkar",
+        film: "Dilwale Dulhania Le Jayenge",
+        year: "1995",
+        duration: "0:30",
+        previewUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/df/53/2d/df532db9-42a5-1657-dc66-252a0fc951cf/mzaf_11264658299886102641.plus.aac.p.m4a",
+        youtubeUrl: "https://www.youtube.com/watch?v=cNV5hLSa9H8"
+      },
+      {
+        title: "Ek Ladki Ko Dekha",
+        artist: "Kumar Sanu",
+        film: "1942: A Love Story",
+        year: "1994",
+        duration: "0:30",
+        previewUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/ca/4e/84/ca4e84e0-d0fd-9672-5099-4ddb9ef00c02/mzaf_2296327157345011511.plus.aac.p.m4a",
+        youtubeUrl: "https://www.youtube.com/watch?v=htMvfOfixuM"
+      },
+      {
+        title: "Do Dil Mil Rahe Hain",
+        artist: "Kumar Sanu",
+        film: "Pardes",
+        year: "1997",
+        duration: "0:30",
+        previewUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/4f/d6/9f/4fd69f91-cf13-2c98-8c1a-b2c1a21c236d/mzaf_2935935954194266061.plus.aac.p.m4a",
+        youtubeUrl: "https://www.youtube.com/watch?v=5SvIuD6wJRI"
+      },
+      {
+        title: "Aankhon Se Tune Kya Keh Diya",
+        artist: "Kumar Sanu & Alka Yagnik",
+        film: "Ghulam",
+        year: "1998",
+        duration: "0:30",
+        previewUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/76/d6/6a/76d66a68-507d-7659-f6a4-a4d89bab5ab4/mzaf_15775683424662039092.plus.aac.p.m4a",
+        youtubeUrl: "https://www.youtube.com/watch?v=RlSRxyxFwXI"
+      },
+      {
+        title: "Chura Ke Dil Mera",
+        artist: "Kumar Sanu & Alka Yagnik",
+        film: "Main Khiladi Tu Anari",
+        year: "1994",
+        duration: "0:30",
+        previewUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/65/1b/6d/651b6d04-5181-8367-c187-914eb7266765/mzaf_14254664281737349492.plus.aac.p.m4a",
+        youtubeUrl: "https://www.youtube.com/results?search_query=Chura+Ke+Dil+Mera+official"
+      }
+    ];
+
+    const body = document.body;
+    const deck = document.getElementById("deck");
+    const heroVideo = document.getElementById("heroVideo");
+    const startButton = document.getElementById("startButton");
+    const videoToggle = document.getElementById("videoToggle");
+    const audioPlayer = document.getElementById("audioPlayer");
+    const audioCover = document.getElementById("audioCover");
+    const fullSongLink = document.getElementById("fullSongLink");
+    const playButton = document.getElementById("playButton");
+    const prevButton = document.getElementById("prevButton");
+    const nextButton = document.getElementById("nextButton");
+    const progressRange = document.getElementById("progressRange");
+    const volumeRange = document.getElementById("volumeRange");
+    const trackList = document.getElementById("trackList");
+    const drawerTrackList = document.getElementById("drawerTrackList");
+    const drawerShade = document.getElementById("drawerShade");
+    const drawerClose = document.getElementById("drawerClose");
+    const statusToast = document.getElementById("statusToast");
+    const mobileBarPlaylist = document.getElementById("mobileBarPlaylist");
+
+    let currentIndex = 0;
+    let toastTimer = null;
+    let videoWasPaused = false;
+
+    function renderTrackList(target) {
+      target.innerHTML = songs.map((song, index) => `
+        <li class="track${index === currentIndex ? " active" : ""}">
+          <button type="button" data-track="${index}" aria-label="${song.title} चलाएँ">
+            <span class="track-number">${String(index + 1).padStart(2, "0")}</span>
+            <span>
+              <span class="track-name">${song.title}</span>
+              <span class="track-info">${song.artist} • ${song.film} • ${song.year}</span>
+            </span>
+            <span class="track-duration">${song.duration}</span>
+          </button>
+        </li>
+      `).join("");
+    }
+
+    function renderLists() {
+      renderTrackList(trackList);
+      renderTrackList(drawerTrackList);
+    }
+
+    function updateSongMeta() {
+      const song = songs[currentIndex];
+      document.getElementById("trackNumber").textContent = String(currentIndex + 1).padStart(2, "0");
+      document.getElementById("nowTitle").textContent = song.title;
+      document.getElementById("nowSubtitle").textContent = `${song.artist} • ${song.year}`;
+      document.getElementById("miniTitle").textContent = song.title;
+      document.getElementById("miniArtist").textContent = song.artist;
+      document.getElementById("stageTitle").textContent = song.title;
+      fullSongLink.href = song.youtubeUrl;
+      renderLists();
+    }
+
+    function formatTime(seconds) {
+      if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
+      const minutes = Math.floor(seconds / 60);
+      const rest = Math.floor(seconds % 60).toString().padStart(2, "0");
+      return `${minutes}:${rest}`;
+    }
+
+    function showToast(message) {
+      statusToast.textContent = message;
+      statusToast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => statusToast.classList.remove("show"), 2600);
+    }
+
+    function setPlaying(isPlaying) {
+      body.classList.toggle("is-playing", isPlaying);
+      deck.classList.toggle("is-playing", isPlaying);
+      playButton.textContent = isPlaying ? "Ⅱ" : "▶";
+      playButton.setAttribute("aria-label", isPlaying ? "रोकें" : "चलाएँ");
+      playButton.title = isPlaying ? "रोकें" : "चलाएँ";
+      if (isPlaying) audioCover.classList.add("hidden");
+    }
+
+    function updateProgress() {
+      const current = audioPlayer.currentTime || 0;
+      const duration = audioPlayer.duration || 0;
+      const percent = duration ? (current / duration) * 100 : 0;
+      progressRange.value = percent;
+      progressRange.style.setProperty("--progress", `${percent}%`);
+      document.getElementById("currentTime").textContent = formatTime(current);
+      document.getElementById("totalTime").textContent = formatTime(duration);
+    }
+
+    function playCurrent() {
+      const playAttempt = audioPlayer.play();
+      if (playAttempt) {
+        playAttempt.catch(() => {
+          audioCover.classList.remove("hidden");
+          showToast("गाना चलाने के लिए कैसेट पर एक बार दबाएँ।");
+        });
+      }
+    }
+
+    function togglePlayback() {
+      if (audioPlayer.paused) playCurrent();
+      else audioPlayer.pause();
+    }
+
+    function selectSong(index, autoplay = true) {
+      currentIndex = (index + songs.length) % songs.length;
+      updateSongMeta();
+      progressRange.value = 0;
+      progressRange.style.setProperty("--progress", "0%");
+      document.getElementById("currentTime").textContent = "0:00";
+      document.getElementById("totalTime").textContent = songs[currentIndex].duration;
+      audioPlayer.src = songs[currentIndex].previewUrl;
+      audioPlayer.load();
+      audioCover.classList.remove("hidden");
+      if (autoplay) playCurrent();
+      showToast(`${songs[currentIndex].title} • ${songs[currentIndex].year}`);
+    }
+
+    function openDrawer() {
+      drawerShade.classList.add("open");
+      drawerShade.setAttribute("aria-hidden", "false");
+      drawerClose.focus();
+    }
+
+    function closeDrawer() {
+      drawerShade.classList.remove("open");
+      drawerShade.setAttribute("aria-hidden", "true");
+    }
+
+    function handleTrackClick(event) {
+      const button = event.target.closest("[data-track]");
+      if (!button) return;
+      selectSong(Number(button.dataset.track), true);
+      closeDrawer();
+    }
+
+    audioPlayer.addEventListener("play", () => setPlaying(true));
+    audioPlayer.addEventListener("pause", () => setPlaying(false));
+    audioPlayer.addEventListener("timeupdate", updateProgress);
+    audioPlayer.addEventListener("loadedmetadata", updateProgress);
+    audioPlayer.addEventListener("ended", () => selectSong(currentIndex + 1, true));
+    audioPlayer.addEventListener("error", () => {
+      setPlaying(false);
+      audioCover.classList.remove("hidden");
+      showToast("प्रीव्यू लोड नहीं हुआ—इंटरनेट कनेक्शन जाँचिए।");
+    });
+
+    startButton.addEventListener("click", () => {
+      body.classList.add("started");
+      selectSong(currentIndex, true);
+      setTimeout(() => {
+        document.getElementById("experience").scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 560);
+    });
+
+    videoToggle.addEventListener("click", () => {
+      if (heroVideo.paused) {
+        heroVideo.play().catch(() => {});
+        videoWasPaused = false;
+        videoToggle.textContent = "Ⅱ";
+        videoToggle.setAttribute("aria-label", "पृष्ठभूमि वीडियो रोकें");
+        videoToggle.title = "पृष्ठभूमि वीडियो रोकें";
+      } else {
+        heroVideo.pause();
+        videoWasPaused = true;
+        videoToggle.textContent = "▶";
+        videoToggle.setAttribute("aria-label", "पृष्ठभूमि वीडियो चलाएँ");
+        videoToggle.title = "पृष्ठभूमि वीडियो चलाएँ";
+      }
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden && !heroVideo.paused) heroVideo.pause();
+      if (!document.hidden && !videoWasPaused) heroVideo.play().catch(() => {});
+    });
+
+    audioCover.addEventListener("click", playCurrent);
+    playButton.addEventListener("click", togglePlayback);
+    prevButton.addEventListener("click", () => selectSong(currentIndex - 1, true));
+    nextButton.addEventListener("click", () => selectSong(currentIndex + 1, true));
+    trackList.addEventListener("click", handleTrackClick);
+    drawerTrackList.addEventListener("click", handleTrackClick);
+
+    progressRange.addEventListener("input", () => {
+      progressRange.style.setProperty("--progress", `${progressRange.value}%`);
+      const duration = audioPlayer.duration || 0;
+      if (duration) audioPlayer.currentTime = (Number(progressRange.value) / 100) * duration;
+    });
+
+    volumeRange.addEventListener("input", () => {
+      volumeRange.style.setProperty("--progress", `${volumeRange.value}%`);
+      audioPlayer.volume = Number(volumeRange.value) / 100;
+    });
+
+    volumeRange.style.setProperty("--progress", `${volumeRange.value}%`);
+
+    [
+      document.getElementById("playlistTrigger"),
+      document.getElementById("mobilePlaylistButton"),
+      mobileBarPlaylist
+    ].forEach(button => button.addEventListener("click", openDrawer));
+
+    drawerClose.addEventListener("click", closeDrawer);
+    drawerShade.addEventListener("click", event => {
+      if (event.target === drawerShade) closeDrawer();
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && drawerShade.classList.contains("open")) closeDrawer();
+      if (!body.classList.contains("started")) return;
+      const tag = document.activeElement?.tagName;
+      if (tag === "INPUT" || tag === "BUTTON") return;
+      if (event.code === "Space") {
+        event.preventDefault();
+        togglePlayback();
+      }
+      if (event.key === "ArrowRight") audioPlayer.currentTime = Math.min(audioPlayer.duration || 0, audioPlayer.currentTime + 10);
+      if (event.key === "ArrowLeft") audioPlayer.currentTime = Math.max(0, audioPlayer.currentTime - 10);
+    });
+
+    audioPlayer.volume = Number(volumeRange.value) / 100;
+    audioPlayer.src = songs[currentIndex].previewUrl;
+    renderLists();
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      heroVideo.pause();
+      videoWasPaused = true;
+      videoToggle.textContent = "▶";
+      videoToggle.setAttribute("aria-label", "पृष्ठभूमि वीडियो चलाएँ");
+      videoToggle.title = "पृष्ठभूमि वीडियो चलाएँ";
+    }
+  </script>
+</body>
+</html>

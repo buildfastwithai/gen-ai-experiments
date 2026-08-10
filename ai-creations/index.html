@@ -374,6 +374,46 @@ body.no-results .grid{display:none}
     <g stroke="var(--m1)" stroke-width="1.2" opacity=".45" fill="none"><path d="M14 24q40 34 0 68M186 24q-40 34 0 68"/></g>
   </symbol>
 
+  <symbol id="art-cassette" viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice">
+    <rect width="200" height="150" fill="#160b0a"/>
+    <circle cx="100" cy="72" r="88" fill="var(--m1)" opacity=".16"/>
+    <g opacity=".2" stroke="var(--m1)" stroke-width="1.2" fill="none">
+      <path d="M0 26h200M0 124h200"/>
+    </g>
+    <rect x="34" y="42" width="132" height="72" rx="7" fill="#20120f" stroke="var(--m1)" stroke-width="2"/>
+    <rect x="42" y="50" width="116" height="34" rx="4" fill="var(--m2)" opacity=".28"/>
+    <rect x="52" y="56" width="96" height="22" rx="3" fill="#0e0806"/>
+    <g fill="var(--m1)">
+      <circle cx="76" cy="67" r="11"/><circle cx="124" cy="67" r="11"/>
+    </g>
+    <g fill="#0e0806"><circle cx="76" cy="67" r="4.6"/><circle cx="124" cy="67" r="4.6"/></g>
+    <g stroke="#0e0806" stroke-width="2">
+      <path d="M76 58v-4M76 76v4M68 67h-4M84 67h4M124 58v-4M124 76v4M116 67h-4M132 67h4"/>
+    </g>
+    <path d="M87 67h26" stroke="var(--m2)" stroke-width="5"/>
+    <g fill="var(--m2)" opacity=".85">
+      <rect x="46" y="92" width="42" height="4" rx="2"/>
+      <rect x="46" y="101" width="26" height="4" rx="2"/>
+    </g>
+    <g fill="var(--m1)"><circle cx="128" cy="99" r="4"/><circle cx="142" cy="99" r="4"/><circle cx="156" cy="99" r="4" opacity=".5"/></g>
+    <g stroke="var(--m1)" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".8">
+      <path d="M172 34q10-8 0-16M182 38q16-12 0-24"/>
+    </g>
+  </symbol>
+
+  <symbol id="art-train" viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice">
+    <rect width="200" height="150" fill="#0d1220"/>
+    <rect x="0" y="0" width="200" height="92" fill="var(--m2)" opacity=".3"/>
+    <circle cx="150" cy="30" r="15" fill="var(--m1)" opacity=".85"/>
+    <path d="M0 74l40-26 32 20 34-24 42 26 52-18v40H0z" fill="var(--m1)" opacity=".35"/>
+    <path d="M0 88l46-18 40 14 44-16 70 20v34H0z" fill="#0a0f1c" opacity=".85"/>
+    <rect x="24" y="26" width="152" height="98" rx="14" fill="none" stroke="#1a2338" stroke-width="16"/>
+    <rect x="24" y="26" width="152" height="98" rx="14" fill="none" stroke="var(--m1)" stroke-width="2" opacity=".7"/>
+    <g fill="#fff" opacity=".5"><circle cx="60" cy="42" r="1.3"/><circle cx="112" cy="36" r="1"/></g>
+    <g stroke="var(--m1)" stroke-width="2" opacity=".55"><path d="M0 128h200M0 138h200"/></g>
+    <g stroke="var(--m2)" stroke-width="3" opacity=".5"><path d="M18 122v22M62 122v22M106 122v22M150 122v22M194 122v22"/></g>
+  </symbol>
+
   <symbol id="art-shooter" viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice">
     <rect width="200" height="150" fill="#050914"/>
     <path d="M0 118h200v32H0z" fill="var(--m2)" opacity=".3"/>
@@ -555,12 +595,12 @@ const GAMES = [
     kw:'minecraft voxel sandbox blocks mining building survival 3d creative' },
 
   { id:'pulse', title:'Pulse Drift', model:'opus-5', type:'game', art:'pulse', tech:'Canvas',
-    href:'opus-5/games/pulse-drift.html', tags:['arcade'], featured:2,
+    href:'opus-5/games/pulse-drift.html', tags:['arcade'], featured:3,
     desc:'A synthwave rhythm racer about sharp turns, clean drifts and perfectly timed boosts.',
     kw:'rhythm racer synthwave neon driving music drift boost' },
 
   { id:'summit', title:'Summit Runner', model:'opus-5', type:'game', art:'summit', tech:'Canvas',
-    href:'opus-5/games/SummitRunner.html', tags:['arcade'], featured:3,
+    href:'opus-5/games/SummitRunner.html', tags:['arcade'], featured:4,
     desc:'Climb procedural peaks, ration your stamina and push through shifting weather.',
     kw:'mountain climbing platformer stamina weather procedural runner' },
 
@@ -570,14 +610,24 @@ const GAMES = [
     kw:'hexagon fall guys tiles survival battle royale platform 3d' },
 
   { id:'lumi', title:'LUMI: Spirit of the Aurora', model:'fable-5', type:'game', art:'runner', tech:'Canvas',
-    href:'fable-5/games/lumi_aurora_runner.html', tags:['arcade'], featured:4,
+    href:'fable-5/games/lumi_aurora_runner.html', tags:['arcade'], featured:5,
     desc:'Run through a glowing aurora landscape, gather energy and dodge drifting void crystals.',
     kw:'endless runner aurora spirit lights collect energy crystals atmospheric' },
 
   { id:'time', title:'The Time Machine', model:'fable-5', type:'page', art:'time', tech:'CSS / JS',
-    href:'fable-5/landing-pages/time-machine.html', tags:[], featured:5,
+    href:'fable-5/landing-pages/time-machine.html', tags:[],
     desc:'An interactive time-travel page with layered historical scenes and eras to explore.',
     kw:'time travel history eras interactive landing page scroll animation web page' },
+
+  { id:'yaadon', title:'यादों की कैसेट', model:'opus-5', type:'page', art:'cassette', tech:'Video / JS',
+    href:'opus-5/landing-pages/yaadon-ki-cassette/index.html', tags:[], featured:2,
+    desc:'A cinematic 90s Bollywood cassette player — deck animation, song requests and a full retro playlist.',
+    kw:'yaadon ki cassette bollywood 90s hindi radio music player retro nostalgia tape deck landing page' },
+
+  { id:'safar', title:'सफ़र-ए-नग़मे', model:'opus-5', type:'page', art:'train', tech:'Video / JS',
+    href:'opus-5/landing-pages/yaadon-ki-cassette/safar-e-nagme.html', tags:[],
+    desc:'Window seat, a moving train and a 90s Hindi cassette on loop — a scrolling journey scene.',
+    kw:'safar e nagme train journey window seat bollywood 90s hindi cassette scroll experience landing page' },
 
   { id:'hexdrop', title:'Hex Drop Arena', model:'gpt-5.6', type:'game', art:'hex', tech:'Three.js',
     href:'gpt%205.6/games/Hex-Drop-Arena.html', tags:['hex','3d'],
