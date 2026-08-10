@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hex-A-Gone - Fall Guys Style</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { overflow: hidden; background: #000; font-family: 'Arial', sans-serif; }
+        canvas { display: block; }
+        #ui {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 10;
+        }
+        #timer {
+            position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+            color: white; font-size: 32px; font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.3); padding: 10px 30px; border-radius: 20px;
+        }
+        #players-left {
+            position: absolute; top: 20px; right: 20px;
+            color: white; font-size: 20px; font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.3); padding: 10px 20px; border-radius: 15px;
+        }
+        #message {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            color: white; font-size: 48px; font-weight: bold;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.7);
+            display: none; text-align: center;
+        }
+        #restart-btn {
+            margin-top: 20px; padding: 15px 40px; font-size: 24px; font-weight: bold;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white; border: none; border-radius: 50px; cursor: pointer;
+            pointer-events: all; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        #restart-btn:hover { transform: scale(1.05); }
+        #start-screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            pointer-events: all; z-index: 100;
+        }
+        #start-screen h1 {
+            color: white; font-size: 72px; margin-bottom: 10px;
+            text-shadow: 4px 4px 8px rgba(0,0,0,0.3);
+        }
+        #start-screen h2 {
+            color: rgba(255,255,255,0.8); font-size: 24px; margin-bottom: 40px;
+        }
+        #start-btn {
+            padding: 20px 60px; font-size: 28px; font-weight: bold;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white; border: none; border-radius: 50px; cursor: pointer;
+            pointer-events: all; transition: transform 0.2s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        #start-btn:hover { transform: scale(1.1); }
+        #controls-info {
+            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+            color: rgba(255,255,255,0.7); font-size: 16px; text-align: center;
+        }
+        #minimap {
+            position: absolute; bottom: 20px; right: 20px;
+            width: 150px; height: 150px;
+            background: rgba(0,0,0,0.4); border-radius: 50%;
+            border: 3px solid rgba(255,255,255,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div id="ui">
+        <div id="timer">⏱ 0:00</div>
+        <div id="players-left">👥 Players: 30</div>
+        <div id="message"></div>
+        <canvas id="minimap"></canvas>
+    </div>
+    <div id="start-screen">
+        <h1>🎯 HEX-A-GONE</h1>
+        <h2>Survive the crumbling platforms!</h2>
+        <button id="start-btn">PLAY!</button>
+        <div id="controls-info">
+            WASD / Arrow Keys - Move | SPACE - Jump | Click & Drag Mouse - Camera
+        </div>
+    </div>
+
+    <!-- Using a newer Three.js version to support CapsuleGeometry -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    
+    <script>
+        // Game State
+        const GameState = { MENU: 0, PLAYING: 1, GAMEOVER: 2 };
+        let gameState = GameState.MENU;
+        let gameTime = 0;
+        let playersAlive = 30;
+
+        // Three.js Setup
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x87CEEB);
+        scene.fog = new THREE.Fog(0x87CEEB, 80, 200);
+
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 500);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        document.body.appendChild(renderer.domElement);
+
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight.position.set(50, 100, 50);
+        dirLight.castShadow = true;
+        dirLight.shadow.mapSize.width = 2048;
+        dirLight.shadow.mapSize.height = 2048;
+        dirLight.shadow.camera.near = 0.5;
+        dirLight.shadow.camera.far = 300;
+        dirLight.shadow.camera.left = -80;
+        dirLight.shadow.camera.right = 80;
+        dirLight.shadow.camera.top = 80;
+        dirLight.shadow.camera.bottom = -80;
+        scene.add(dirLight);
+
+        const hemiLight = new THREE.HemisphereLight(0x87CEEB, 0xff69b4, 0.3);
+        scene.add(hemiLight);
+
+        // Hex Platform System
+        const HEX_SIZE = 2.0;
+        const HEX_HEIGHT = 0.8;
+        const LAYER_SPACING = 3.5;
+        const NUM_LAYERS = 12;
+        const TILE_STATES = { SOLID: 0, TOUCHED: 1, DISAPPEARING: 2, GONE: 3 };
+
+        let hexTiles = [];
+        let tileMeshes = [];
+
+        function createHexGeometry(size, height) {
+            const shape = new THREE.Shape();
+            for (let i = 0; i < 6; i++) {
+                const angle = (Math.PI / 3) * i - Math.PI / 6;
+                const x = size * Math.cos(angle);
+                const y = size * Math.sin(angle);
+                if (i === 0) shape.moveTo(x, y);
+                else shape.lineTo(x, y);
+            }
+            shape.closePath();
+            const extrudeSettings = { depth: height, bevelEnabled: true, bevelThickness: 0.05, bevelSize: 0.05, bevelSegments: 2 };
+            return new THREE.ExtrudeGeometry(shape, extrudeSettings);
+        }
+
+        function generateHexLayer(layerIndex, radius) {
+            const positions = [];
+            const hexWidth = HEX_SIZE * 1.75;
+            const hexHeight = HEX_SIZE * 1.52;
+            for (let q = -radius; q <= radius; q++) {
+                for (let r = -radius; r <= radius; r++) {
+                    if (Math.abs(q + r) <= radius) {
+                        const x = hexWidth * (q + r * 0.5);
+                        const z = hexHeight * r;
+                        positions.push({ q, r, x, z, y: layerIndex * LAYER_SPACING });
+                    }
+                }
+            }
+            return positions;
+        }
+
+        function createPlatforms() {
+            const hexGeo = createHexGeometry(HEX_SIZE, HEX_HEIGHT);
+            for (let layer = 0; layer < NUM_LAYERS; layer++) {
+                const radius = Math.max(1, 6 - Math.floor(layer / 2));
+                const positions = generateHexLayer(layer, radius);
+                const hue = (layer / NUM_LAYERS) * 0.8;
+                const baseColor = new THREE.Color().setHSL(hue, 0.7, 0.55);
+
+                positions.forEach(pos => {
+                    const material = new THREE.MeshStandardMaterial({
+                        color: baseColor, roughness: 0.4, metalness: 0.1
+                    });
+                    const mesh = new THREE.Mesh(hexGeo, material);
+                    mesh.rotation.x = -Math.PI / 2;
+                    mesh.position.set(pos.x, pos.y, pos.z);
+                    mesh.castShadow = true;
+                    mesh.receiveShadow = true;
+                    scene.add(mesh);
+
+                    hexTiles.push({
+                        mesh, material, state: TILE_STATES.SOLID, layer,
+                        baseColor: baseColor.clone(), touchedTime: 0,
+                        q: pos.q, r: pos.r, x: pos.x, y: pos.y, z: pos.z, originalY: pos.y
+                    });
+                    tileMeshes.push(mesh);
+                });
+            }
+        }
+
+        function createGoop() {
+            const goopGeo = new THREE.PlaneGeometry(300, 300, 50, 50);
+            const goopMat = new THREE.MeshStandardMaterial({
+                color: 0xff69b4, roughness: 0.2, metalness: 0.3,
+                transparent: true, opacity: 0.85, flatShading: true
+            });
+            const goop = new THREE.Mesh(goopGeo, goopMat);
+            goop.rotation.x = -Math.PI / 2;
+            goop.position.y = -5;
+            goop.receiveShadow = true;
+            scene.add(goop);
+
+            goop.userData.vertices = goopGeo.attributes.position;
+            goop.userData.originalPositions = goopGeo.attributes.position.array.slice();
+            return goop;
+        }
+
+        let goopMesh;
+
+        class PlayerCharacter {
+            constructor(color, isPlayer = false) {
+                this.group = new THREE.Group();
+                this.isPlayer = isPlayer;
+                this.velocity = new THREE.Vector3(0, 0, 0);
+                this.onGround = false;
+                this.alive = true;
+                this.speed = isPlayer ? 15 : 8 + Math.random() * 6;
+                this.jumpForce = 12;
+
+                // Body
+                const bodyGeo = new THREE.CapsuleGeometry(0.6, 1.0, 8, 16);
+                const bodyMat = new THREE.MeshStandardMaterial({ color, roughness: 0.3, metalness: 0.1 });
+                this.body = new THREE.Mesh(bodyGeo, bodyMat);
+                this.body.castShadow = true;
+                this.group.add(this.body);
+
+                // Face
+                const faceGeo = new THREE.PlaneGeometry(0.6, 0.4);
+                const faceCanvas = document.createElement('canvas');
+                faceCanvas.width = 64; faceCanvas.height = 48;
+                const ctx = faceCanvas.getContext('2d');
+                ctx.fillStyle = 'white';
+                ctx.beginPath(); ctx.ellipse(20, 18, 8, 10, 0, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.ellipse(44, 18, 8, 10, 0, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = 'black';
+                ctx.beginPath(); ctx.arc(22, 20, 4, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(46, 20, 4, 0, Math.PI * 2); ctx.fill();
+                ctx.strokeStyle = 'black'; ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.arc(32, 32, 8, 0, Math.PI); ctx.stroke();
+
+                const faceTexture = new THREE.CanvasTexture(faceCanvas);
+                const faceMat = new THREE.MeshBasicMaterial({ map: faceTexture, transparent: true });
+                const face = new THREE.Mesh(faceGeo, faceMat);
+                face.position.set(0, 0.3, 0.55);
+                this.group.add(face);
+
+                // Limbs
+                const legGeo = new THREE.CapsuleGeometry(0.2, 0.4, 4, 8);
+                const legMat = new THREE.MeshStandardMaterial({ color, roughness: 0.3 });
+
+                this.leftLeg = new THREE.Mesh(legGeo, legMat);
+                this.leftLeg.position.set(-0.25, -1.0, 0); this.leftLeg.castShadow = true;
+                this.group.add(this.leftLeg);
+
+                this.rightLeg = new THREE.Mesh(legGeo, legMat);
+                this.rightLeg.position.set(0.25, -1.0, 0); this.rightLeg.castShadow = true;
+                this.group.add(this.rightLeg);
+
+                const armGeo = new THREE.CapsuleGeometry(0.15, 0.5, 4, 8);
+                this.leftArm = new THREE.Mesh(armGeo, legMat);
+                this.leftArm.position.set(-0.7, 0.1, 0); this.leftArm.rotation.z = 0.3; this.leftArm.castShadow = true;
+                this.group.add(this.leftArm);
+
+                this.rightArm = new THREE.Mesh(armGeo, legMat);
+                this.rightArm.position.set(0.7, 0.1, 0); this.rightArm.rotation.z = -0.3; this.rightArm.castShadow = true;
+                this.group.add(this.rightArm);
+
+                this.walkTime = Math.random() * Math.PI * 2;
+                this.aiTarget = null;
+                this.aiTimer = 0;
+            }
+
+            update(deltaTime, inputDir, allPlayers) {
+                if (!this.alive) return;
+
+                let moveDir = new THREE.Vector3();
+                if (this.isPlayer) {
+                    moveDir.copy(inputDir);
+                } else {
+                    moveDir = this.getAIInput(allPlayers, deltaTime);
+                }
+
+                if (moveDir.length() > 0) {
+                    moveDir.normalize();
+                    this.velocity.x = moveDir.x * this.speed;
+                    this.velocity.z = moveDir.z * this.speed;
+
+                    const targetAngle = Math.atan2(moveDir.x, moveDir.z);
+                    let angleDiff = targetAngle - this.group.rotation.y;
+                    while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
+                    while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
+                    this.group.rotation.y += angleDiff * 10 * deltaTime;
+
+                    this.walkTime += deltaTime * this.speed * 0.8;
+                    this.leftLeg.rotation.x = Math.sin(this.walkTime) * 0.5;
+                    this.rightLeg.rotation.x = -Math.sin(this.walkTime) * 0.5;
+                    this.leftArm.rotation.x = -Math.sin(this.walkTime) * 0.4;
+                    this.rightArm.rotation.x = Math.sin(this.walkTime) * 0.4;
+                } else {
+                    this.velocity.x *= 0.85;
+                    this.velocity.z *= 0.85;
+                    this.leftLeg.rotation.x *= 0.9;
+                    this.rightLeg.rotation.x *= 0.9;
+                    this.leftArm.rotation.x *= 0.9;
+                    this.rightArm.rotation.x *= 0.9;
+                }
+
+                this.velocity.y -= 30 * deltaTime;
+                this.group.position.x += this.velocity.x * deltaTime;
+                this.group.position.y += this.velocity.y * deltaTime;
+                this.group.position.z += this.velocity.z * deltaTime;
+
+                this.onGround = false;
+                this.checkPlatformCollision();
+
+                if (this.group.position.y < -3) {
+                    this.eliminate();
+                }
+
+                if (this.isPlayer && inputDir.y > 0 && this.onGround) {
+                    this.velocity.y = this.jumpForce;
+                    this.onGround = false;
+                }
+            }
+
+            checkPlatformCollision() {
+                const pos = this.group.position;
+                const feetY = pos.y - 1.4;
+
+                for (let tile of hexTiles) {
+                    if (tile.state === TILE_STATES.GONE) continue;
+                    const dx = pos.x - tile.x;
+                    const dz = pos.z - tile.z;
+                    const dist = Math.sqrt(dx * dx + dz * dz);
+                    const tileTop = tile.mesh.position.y + HEX_HEIGHT;
+
+                    if (dist < HEX_SIZE * 0.9 && feetY <= tileTop && feetY > tileTop - 1.5 && this.velocity.y <= 0) {
+                        this.group.position.y = tileTop + 1.4;
+                        this.velocity.y = 0;
+                        this.onGround = true;
+
+                        if (tile.state === TILE_STATES.SOLID) {
+                            tile.state = TILE_STATES.TOUCHED;
+                            tile.touchedTime = gameTime;
+                            tile.material.color.set(0xffffff);
+                            tile.material.emissive = new THREE.Color(0x333333);
+                        }
+                        break;
+                    }
+                }
+            }
+
+            getAIInput(allPlayers, deltaTime) {
+                const input = new THREE.Vector3();
+                this.aiTimer -= deltaTime;
+
+                if (this.aiTimer <= 0) {
+                    this.aiTimer = 0.3 + Math.random() * 0.5;
+                    let bestTile = null;
+                    let bestScore = -Infinity;
+                    const myPos = this.group.position;
+
+                    for (let tile of hexTiles) {
+                        if (tile.state !== TILE_STATES.SOLID) continue;
+                        const dx = tile.x - myPos.x;
+                        const dz = tile.z - myPos.z;
+                        const dist = Math.sqrt(dx * dx + dz * dz);
+                        if (dist > 20) continue;
+
+                        let score = 0;
+                        score -= (tile.y - myPos.y) * 0.5;
+                        score -= dist * 0.3;
+                        const neighbors = hexTiles.filter(t =>
+                            t.state === TILE_STATES.SOLID && t.layer === tile.layer &&
+                            Math.sqrt((t.x - tile.x) ** 2 + (t.z - tile.z) ** 2) < HEX_SIZE * 2.5
+                        ).length;
+                        score += neighbors * 0.5;
+                        score += (Math.random() - 0.5) * 3;
+
+                        if (score > bestScore) {
+                            bestScore = score;
+                            bestTile = tile;
+                        }
+                    }
+
+                    if (bestTile) {
+                        this.aiTarget = new THREE.Vector3(bestTile.x, 0, bestTile.z);
+                    } else {
+                        this.aiTarget = new THREE.Vector3(
+                            myPos.x + (Math.random() - 0.5) * 5, 0,
+                            myPos.z + (Math.random() - 0.5) * 5
+                        );
+                    }
+                }
+
+                if (this.aiTarget) {
+                    const dir = new THREE.Vector3().subVectors(this.aiTarget, this.group.position);
+                    dir.y = 0;
+                    if (dir.length() > 0.5) input.copy(dir).normalize();
+                }
+
+                for (let other of allPlayers) {
+                    if (other === this || !other.alive) continue;
+                    const diff = new THREE.Vector3().subVectors(this.group.position, other.group.position);
+                    diff.y = 0;
+                    const dist = diff.length();
+                    if (dist < 2 && dist > 0) input.add(diff.normalize().multiplyScalar(2 / dist));
+                }
+
+                if (this.onGround && Math.random() < 0.02) this.velocity.y = this.jumpForce;
+                return input;
+            }
+
+            eliminate() {
+                if (!this.alive) return;
+                this.alive = false;
+                createSplash(this.group.position.clone());
+                this.group.visible = false;
+
+                if (this.isPlayer) {
+                    showMessage("💀 ELIMINATED!", 3000);
+                    setTimeout(() => {
+                        showMessage("Game Over!<br><button id='restart-btn' onclick='location.reload()'>Play Again</button>", 0);
+                        gameState = GameState.GAMEOVER;
+                    }, 2000);
+                }
+
+                playersAlive--;
+                document.getElementById('players-left').textContent = '👥 Players: ' + playersAlive;
+
+                if (playersAlive <= 1 && this.isPlayer) {
+                    showMessage("🏆 YOU WIN! 🏆<br><button id='restart-btn' onclick='location.reload()'>Play Again</button>", 0);
+                    gameState = GameState.GAMEOVER;
+                } else if (playersAlive <= 1) {
+                    setTimeout(() => {
+                        showMessage("🏆 Round Over! 🏆<br><button id='restart-btn' onclick='location.reload()'>Play Again</button>", 0);
+                        gameState = GameState.GAMEOVER;
+                    }, 1000);
+                }
+            }
+        }
+
+        function createSplash(position) {
+            const particleCount = 20;
+            const particles = [];
+            const geo = new THREE.SphereGeometry(0.15, 8, 8);
+            const mat = new THREE.MeshStandardMaterial({ color: 0xff69b4, emissive: 0xff1493 });
+
+            for (let i = 0; i < particleCount; i++) {
+                const p = new THREE.Mesh(geo, mat);
+                p.position.copy(position); p.position.y = -3;
+                p.userData.velocity = new THREE.Vector3(
+                    (Math.random() - 0.5) * 10, Math.random() * 8 + 3, (Math.random() - 0.5) * 10
+                );
+                p.userData.life = 1.0;
+                scene.add(p);
+                particles.push(p);
+            }
+
+            function animateSplash() {
+                let allDead = true;
+                for (let p of particles) {
+                    if (p.userData.life <= 0) continue;
+                    allDead = false;
+                    p.userData.velocity.y -= 15 * 0.016;
+                    p.position.add(p.userData.velocity.clone().multiplyScalar(0.016));
+                    p.userData.life -= 0.02;
+                    p.scale.setScalar(p.userData.life);
+                    if (p.userData.life <= 0) scene.remove(p);
+                }
+                if (!allDead) requestAnimationFrame(animateSplash);
+            }
+            animateSplash();
+        }
+
+        // Input handling
+        const keys = {};
+        let cameraAngle = 0;
+        let cameraPitch = 0.4;
+        let cameraDistance = 12;
+        let isMouseDown = false;
+
+        document.addEventListener('keydown', (e) => { keys[e.code] = true; });
+        document.addEventListener('keyup', (e) => { keys[e.code] = false; });
+        document.addEventListener('mousedown', (e) => { isMouseDown = true; });
+        document.addEventListener('mouseup', (e) => { isMouseDown = false; });
+        document.addEventListener('mousemove', (e) => {
+            if (isMouseDown) {
+                cameraAngle -= e.movementX * 0.005;
+                cameraPitch = Math.max(0.1, Math.min(1.2, cameraPitch + e.movementY * 0.005));
+            }
+        });
+        document.addEventListener('wheel', (e) => {
+            cameraDistance = Math.max(5, Math.min(25, cameraDistance + e.deltaY * 0.01));
+        });
+
+        function getInputDirection() {
+            const dir = new THREE.Vector3(0, 0, 0);
+            const forward = new THREE.Vector3(-Math.sin(cameraAngle), 0, -Math.cos(cameraAngle)).normalize();
+            const right = new THREE.Vector3(-Math.cos(cameraAngle), 0, Math.sin(cameraAngle)).normalize();
+
+            if (keys['KeyW'] || keys['ArrowUp']) dir.add(forward);
+            if (keys['KeyS'] || keys['ArrowDown']) dir.sub(forward);
+            if (keys['KeyA'] || keys['ArrowLeft']) dir.sub(right);
+            if (keys['KeyD'] || keys['ArrowRight']) dir.add(right);
+            if (keys['Space']) dir.y = 1;
+            return dir;
+        }
+
+        function showMessage(text, duration) {
+            const msg = document.getElementById('message');
+            msg.innerHTML = text;
+            msg.style.display = 'block';
+            if (duration > 0) setTimeout(() => { msg.style.display = 'none'; }, duration);
+        }
+
+        const minimapCanvas = document.getElementById('minimap');
+        const minimapCtx = minimapCanvas.getContext('2d');
+        minimapCanvas.width = 150; minimapCanvas.height = 150;
+
+        function drawMinimap() {
+            minimapCtx.clearRect(0, 0, 150, 150);
+            minimapCtx.fillStyle = 'rgba(0,0,0,0.3)';
+            minimapCtx.fillRect(0, 0, 150, 150);
+
+            const scale = 2.5;
+            const cx = 75, cy = 75;
+            const playerPos = player ? player.group.position : new THREE.Vector3();
+
+            for (let tile of hexTiles) {
+                if (tile.state === TILE_STATES.GONE) continue;
+                const tx = cx + (tile.x - playerPos.x) * scale;
+                const ty = cy + (tile.z - playerPos.z) * scale;
+                if (tx < -5 || tx > 155 || ty < -5 || ty > 155) continue;
+
+                minimapCtx.fillStyle = tile.state === TILE_STATES.SOLID ? `hsl(${tile.layer * 30}, 70%, 55%)` : 'white';
+                minimapCtx.beginPath();
+                minimapCtx.arc(tx, ty, 3, 0, Math.PI * 2);
+                minimapCtx.fill();
+            }
+
+            for (let p of allPlayers) {
+                if (!p.alive) continue;
+                const px = cx + (p.group.position.x - playerPos.x) * scale;
+                const py = cy + (p.group.position.z - playerPos.z) * scale;
+                if (px < 0 || px > 150 || py < 0 || py > 150) continue;
+
+                minimapCtx.fillStyle = p.isPlayer ? '#ffff00' : '#ff4444';
+                minimapCtx.beginPath();
+                minimapCtx.arc(px, py, p.isPlayer ? 5 : 3, 0, Math.PI * 2);
+                minimapCtx.fill();
+            }
+        }
+
+        function createBackground() {
+            const cloudGeo = new THREE.SphereGeometry(1, 8, 8);
+            for (let i = 0; i < 30; i++) {
+                const cloudGroup = new THREE.Group();
+                const cloudMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1, transparent: true, opacity: 0.8 });
+                for (let j = 0; j < 5; j++) {
+                    const cloud = new THREE.Mesh(cloudGeo, cloudMat);
+                    cloud.position.set((Math.random() - 0.5) * 4, (Math.random() - 0.5) * 1, (Math.random() - 0.5) * 2);
+                    cloud.scale.set(1 + Math.random() * 2, 0.5 + Math.random() * 0.5, 1 + Math.random());
+                    cloudGroup.add(cloud);
+                }
+                cloudGroup.position.set((Math.random() - 0.5) * 200, 50 + Math.random() * 40, (Math.random() - 0.5) * 200);
+                scene.add(cloudGroup);
+            }
+        }
+
+        let player;
+        let allPlayers = [];
+        const npcColors = [
+            0xff4444, 0x44ff44, 0x4444ff, 0xffff44, 0xff44ff, 0x44ffff,
+            0xff8844, 0x88ff44, 0x4488ff, 0xff4488, 0x44ff88, 0x8844ff,
+            0xff6644, 0x66ff44, 0x4466ff, 0xff4466, 0x44ff66, 0x6644ff,
+            0xcc4444, 0x44cc44, 0x4444cc, 0xcccc44, 0xcc44cc, 0x44cccc,
+            0xff8888, 0x88ff88, 0x8888ff, 0xffff88, 0xff88ff
+        ];
+
+        function initGame() {
+            hexTiles.forEach(t => scene.remove(t.mesh));
+            hexTiles = []; tileMeshes = [];
+            allPlayers.forEach(p => scene.remove(p.group));
+            allPlayers = [];
+
+            createPlatforms();
+            goopMesh = createGoop();
+            createBackground();
+
+            player = new PlayerCharacter(0x00ccff, true);
+            const topLayer = NUM_LAYERS - 1;
+            const topPositions = generateHexLayer(topLayer, Math.max(1, 6 - Math.floor(topLayer / 2)));
+            const startPos = topPositions[Math.floor(Math.random() * topPositions.length)];
+            player.group.position.set(startPos.x, startPos.y + 3, startPos.z);
+            scene.add(player.group);
+            allPlayers.push(player);
+
+            for (let i = 0; i < 29; i++) {
+                const npc = new PlayerCharacter(npcColors[i % npcColors.length], false);
+                const layer = Math.floor(Math.random() * NUM_LAYERS);
+                const positions = generateHexLayer(layer, Math.max(1, 6 - Math.floor(layer / 2)));
+                const pos = positions[Math.floor(Math.random() * positions.length)];
+                npc.group.position.set(pos.x, pos.y + 3, pos.z);
+                scene.add(npc.group);
+                allPlayers.push(npc);
+            }
+
+            playersAlive = 30;
+            gameTime = 0;
+            gameState = GameState.PLAYING;
+            document.getElementById('players-left').textContent = '👥 Players: 30';
+            document.getElementById('message').style.display = 'none';
+        }
+
+        function updateTiles() {
+            for (let tile of hexTiles) {
+                if (tile.state === TILE_STATES.TOUCHED) {
+                    const elapsed = gameTime - tile.touchedTime;
+                    if (elapsed > 0.8) {
+                        tile.mesh.position.x = tile.x + (Math.random() - 0.5) * 0.2;
+                        tile.mesh.position.z = tile.z + (Math.random() - 0.5) * 0.2;
+                        tile.material.opacity = 1 - (elapsed - 0.8) / 0.7;
+                        tile.material.transparent = true;
+                    }
+                    if (elapsed > 1.5) tile.state = TILE_STATES.DISAPPEARING;
+                }
+                if (tile.state === TILE_STATES.DISAPPEARING) {
+                    tile.mesh.scale.y *= 0.9;
+                    tile.mesh.scale.x *= 0.95;
+                    tile.mesh.scale.z *= 0.95;
+                    tile.mesh.position.y -= 0.1;
+                    if (tile.mesh.scale.y < 0.05) {
+                        tile.state = TILE_STATES.GONE;
+                        tile.mesh.visible = false;
+                    }
+                }
+            }
+        }
+
+        function updateGoop(time) {
+            if (!goopMesh) return;
+            const positions = goopMesh.userData.vertices;
+            const original = goopMesh.userData.originalPositions;
+            for (let i = 0; i < positions.count; i++) {
+                const x = original[i * 3];
+                const z = original[i * 3 + 2];
+                positions.array[i * 3 + 1] = Math.sin(x * 0.1 + time * 2) * 0.5 + Math.cos(z * 0.1 + time * 1.5) * 0.3;
+            }
+            positions.needsUpdate = true;
+        }
+
+        function updateCamera() {
+            if (!player) return;
+            const target = player.group.position.clone();
+            target.y += 2;
+
+            const camX = target.x + Math.sin(cameraAngle) * Math.cos(cameraPitch) * cameraDistance;
+            const camY = target.y + Math.sin(cameraPitch) * cameraDistance;
+            const camZ = target.z + Math.cos(cameraAngle) * Math.cos(cameraPitch) * cameraDistance;
+
+            camera.position.lerp(new THREE.Vector3(camX, camY, camZ), 0.1);
+            camera.lookAt(target);
+        }
+
+        let lastTime = 0;
+        function animate(currentTime) {
+            requestAnimationFrame(animate);
+            const deltaTime = Math.min((currentTime - lastTime) / 1000, 0.05);
+            lastTime = currentTime;
+
+            if (gameState === GameState.PLAYING) {
+                gameTime += deltaTime;
+                const mins = Math.floor(gameTime / 60);
+                const secs = Math.floor(gameTime % 60);
+                document.getElementById('timer').textContent = `⏱ ${mins}:${secs.toString().padStart(2, '0')}`;
+
+                const inputDir = getInputDirection();
+                for (let p of allPlayers) {
+                    if (p.alive) p.update(deltaTime, inputDir, allPlayers);
+                }
+
+                updateTiles();
+                updateGoop(gameTime);
+                updateCamera();
+                drawMinimap();
+
+                for (let p of allPlayers) {
+                    if (!p.isPlayer && p.alive && p.group.position.y < -3) p.eliminate();
+                }
+            }
+            renderer.render(scene, camera);
+        }
+
+        document.getElementById('start-btn').addEventListener('click', () => {
+            document.getElementById('start-screen').style.display = 'none';
+            initGame();
+        });
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate(0);
+    </script>
+</body>
+</html>
