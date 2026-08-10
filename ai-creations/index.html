@@ -1,646 +1,758 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="A collection of small HTML games, demos, and interactive web experiments.">
-  <title>HTML Creations | BuildFastWithAI</title>
-
-  <style>
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-    }
-
-    :root {
-      color-scheme: dark;
-      --page: #07111f;
-      --surface: #0d1b2d;
-      --text: #eef4ff;
-      --muted: #97a9c2;
-      --line: #1e3350;
-      --accent: #6ea8ff;
-      --accent-hover: #9ac4ff;
-      --radius: 16px;
-      --shadow: 0 10px 28px rgba(0, 5, 14, 0.32);
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      margin: 0;
-      background: var(--page);
-      color: var(--text);
-      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      line-height: 1.5;
-    }
-
-    button,
-    input {
-      font: inherit;
-    }
-
-    a {
-      color: inherit;
-    }
-
-    .visually-hidden {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
-    }
-
-    .site-header {
-      background: var(--surface);
-      border-bottom: 1px solid var(--line);
-    }
-
-    .header-inner,
-    .main-content,
-    .footer-inner {
-      width: min(1120px, calc(100% - 40px));
-      margin: 0 auto;
-    }
-
-    .header-inner {
-      min-height: 70px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 24px;
-    }
-
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 11px;
-      color: var(--text);
-      font-size: 17px;
-      font-weight: 750;
-      text-decoration: none;
-      letter-spacing: -0.01em;
-    }
-
-    .brand-mark {
-      width: 32px;
-      height: 32px;
-      display: grid;
-      place-items: center;
-      border-radius: 9px;
-      background: var(--accent);
-      color: white;
-      font-size: 14px;
-      font-weight: 800;
-    }
-
-    .header-link {
-      color: var(--muted);
-      font-size: 14px;
-      text-decoration: none;
-    }
-
-    .header-link:hover {
-      color: var(--text);
-    }
-
-    .main-content {
-      padding: 76px 0 80px;
-    }
-
-    .hero {
-      max-width: 760px;
-      margin-bottom: 52px;
-    }
-
-    .eyebrow {
-      margin: 0 0 12px;
-      color: var(--accent);
-      font-size: 13px;
-      font-weight: 750;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    h1 {
-      max-width: 720px;
-      margin: 0;
-      font-size: clamp(40px, 6vw, 64px);
-      line-height: 1.05;
-      letter-spacing: -0.045em;
-    }
-
-    .hero-copy {
-      max-width: 640px;
-      margin: 22px 0 0;
-      color: var(--muted);
-      font-size: 18px;
-      line-height: 1.7;
-    }
-
-    .section-heading {
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-      gap: 24px;
-      margin-bottom: 22px;
-    }
-
-    .section-heading h2 {
-      margin: 0;
-      font-size: 25px;
-      letter-spacing: -0.025em;
-    }
-
-    .result-count {
-      margin: 5px 0 0;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .controls {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .search-field {
-      width: 230px;
-      height: 42px;
-      padding: 0 14px;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      outline: none;
-      background: var(--surface);
-      color: var(--text);
-    }
-
-    .search-field::placeholder {
-      color: #7488a5;
-    }
-
-    .search-field:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(110, 168, 255, 0.16);
-    }
-
-    .filters {
-      display: flex;
-      gap: 6px;
-      padding: 4px;
-      border: 1px solid var(--line);
-      border-radius: 11px;
-      background: var(--surface);
-    }
-
-    .filter-button {
-      min-height: 32px;
-      padding: 0 12px;
-      border: 0;
-      border-radius: 7px;
-      background: transparent;
-      color: var(--muted);
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 650;
-    }
-
-    .filter-button:hover {
-      color: var(--text);
-    }
-
-    .filter-button.is-active {
-      background: #172c49;
-      color: var(--accent);
-    }
-
-    .project-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 20px;
-    }
-
-    .project-card {
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: var(--surface);
-      text-decoration: none;
-      transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
-    }
-
-    .project-card:hover {
-      transform: translateY(-3px);
-      border-color: #365174;
-      box-shadow: var(--shadow);
-    }
-
-    .project-card:focus-visible {
-      outline: 3px solid rgba(110, 168, 255, 0.38);
-      outline-offset: 3px;
-    }
-
-    .card-visual {
-      min-height: 138px;
-      display: flex;
-      align-items: end;
-      padding: 18px;
-      background: var(--card-bg);
-      color: var(--card-fg);
-    }
-
-    .card-mark {
-      font-size: 31px;
-      font-weight: 850;
-      letter-spacing: -0.045em;
-    }
-
-    .card-body {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      padding: 20px;
-    }
-
-    .card-meta {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 12px;
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 650;
-    }
-
-    .card-type {
-      display: inline-flex;
-      align-items: center;
-      min-height: 24px;
-      padding: 0 8px;
-      border-radius: 999px;
-      background: #152740;
-      color: #afc0d5;
-    }
-
-    .card-title {
-      margin: 0;
-      font-size: 19px;
-      line-height: 1.3;
-      letter-spacing: -0.02em;
-    }
-
-    .card-description {
-      margin: 9px 0 20px;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    .card-action {
-      margin-top: auto;
-      color: var(--accent);
-      font-size: 14px;
-      font-weight: 750;
-    }
-
-    .project-card:hover .card-action {
-      color: var(--accent-hover);
-    }
-
-    .empty-state {
-      display: none;
-      padding: 52px 24px;
-      border: 1px dashed #294464;
-      border-radius: var(--radius);
-      background: var(--surface);
-      color: var(--muted);
-      text-align: center;
-    }
-
-    .empty-state strong {
-      display: block;
-      margin-bottom: 5px;
-      color: var(--text);
-      font-size: 17px;
-    }
-
-    .site-footer {
-      border-top: 1px solid var(--line);
-      background: var(--surface);
-    }
-
-    .footer-inner {
-      min-height: 82px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .footer-inner p {
-      margin: 0;
-    }
-
-    [hidden] {
-      display: none !important;
-    }
-
-    @media (max-width: 900px) {
-      .section-heading {
-        align-items: stretch;
-        flex-direction: column;
-      }
-
-      .controls {
-        justify-content: space-between;
-      }
-
-      .search-field {
-        flex: 1;
-        width: auto;
-      }
-
-      .project-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    @media (max-width: 620px) {
-      .header-inner,
-      .main-content,
-      .footer-inner {
-        width: min(100% - 28px, 1120px);
-      }
-
-      .header-inner {
-        min-height: 62px;
-      }
-
-      .header-link {
-        display: none;
-      }
-
-      .main-content {
-        padding: 52px 0 60px;
-      }
-
-      .hero {
-        margin-bottom: 42px;
-      }
-
-      h1 {
-        font-size: clamp(38px, 13vw, 50px);
-      }
-
-      .hero-copy {
-        font-size: 16px;
-      }
-
-      .controls {
-        align-items: stretch;
-        flex-direction: column;
-      }
-
-      .search-field {
-        flex: none;
-        width: 100%;
-      }
-
-      .filters {
-        width: 100%;
-      }
-
-      .filter-button {
-        flex: 1;
-      }
-
-      .project-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .card-visual {
-        min-height: 118px;
-      }
-
-      .footer-inner {
-        align-items: flex-start;
-        flex-direction: column;
-        justify-content: center;
-        padding: 20px 0;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      html {
-        scroll-behavior: auto;
-      }
-
-      .project-card {
-        transition: none;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Play free browser games and explore interactive web pages — every single one built end-to-end by a different frontier AI model.">
+<title>AI Creations — Free Browser Games Built by AI Models</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  color-scheme:dark;
+  --bg:#0e0e13;
+  --bg-2:#16161e;
+  --panel:#1c1c26;
+  --panel-2:#23232f;
+  --line:rgba(255,255,255,.08);
+  --line-2:rgba(255,255,255,.15);
+  --text:#f4f5fa;
+  --muted:#9b9db0;
+  --muted-2:#6d6f83;
+  --brand:#7c5cff;
+  --brand-2:#a78bfa;
+  --sidebar-w:232px;
+  --top-h:64px;
+  --r:12px;
+  --ease:cubic-bezier(.2,.7,.3,1);
+}
+[data-model="opus-5"]       {--m1:#f0844c;--m2:#e8544f}
+[data-model="fable-5"]      {--m1:#a78bfa;--m2:#f472b6}
+[data-model="gpt-5.6"]      {--m1:#3ddc97;--m2:#12c2b8}
+[data-model="grok-4.6"]     {--m1:#cbd5e1;--m2:#6b7689}
+[data-model="kimi-k3"]      {--m1:#5b9dff;--m2:#7b6bff}
+[data-model="qwen-3.8-max"] {--m1:#ff7ab6;--m2:#9b5cff}
+[data-model="deepseek-v4"]  {--m1:#4d8bff;--m2:#38d0ff}
+
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  line-height:1.45;-webkit-font-smoothing:antialiased;
+}
+button,input{font:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#33333f;border-radius:8px;border:2px solid var(--bg)}
+::-webkit-scrollbar-thumb:hover{background:#45455a}
+
+/* ============ TOP BAR ============ */
+.topbar{
+  position:fixed;top:0;left:0;right:0;height:var(--top-h);z-index:60;
+  display:flex;align-items:center;gap:14px;padding:0 16px;
+  background:var(--bg-2);border-bottom:1px solid var(--line);
+}
+.icon-btn{
+  width:40px;height:40px;flex:none;display:grid;place-items:center;border-radius:10px;
+  border:0;background:transparent;color:var(--muted);cursor:pointer;transition:.15s
+}
+.icon-btn:hover{background:var(--panel);color:var(--text)}
+.icon-btn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:17px;letter-spacing:-.03em;flex:none}
+.logo-mark{
+  width:34px;height:34px;border-radius:10px;display:grid;place-items:center;flex:none;
+  background:linear-gradient(135deg,#7c5cff,#f0844c);box-shadow:0 4px 16px rgba(124,92,255,.4)
+}
+.logo-mark svg{width:19px;height:19px;fill:#fff}
+.logo span i{font-style:normal;color:var(--brand-2)}
+
+.searchbox{position:relative;flex:1;max-width:620px;margin:0 auto}
+.searchbox>svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:17px;height:17px;fill:none;stroke:var(--muted-2);stroke-width:2}
+.searchbox input{
+  width:100%;height:42px;padding:0 40px 0 42px;border-radius:999px;border:1px solid transparent;
+  background:var(--panel);outline:none;font-size:14.5px;transition:.18s
+}
+.searchbox input::placeholder{color:var(--muted-2)}
+.searchbox input:focus{border-color:var(--brand);background:var(--panel-2);box-shadow:0 0 0 3px rgba(124,92,255,.18)}
+.searchbox button{
+  position:absolute;right:8px;top:50%;transform:translateY(-50%);width:28px;height:28px;
+  border:0;border-radius:50%;background:var(--panel-2);color:var(--muted);cursor:pointer;display:none;line-height:1
+}
+.searchbox.filled button{display:block}
+.top-actions{display:flex;align-items:center;gap:8px;flex:none}
+.btn-primary{
+  height:40px;padding:0 18px;border-radius:999px;border:0;cursor:pointer;font-weight:700;font-size:14px;
+  background:linear-gradient(135deg,var(--brand),#9d6bff);color:#fff;white-space:nowrap;
+  box-shadow:0 4px 16px rgba(124,92,255,.35);transition:.18s var(--ease)
+}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 7px 22px rgba(124,92,255,.5)}
+
+/* ============ SIDEBAR ============ */
+.sidebar{
+  position:fixed;top:var(--top-h);bottom:0;left:0;width:var(--sidebar-w);z-index:50;
+  background:var(--bg-2);border-right:1px solid var(--line);
+  overflow-y:auto;padding:12px 10px 28px;transition:transform .25s var(--ease)
+}
+.nav-group{margin-bottom:6px}
+.nav-label{
+  padding:14px 12px 7px;font-size:10.5px;font-weight:800;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--muted-2)
+}
+.nav-item{
+  display:flex;align-items:center;gap:11px;width:100%;padding:9px 12px;border-radius:10px;
+  border:0;background:transparent;color:var(--muted);font-size:14px;font-weight:600;
+  cursor:pointer;text-align:left;transition:.15s;position:relative
+}
+.nav-item:hover{background:var(--panel);color:var(--text)}
+.nav-item .ico{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.nav-item .swatch{width:11px;height:11px;border-radius:4px;flex:none;background:linear-gradient(135deg,var(--m1,#888),var(--m2,#555))}
+.nav-item .n{margin-left:auto;font-size:11.5px;font-weight:700;color:var(--muted-2);background:rgba(255,255,255,.06);padding:1px 7px;border-radius:99px}
+.nav-item.active{background:linear-gradient(90deg,rgba(124,92,255,.2),rgba(124,92,255,.05));color:var(--text)}
+.nav-item.active::before{content:"";position:absolute;left:0;top:9px;bottom:9px;width:3px;border-radius:0 3px 3px 0;background:var(--brand)}
+.nav-item.active .n{background:rgba(255,255,255,.14);color:var(--text)}
+.nav-item[data-model].active{background:linear-gradient(90deg,color-mix(in srgb,var(--m1) 22%,transparent),transparent)}
+.nav-item[data-model].active::before{background:var(--m1)}
+.sidebar hr{border:0;border-top:1px solid var(--line);margin:12px 12px}
+.side-foot{padding:10px 12px;font-size:11.5px;color:var(--muted-2);line-height:1.5}
+
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:45;opacity:0;pointer-events:none;transition:.25s}
+body.nav-open .scrim{opacity:1;pointer-events:auto}
+
+/* ============ MAIN ============ */
+main{margin:var(--top-h) 0 0 var(--sidebar-w);padding:20px 22px 70px;max-width:1620px}
+
+.section{margin-bottom:34px}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:13px}
+.section-head h2{margin:0;font-size:19px;font-weight:800;letter-spacing:-.025em;display:flex;align-items:center;gap:9px}
+.section-head h2 .swatch{width:13px;height:13px;border-radius:5px;background:linear-gradient(135deg,var(--m1,#888),var(--m2,#555))}
+.section-head p{margin:2px 0 0;font-size:12.5px;color:var(--muted-2);font-weight:500}
+.rail-nav{display:flex;gap:7px;flex:none}
+.rail-nav button{
+  width:32px;height:32px;border-radius:50%;border:1px solid var(--line-2);background:var(--panel);
+  color:var(--text);cursor:pointer;display:grid;place-items:center;transition:.15s
+}
+.rail-nav button:hover{background:var(--panel-2);border-color:var(--brand)}
+.rail-nav button:disabled{opacity:.3;cursor:default}
+.rail-nav svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round}
+
+/* mosaic */
+.mosaic{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.mosaic .tile.feature{grid-column:span 2;grid-row:span 2}
+
+/* rails */
+.rail{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(196px,1fr);gap:14px;overflow-x:auto;scroll-behavior:smooth;padding-bottom:4px;scrollbar-width:none}
+.rail::-webkit-scrollbar{display:none}
+
+/* grid (filtered view) */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+
+/* ============ TILE ============ */
+.tile{
+  position:relative;display:block;border-radius:var(--r);overflow:hidden;background:var(--panel);
+  transition:transform .25s var(--ease),box-shadow .25s;
+}
+.tile:hover{transform:translateY(-4px) scale(1.015);box-shadow:0 14px 34px -10px color-mix(in srgb,var(--m1) 55%,transparent),0 0 0 2px var(--m1)}
+.tile:focus-visible{outline:3px solid var(--m1);outline-offset:2px}
+.thumb{position:relative;aspect-ratio:1/1;overflow:hidden;background:#0b0b12}
+.mosaic .feature .thumb{aspect-ratio:auto;height:100%}
+.rail .thumb,.grid .thumb{aspect-ratio:4/3}
+.thumb svg.art{position:absolute;inset:0;width:100%;height:100%}
+.thumb::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 42%,rgba(6,6,12,.9))}
+
+.badge{
+  position:absolute;top:9px;left:9px;z-index:3;display:inline-flex;align-items:center;gap:6px;
+  padding:4px 10px 4px 7px;border-radius:99px;font-size:11px;font-weight:800;letter-spacing:.01em;
+  background:rgba(10,10,18,.72);backdrop-filter:blur(8px);
+  border:1px solid color-mix(in srgb,var(--m1) 60%,transparent);color:#fff;white-space:nowrap
+}
+.badge .dot{width:7px;height:7px;border-radius:50%;background:linear-gradient(135deg,var(--m1),var(--m2));box-shadow:0 0 8px var(--m1)}
+.kind{
+  position:absolute;top:9px;right:9px;z-index:3;padding:4px 9px;border-radius:7px;
+  font-size:9.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+  background:rgba(10,10,18,.72);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.16);color:#dfe2f0
+}
+.tile-info{position:absolute;left:0;right:0;bottom:0;z-index:3;padding:12px 13px}
+.tile-info h3{margin:0;font-size:15px;font-weight:800;letter-spacing:-.02em;line-height:1.25;text-shadow:0 2px 10px rgba(0,0,0,.7)}
+.tile-info .by{margin:4px 0 0;font-size:11.5px;font-weight:600;color:#c8cbdd;display:flex;align-items:center;gap:5px}
+.tile-info .by b{color:color-mix(in srgb,var(--m1) 72%,#fff);font-weight:700}
+.mosaic .feature .tile-info{padding:20px 22px}
+.mosaic .feature .tile-info h3{font-size:27px}
+.mosaic .feature .tile-info .by{font-size:13px;margin-top:6px}
+.mosaic .feature .desc{margin:8px 0 0;font-size:13.5px;color:#c3c6d8;max-width:400px}
+.desc{display:none}
+.play-fab{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.7);z-index:3;
+  width:52px;height:52px;border-radius:50%;display:grid;place-items:center;
+  background:rgba(255,255,255,.94);opacity:0;transition:.25s var(--ease);pointer-events:none
+}
+.play-fab svg{width:22px;height:22px;fill:#12121a;margin-left:3px}
+.tile:hover .play-fab{opacity:1;transform:translate(-50%,-50%) scale(1)}
+
+/* hero strip */
+.hero{
+  display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;
+  padding:18px 22px;margin-bottom:26px;border-radius:16px;
+  background:linear-gradient(110deg,rgba(124,92,255,.22),rgba(240,132,76,.14) 55%,rgba(61,220,151,.12));
+  border:1px solid var(--line-2)
+}
+.hero h1{margin:0;font-size:clamp(19px,2.5vw,25px);font-weight:900;letter-spacing:-.03em}
+.hero p{margin:5px 0 0;font-size:13.5px;color:#c6c9db;max-width:560px}
+.hero-stats{display:flex;gap:26px;flex:none}
+.hero-stats b{display:block;font-size:21px;font-weight:900;letter-spacing:-.02em}
+.hero-stats span{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:700}
+
+/* results view */
+#results{display:none}
+body.filtering #curated{display:none}
+body.filtering #results{display:block}
+.results-head{display:flex;align-items:baseline;justify-content:space-between;gap:14px;margin-bottom:14px;flex-wrap:wrap}
+.results-head h2{margin:0;font-size:22px;font-weight:900;letter-spacing:-.03em;display:flex;align-items:center;gap:10px}
+.results-head .swatch{width:14px;height:14px;border-radius:5px;background:linear-gradient(135deg,var(--m1,#888),var(--m2,#555))}
+.results-head span{font-size:13px;color:var(--muted-2)}
+.empty{display:none;padding:70px 20px;text-align:center;border:1px dashed var(--line-2);border-radius:14px;color:var(--muted)}
+.empty b{display:block;font-size:17px;color:var(--text);margin-bottom:6px}
+body.no-results .empty{display:block}
+body.no-results .grid{display:none}
+
+.footer-note{margin-top:44px;padding-top:20px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted-2);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.footer-note a{color:var(--muted);font-weight:600}
+
+@media (max-width:1100px){
+  .mosaic{grid-template-columns:repeat(3,1fr)}
+}
+@media (max-width:860px){
+  :root{--sidebar-w:0px}
+  .sidebar{width:246px;transform:translateX(-100%);box-shadow:0 0 40px rgba(0,0,0,.6)}
+  body.nav-open .sidebar{transform:none}
+  main{margin-left:0;padding:16px 14px 60px}
+  .mosaic{grid-template-columns:repeat(2,1fr)}
+  .mosaic .tile.feature{grid-column:span 2;grid-row:span 1}
+  .mosaic .feature .tile-info h3{font-size:21px}
+  .top-actions .btn-primary{padding:0 13px}
+  .hero-stats{gap:18px}
+}
+@media (min-width:861px){.menu-btn{display:none}}
+@media (prefers-reduced-motion:reduce){*{transition-duration:.01ms!important;animation-duration:.01ms!important}}
+</style>
 </head>
-
 <body>
-  <header class="site-header">
-    <div class="header-inner">
-      <a class="brand" href="./" aria-label="HTML Creations home">
-        <span class="brand-mark" aria-hidden="true">H</span>
-        <span>HTML Creations</span>
-      </a>
-      <a class="header-link" href="#projects">Browse all 7 projects</a>
-    </div>
-  </header>
 
-  <main class="main-content">
-    <section class="hero" aria-labelledby="page-title">
-      <p class="eyebrow">BuildFastWithAI collection</p>
-      <h1 id="page-title">Small experiments, games, and web ideas.</h1>
-      <p class="hero-copy">
-        A growing collection of standalone HTML projects. Pick a card below to open a game or explore an interactive demo.
-      </p>
+<!-- ========== thumbnail art sprite ========== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="g-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--m1)"/><stop offset="1" stop-color="var(--m2)"/></linearGradient>
+  </defs>
+
+  <symbol id="art-hex" viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice">
+    <rect width="200" height="150" fill="#0b0d18"/>
+    <circle cx="100" cy="40" r="80" fill="var(--m1)" opacity=".28"/>
+    <g fill="none" stroke="var(--m1)" stroke-width="1.6" opacity=".9">
+      <path d="M40 95l14-8 14 8v16l-14 8-14-8z" fill="var(--m1)" opacity=".55"/>
+      <path d="M68 79l14-8 14 8v16l-14 8-14-8z" fill="var(--m2)" opacity=".7"/>
+      <path d="M96 95l14-8 14 8v16l-14 8-14-8z" fill="var(--m1)" opacity=".35"/>
+      <path d="M124 79l14-8 14 8v16l-14 8-14-8z" fill="var(--m2)" opacity=".5"/>
+      <path d="M54 63l14-8 14 8v16l-14 8-14-8z" opacity=".55"/>
+      <path d="M110 63l14-8 14 8v16l-14 8-14-8z" opacity=".4"/>
+    </g>
+    <circle cx="82" cy="52" r="9" fill="#fff" opacity=".92"/>
+    <circle cx="82" cy="52" r="15" fill="var(--m1)" opacity=".35"/>
+  </symbol>
+
+  <symbol id="art-voxel" viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice">
+    <rect width="200" height="150" fill="#0a0e18"/>
+    <rect width="200" height="72" fill="var(--m2)" opacity=".3"/>
+    <circle cx="158" cy="30" r="14" fill="#fff" opacity=".8"/>
+    <g stroke="rgba(0,0,0,.35)" stroke-width="1">
+      <g transform="translate(30,66)">
+        <path d="M0 0l26-14 26 14v28L26 108 0 28z" fill="none"/>
+      </g>
+    </g>
+    <g>
+      <path d="M26 84l28-15 28 15-28 15z" fill="var(--m1)"/>
+      <path d="M26 84v26l28 15V99z" fill="var(--m1)" opacity=".65"/>
+      <path d="M82 84v26l-28 15V99z" fill="var(--m1)" opacity=".4"/>
+      <path d="M82 70l28-15 28 15-28 15z" fill="var(--m2)"/>
+      <path d="M82 70v26l28 15V85z" fill="var(--m2)" opacity=".65"/>
+      <path d="M138 70v26l-28 15V85z" fill="var(--m2)" opacity=".4"/>
+      <path d="M110 110l28-15 28 15-28 15z" fill="var(--m1)" opacity=".8"/>
+      <path d="M110 110v22l28 15v-22z" fill="var(--m1)" opacity=".5"/>
+      <path d="M166 110v22l-28 15v-22z" fill="var(--m1)" opacity=".3"/>
+    </g>
+  </symbol>
+
+  <symbol id="art-space" viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice">
+    <rect width="200" height="150" fill="#06070f"/>
+    <g fill="#fff" opacity=".65">
+      <circle cx="18" cy="20" r="1.4"/><circle cx="52" cy="12" r="1"/><circle cx="96" cy="26" r="1.6"/>
+      <circle cx="140" cy="16" r="1"/><circle cx="176" cy="34" r="1.4"/><circle cx="72" cy="46" r="1"/>
+      <circle cx="160" cy="62" r="1.2"/><circle cx="30" cy="58" r="1"/>
+    </g>
+    <g fill="var(--m1)">
+      <g transform="translate(0,0)">
+        <path d="M44 46h6v-5h10v5h6v6h4v7h-6v-5h-4v5H50v-5h-4v5h-6v-7h4z"/>
+        <path d="M94 46h6v-5h10v5h6v6h4v7h-6v-5h-4v5h-10v-5h-4v5h-6v-7h4z"/>
+        <path d="M144 46h6v-5h10v5h6v6h4v7h-6v-5h-4v5h-10v-5h-4v5h-6v-7h4z"/>
+      </g>
+    </g>
+    <g fill="var(--m2)" opacity=".85">
+      <path d="M44 76h6v-5h10v5h6v6h4v7h-6v-5h-4v5H50v-5h-4v5h-6v-7h4z"/>
+      <path d="M119 76h6v-5h10v5h6v6h4v7h-6v-5h-4v5h-10v-5h-4v5h-6v-7h4z"/>
+    </g>
+    <rect x="96" y="98" width="4" height="16" fill="#fff"/>
+    <path d="M78 132h40l8 10H70z" fill="var(--m1)"/>
+    <rect x="92" y="122" width="12" height="10" fill="var(--m1)"/>
+  </symbol>
+
+  <symbol id="art-runner" viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice">
+    <rect width="200" height="150" fill="#060a16"/>
+    <path d="M0 0h200v80c-40 20-70-14-104 4S30 96 0 78z" fill="var(--m1)" opacity=".34"/>
+    <path d="M0 10h200v58c-46 26-64-8-100 8S26 88 0 66z" fill="var(--m2)" opacity=".38"/>
+    <g fill="#fff" opacity=".7"><circle cx="34" cy="22" r="1.3"/><circle cx="88" cy="14" r="1"/><circle cx="150" cy="26" r="1.4"/></g>
+    <path d="M0 112h200v38H0z" fill="var(--m2)" opacity=".25"/>
+    <path d="M0 112h200" stroke="var(--m1)" stroke-width="2" opacity=".8"/>
+    <g><circle cx="66" cy="98" r="11" fill="#fff"/><circle cx="66" cy="98" r="19" fill="var(--m1)" opacity=".3"/>
+      <path d="M66 109v14M60 116l6-5 6 5M60 130l6-7 6 7" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none"/></g>
+    <g fill="var(--m1)" opacity=".9"><path d="M128 92l5 9-5 9-5-9z"/><path d="M158 76l4 8-4 8-4-8z"/></g>
+  </symbol>
+
+  <symbol id="art-pulse" viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice">
+    <rect width="200" height="150" fill="#0a0616"/>
+    <circle cx="100" cy="58" r="34" fill="var(--m1)" opacity=".45"/>
+    <rect y="58" width="200" height="92" fill="#120a24"/>
+    <g stroke="var(--m2)" stroke-width="1.4" opacity=".55">
+      <path d="M0 74h200M0 88h200M0 106h200M0 128h200"/>
+      <path d="M100 58 -30 150M100 58 20 150M100 58 70 150M100 58 130 150M100 58 180 150M100 58 230 150"/>
+    </g>
+    <path d="M100 58 40 150h120z" fill="var(--m1)" opacity=".22"/>
+    <path d="M78 128h16l6 14H72z" fill="var(--m1)"/>
+    <rect x="82" y="118" width="12" height="12" rx="3" fill="#fff" opacity=".9"/>
+    <path d="M0 40q25-18 50 0t50 0 50 0 50 0" stroke="var(--m1)" stroke-width="2.5" fill="none" opacity=".8"/>
+  </symbol>
+
+  <symbol id="art-summit" viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice">
+    <rect width="200" height="150" fill="#081420"/>
+    <circle cx="150" cy="34" r="18" fill="var(--m1)" opacity=".55"/>
+    <path d="M0 150l58-84 30 40 26-32 46 76z" fill="var(--m2)" opacity=".45"/>
+    <path d="M0 150l58-84 34 84z" fill="var(--m1)" opacity=".55"/>
+    <path d="M58 66l14 20H44z" fill="#fff" opacity=".9"/>
+    <path d="M114 74l16 22h-32z" fill="#fff" opacity=".6"/>
+    <path d="M92 150l30-64 46 64z" fill="var(--m2)" opacity=".6"/>
+    <g stroke="#fff" stroke-width="1.5" opacity=".35"><path d="M10 26q22-10 44 0M120 16q20-8 40 0"/></g>
+  </symbol>
+
+  <symbol id="art-ant" viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice">
+    <rect width="200" height="150" fill="#120d08"/>
+    <path d="M0 34h200v116H0z" fill="var(--m2)" opacity=".22"/>
+    <path d="M0 34h200v10H0z" fill="var(--m1)" opacity=".5"/>
+    <g stroke="var(--m1)" stroke-width="3" fill="none" opacity=".5" stroke-linecap="round">
+      <path d="M60 44v34M60 78q-24 8-30 34M60 78q26 10 34 40M130 44v26M130 70q22 10 26 40"/>
+    </g>
+    <g fill="var(--m1)">
+      <g transform="translate(46,92)"><ellipse cx="0" cy="0" rx="5" ry="3.4"/><circle cx="7" cy="0" r="2.4"/><circle cx="12" cy="0" r="3"/></g>
+      <g transform="translate(96,120)"><ellipse cx="0" cy="0" rx="5" ry="3.4"/><circle cx="7" cy="0" r="2.4"/><circle cx="12" cy="0" r="3"/></g>
+      <g transform="translate(150,106)"><ellipse cx="0" cy="0" rx="5" ry="3.4"/><circle cx="7" cy="0" r="2.4"/><circle cx="12" cy="0" r="3"/></g>
+      <g transform="translate(120,60)"><ellipse cx="0" cy="0" rx="7" ry="4.6"/><circle cx="10" cy="0" r="3.4"/><circle cx="17" cy="0" r="4.2"/></g>
+    </g>
+    <circle cx="36" cy="120" r="7" fill="var(--m2)" opacity=".9"/>
+    <circle cx="168" cy="130" r="5" fill="var(--m2)" opacity=".8"/>
+  </symbol>
+
+  <symbol id="art-time" viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice">
+    <rect width="200" height="150" fill="#0b0a1a"/>
+    <g opacity=".9">
+      <circle cx="100" cy="75" r="62" fill="none" stroke="var(--m2)" stroke-width="1.4" opacity=".4"/>
+      <circle cx="100" cy="75" r="48" fill="none" stroke="var(--m1)" stroke-width="1.6" opacity=".6"/>
+      <circle cx="100" cy="75" r="34" fill="var(--m1)" opacity=".2"/>
+      <circle cx="100" cy="75" r="34" fill="none" stroke="var(--m1)" stroke-width="2"/>
+    </g>
+    <g stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="M100 75V52M100 75l17 12"/></g>
+    <circle cx="100" cy="75" r="4" fill="#fff"/>
+    <g fill="var(--m2)"><circle cx="100" cy="13" r="3.4"/><circle cx="162" cy="75" r="3.4"/><circle cx="100" cy="137" r="3.4"/><circle cx="38" cy="75" r="3.4"/></g>
+    <g stroke="var(--m1)" stroke-width="1.2" opacity=".45" fill="none"><path d="M14 24q40 34 0 68M186 24q-40 34 0 68"/></g>
+  </symbol>
+
+  <symbol id="art-shooter" viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice">
+    <rect width="200" height="150" fill="#050914"/>
+    <path d="M0 118h200v32H0z" fill="var(--m2)" opacity=".3"/>
+    <g fill="#fff" opacity=".6"><circle cx="24" cy="22" r="1.2"/><circle cx="70" cy="34" r="1"/><circle cx="128" cy="18" r="1.4"/><circle cx="172" cy="44" r="1"/></g>
+    <g fill="var(--m1)">
+      <path d="M100 96l16 22H84z"/><rect x="94" y="86" width="12" height="14" rx="3"/>
+    </g>
+    <g fill="var(--m2)" opacity=".9">
+      <path d="M40 40l10 14H30zM100 26l10 14H90zM160 44l10 14h-20z"/>
+    </g>
+    <g stroke="var(--m1)" stroke-width="3" stroke-linecap="round"><path d="M100 84V60M60 96V78M142 98V80"/></g>
+    <circle cx="100" cy="52" r="22" fill="var(--m1)" opacity=".18"/>
+  </symbol>
+</svg>
+
+<!-- ========== TOP BAR ========== -->
+<header class="topbar">
+  <button class="icon-btn menu-btn" id="menuBtn" aria-label="Toggle menu">
+    <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+  </button>
+  <a class="logo" href="./" id="homeLogo">
+    <span class="logo-mark"><svg viewBox="0 0 24 24"><path d="M7 4h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3Zm1.2 5v2.3H5.9v1.9h2.3v2.3h1.9v-2.3h2.3v-1.9H10.1V9H8.2Zm8 .4a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6Zm-2.4 3.4a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6Z"/></svg></span>
+    <span>AI<i>Creations</i></span>
+  </a>
+  <div class="searchbox" id="searchBox">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.3-3.3"/></svg>
+    <input type="search" id="search" placeholder="Search games, models, or genres…" aria-label="Search">
+    <button type="button" id="clearBtn" aria-label="Clear search">×</button>
+  </div>
+  <div class="top-actions">
+    <button class="btn-primary" type="button" id="randomBtn">🎲 Random game</button>
+  </div>
+</header>
+
+<!-- ========== SIDEBAR ========== -->
+<nav class="sidebar" id="sidebar" aria-label="Browse">
+  <div class="nav-group">
+    <button class="nav-item active" data-filter="all" type="button">
+      <svg class="ico" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
+      Home
+    </button>
+    <button class="nav-item" data-filter="game" type="button">
+      <svg class="ico" viewBox="0 0 24 24"><path d="M7 7h10a5 5 0 0 1 4.6 7l-1.3 3a2.4 2.4 0 0 1-4.2.4L15 16H9l-1.1 1.4a2.4 2.4 0 0 1-4.2-.4l-1.3-3A5 5 0 0 1 7 7Z"/><path d="M7.5 11v2.4M6.3 12.2h2.4M15.6 11.6h.01M17.6 13.4h.01"/></svg>
+      All games <span class="n" data-count="game"></span>
+    </button>
+    <button class="nav-item" data-filter="page" type="button">
+      <svg class="ico" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M7 6.5h.01M10 6.5h.01"/></svg>
+      Web pages <span class="n" data-count="page"></span>
+    </button>
+    <button class="nav-item" data-filter="3d" type="button">
+      <svg class="ico" viewBox="0 0 24 24"><path d="M12 3 3 8v8l9 5 9-5V8z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg>
+      3D worlds <span class="n" data-count="3d"></span>
+    </button>
+  </div>
+
+  <hr>
+  <div class="nav-label">Browse by model</div>
+  <div class="nav-group" id="modelNav">
+    <button class="nav-item" data-model-filter="opus-5"      data-model="opus-5"      type="button"><span class="swatch"></span>Claude Opus 5 <span class="n"></span></button>
+    <button class="nav-item" data-model-filter="fable-5"     data-model="fable-5"     type="button"><span class="swatch"></span>Claude Fable 5 <span class="n"></span></button>
+    <button class="nav-item" data-model-filter="gpt-5.6"     data-model="gpt-5.6"     type="button"><span class="swatch"></span>GPT-5.6 <span class="n"></span></button>
+    <button class="nav-item" data-model-filter="grok-4.6"    data-model="grok-4.6"    type="button"><span class="swatch"></span>Grok 4.6 <span class="n"></span></button>
+    <button class="nav-item" data-model-filter="kimi-k3"     data-model="kimi-k3"     type="button"><span class="swatch"></span>Kimi K3 <span class="n"></span></button>
+    <button class="nav-item" data-model-filter="qwen-3.8-max" data-model="qwen-3.8-max" type="button"><span class="swatch"></span>Qwen 3.8 Max <span class="n"></span></button>
+    <button class="nav-item" data-model-filter="deepseek-v4" data-model="deepseek-v4" type="button"><span class="swatch"></span>DeepSeek V4 Flash <span class="n"></span></button>
+  </div>
+
+  <hr>
+  <div class="nav-label">Collections</div>
+  <div class="nav-group">
+    <button class="nav-item" data-filter="hex" type="button">
+      <svg class="ico" viewBox="0 0 24 24"><path d="m12 3 7.8 4.5v9L12 21l-7.8-4.5v-9z"/></svg>
+      Hex royale <span class="n" data-count="hex"></span>
+    </button>
+    <button class="nav-item" data-filter="sandbox" type="button">
+      <svg class="ico" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/></svg>
+      Sandbox builders <span class="n" data-count="sandbox"></span>
+    </button>
+    <button class="nav-item" data-filter="arcade" type="button">
+      <svg class="ico" viewBox="0 0 24 24"><path d="M5 3h14v18l-7-4-7 4z"/></svg>
+      Arcade classics <span class="n" data-count="arcade"></span>
+    </button>
+  </div>
+
+  <hr>
+  <div class="side-foot">Every title here was written entirely by one AI model — no human code.<br><br><a href="https://buildfastwithai.com" target="_blank" rel="noopener" style="color:var(--brand-2);font-weight:700">buildfastwithai.com ↗</a></div>
+</nav>
+<div class="scrim" id="scrim"></div>
+
+<!-- ========== MAIN ========== -->
+<main>
+  <section class="hero">
+    <div>
+      <h1>Same brief. Seven different AI models.</h1>
+      <p>Every game and page below was built end-to-end by a single frontier model. Play them side by side and see who builds what.</p>
+    </div>
+    <div class="hero-stats">
+      <div><b id="sTotal">13</b><span>Creations</span></div>
+      <div><b>7</b><span>Models</span></div>
+      <div><b id="sGames">12</b><span>Games</span></div>
+    </div>
+  </section>
+
+  <!-- ===== CURATED HOME ===== -->
+  <div id="curated">
+
+    <section class="section">
+      <div class="section-head">
+        <div><h2>Featured</h2><p>Start here — the most complete builds in the collection</p></div>
+      </div>
+      <div class="mosaic" id="mosaic"></div>
     </section>
 
-    <section id="projects" aria-labelledby="projects-title">
-      <div class="section-heading">
-        <div>
-          <h2 id="projects-title">Explore the collection</h2>
-          <p class="result-count" id="result-count" aria-live="polite">Showing all 7 projects</p>
-        </div>
-
-        <div class="controls">
-          <label>
-            <span class="visually-hidden">Search projects</span>
-            <input class="search-field" id="search" type="search" placeholder="Search projects..." autocomplete="off">
-          </label>
-
-          <div class="filters" aria-label="Filter projects by type">
-            <button class="filter-button is-active" type="button" data-filter="all" aria-pressed="true">All</button>
-            <button class="filter-button" type="button" data-filter="game" aria-pressed="false">Games</button>
-            <button class="filter-button" type="button" data-filter="page" aria-pressed="false">Pages</button>
-          </div>
-        </div>
+    <section class="section" data-row="hex">
+      <div class="section-head">
+        <div><h2>⬡ Hex Royale — four models, one brief</h2><p>The exact same "vanishing hexagon floor" prompt, built four times over</p></div>
+        <div class="rail-nav"></div>
       </div>
-
-      <div class="project-grid" id="project-grid">
-        <a class="project-card" href="fable-5/games/lumi_aurora_runner.html" data-type="game" data-search="lumi spirit aurora runner fable 5 game">
-          <div class="card-visual" style="--card-bg:#12324a;--card-fg:#83d6ff;">
-            <span class="card-mark">LUMI</span>
-          </div>
-          <div class="card-body">
-            <div class="card-meta"><span class="card-type">Game</span><span>Fable-5</span></div>
-            <h3 class="card-title">LUMI: Spirit of the Aurora</h3>
-            <p class="card-description">Run through an aurora landscape, collect energy, and dodge void crystals.</p>
-            <span class="card-action">Play game &rarr;</span>
-          </div>
-        </a>
-
-        <a class="project-card" href="fable-5/landing-pages/time-machine.html" data-type="page" data-search="time machine history travel fable 5 landing page interactive demo">
-          <div class="card-visual" style="--card-bg:#1e2f4c;--card-fg:#b9d1ff;">
-            <span class="card-mark">TIME</span>
-          </div>
-          <div class="card-body">
-            <div class="card-meta"><span class="card-type">Web page</span><span>Fable-5</span></div>
-            <h3 class="card-title">The Time Machine</h3>
-            <p class="card-description">An interactive time-travel page with eras to explore and layered historical scenes.</p>
-            <span class="card-action">View page &rarr;</span>
-          </div>
-        </a>
-
-        <a class="project-card" href="kimi-k3/games/ant-civilization.html" data-type="game" data-search="formica ant civilization simulator colony kimi k3 game 3d">
-          <div class="card-visual" style="--card-bg:#18263f;--card-fg:#8fb9f8;">
-            <span class="card-mark">FORMICA</span>
-          </div>
-          <div class="card-body">
-            <div class="card-meta"><span class="card-type">Game</span><span>Kimi-k3</span></div>
-            <h3 class="card-title">Formica: Ant Simulator</h3>
-            <p class="card-description">Observe an active ant colony as it forages, gathers food, and grows.</p>
-            <span class="card-action">Play game &rarr;</span>
-          </div>
-        </a>
-
-        <a class="project-card" href="kimi-k3/games/sky-smashers.html" data-type="game" data-search="sky smashers arcade shooter retro space kimi k3 game">
-          <div class="card-visual" style="--card-bg:#102d50;--card-fg:#85c5ff;">
-            <span class="card-mark">SKY</span>
-          </div>
-          <div class="card-body">
-            <div class="card-meta"><span class="card-type">Game</span><span>Kimi-k3</span></div>
-            <h3 class="card-title">Sky Smashers</h3>
-            <p class="card-description">A fast retro shooter with power-ups, enemy waves, and a final boss.</p>
-            <span class="card-action">Play game &rarr;</span>
-          </div>
-        </a>
-
-        <a class="project-card" href="opus-5/games/pulse-drift.html" data-type="game" data-search="pulse drift rhythm racer synthwave opus 5 game">
-          <div class="card-visual" style="--card-bg:#251f4b;--card-fg:#c4b5ff;">
-            <span class="card-mark">PULSE</span>
-          </div>
-          <div class="card-body">
-            <div class="card-meta"><span class="card-type">Game</span><span>Opus-5</span></div>
-            <h3 class="card-title">Pulse Drift</h3>
-            <p class="card-description">A rhythm racer about sharp turns, clean drifts, and perfectly timed boosts.</p>
-            <span class="card-action">Play game &rarr;</span>
-          </div>
-        </a>
-
-        <a class="project-card" href="opus-5/games/SummitRunner.html" data-type="game" data-search="summit runner mountain climbing weather opus 5 game platformer">
-          <div class="card-visual" style="--card-bg:#13344a;--card-fg:#8ed7e5;">
-            <span class="card-mark">SUMMIT</span>
-          </div>
-          <div class="card-body">
-            <div class="card-meta"><span class="card-type">Game</span><span>Opus-5</span></div>
-            <h3 class="card-title">Summit Runner</h3>
-            <p class="card-description">Climb procedural peaks, manage stamina, and push through changing weather.</p>
-            <span class="card-action">Play game &rarr;</span>
-          </div>
-        </a>
-
-        <a class="project-card" href="qwen-3.8-max/games/space-invaders.html" data-type="game" data-search="space invaders arcade retro laser qwen 3.8 max game">
-          <div class="card-visual" style="--card-bg:#161d3f;--card-fg:#9aaeff;">
-            <span class="card-mark">SPACE</span>
-          </div>
-          <div class="card-body">
-            <div class="card-meta"><span class="card-type">Game</span><span>Qwen-3.8-max</span></div>
-            <h3 class="card-title">Space Invaders</h3>
-            <p class="card-description">A modern take on the arcade classic with lasers and increasing difficulty.</p>
-            <span class="card-action">Play game &rarr;</span>
-          </div>
-        </a>
-      </div>
-
-      <div class="empty-state" id="empty-state">
-        <strong>No projects found</strong>
-        Try a different search or choose another category.
-      </div>
+      <div class="rail"></div>
     </section>
-  </main>
 
-  <footer class="site-footer">
-    <div class="footer-inner">
-      <p>HTML Creations</p>
-      <p>Games and demos built with BuildFastWithAI.</p>
+    <section class="section" data-row="sandbox">
+      <div class="section-head">
+        <div><h2>⬛ Sandbox builders</h2><p>Voxel worlds you can mine, place and wander</p></div>
+        <div class="rail-nav"></div>
+      </div>
+      <div class="rail"></div>
+    </section>
+
+    <section class="section" data-row="arcade">
+      <div class="section-head">
+        <div><h2>🕹 Arcade &amp; action</h2><p>Quick reflex games you can finish in a coffee break</p></div>
+        <div class="rail-nav"></div>
+      </div>
+      <div class="rail"></div>
+    </section>
+
+    <section class="section" data-row="all">
+      <div class="section-head">
+        <div><h2>Everything in the collection</h2><p>All 13 creations, newest models first</p></div>
+        <div class="rail-nav"></div>
+      </div>
+      <div class="rail"></div>
+    </section>
+
+  </div>
+
+  <!-- ===== FILTERED RESULTS ===== -->
+  <div id="results">
+    <div class="results-head">
+      <h2 id="resultsTitle">All creations</h2>
+      <span id="resultsCount"></span>
     </div>
-  </footer>
+    <div class="grid" id="grid"></div>
+    <div class="empty"><b>No creations match that</b>Try another search term, or pick a different model in the sidebar.</div>
+  </div>
 
-  <script>
-    const cards = [...document.querySelectorAll('.project-card')];
-    const searchInput = document.getElementById('search');
-    const filterButtons = [...document.querySelectorAll('.filter-button')];
-    const resultCount = document.getElementById('result-count');
-    const projectGrid = document.getElementById('project-grid');
-    const emptyState = document.getElementById('empty-state');
-    let activeFilter = 'all';
+  <div class="footer-note">
+    <span>AI Creations — a side-by-side gallery of what frontier models build unassisted.</span>
+    <a href="https://buildfastwithai.com" target="_blank" rel="noopener">buildfastwithai.com ↗</a>
+  </div>
+</main>
 
-    function updateProjects() {
-      const query = searchInput.value.trim().toLowerCase();
-      let visibleCount = 0;
+<script>
+const MODELS = {
+  'opus-5':       'Claude Opus 5',
+  'fable-5':      'Claude Fable 5',
+  'gpt-5.6':      'GPT-5.6',
+  'grok-4.6':     'Grok 4.6',
+  'kimi-k3':      'Kimi K3',
+  'qwen-3.8-max': 'Qwen 3.8 Max',
+  'deepseek-v4':  'DeepSeek V4 Flash'
+};
 
-      cards.forEach((card) => {
-        const matchesType = activeFilter === 'all' || card.dataset.type === activeFilter;
-        const matchesSearch = !query || card.dataset.search.includes(query);
-        const isVisible = matchesType && matchesSearch;
+const GAMES = [
+  { id:'voxel-opus', title:'Voxel World', model:'opus-5', type:'game', art:'voxel', tech:'Three.js',
+    href:'opus-5/games/claude-minecraft.html', tags:['sandbox','3d'],
+    desc:'A first-person block sandbox — mine terrain, place blocks and reshape a whole world.',
+    kw:'minecraft voxel sandbox blocks mining building survival 3d creative' },
 
-        card.hidden = !isVisible;
-        if (isVisible) visibleCount += 1;
-      });
+  { id:'pulse', title:'Pulse Drift', model:'opus-5', type:'game', art:'pulse', tech:'Canvas',
+    href:'opus-5/games/pulse-drift.html', tags:['arcade'], featured:2,
+    desc:'A synthwave rhythm racer about sharp turns, clean drifts and perfectly timed boosts.',
+    kw:'rhythm racer synthwave neon driving music drift boost' },
 
-      projectGrid.hidden = visibleCount === 0;
-      emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
-      resultCount.textContent = visibleCount === cards.length
-        ? `Showing all ${cards.length} projects`
-        : `Showing ${visibleCount} of ${cards.length} projects`;
-    }
+  { id:'summit', title:'Summit Runner', model:'opus-5', type:'game', art:'summit', tech:'Canvas',
+    href:'opus-5/games/SummitRunner.html', tags:['arcade'], featured:3,
+    desc:'Climb procedural peaks, ration your stamina and push through shifting weather.',
+    kw:'mountain climbing platformer stamina weather procedural runner' },
 
-    filterButtons.forEach((button) => {
-      button.addEventListener('click', () => {
-        activeFilter = button.dataset.filter;
+  { id:'hex-opus', title:'Hex-A-Gone', model:'opus-5', type:'game', art:'hex', tech:'Three.js',
+    href:'opus-5/games/hex-a-gone.html', tags:['hex','3d'], featured:1,
+    desc:'Hexagon tiles vanish the moment you touch them. Outlast the collapsing floor.',
+    kw:'hexagon fall guys tiles survival battle royale platform 3d' },
 
-        filterButtons.forEach((item) => {
-          const isActive = item === button;
-          item.classList.toggle('is-active', isActive);
-          item.setAttribute('aria-pressed', String(isActive));
-        });
+  { id:'lumi', title:'LUMI: Spirit of the Aurora', model:'fable-5', type:'game', art:'runner', tech:'Canvas',
+    href:'fable-5/games/lumi_aurora_runner.html', tags:['arcade'], featured:4,
+    desc:'Run through a glowing aurora landscape, gather energy and dodge drifting void crystals.',
+    kw:'endless runner aurora spirit lights collect energy crystals atmospheric' },
 
-        updateProjects();
-      });
-    });
+  { id:'time', title:'The Time Machine', model:'fable-5', type:'page', art:'time', tech:'CSS / JS',
+    href:'fable-5/landing-pages/time-machine.html', tags:[], featured:5,
+    desc:'An interactive time-travel page with layered historical scenes and eras to explore.',
+    kw:'time travel history eras interactive landing page scroll animation web page' },
 
-    searchInput.addEventListener('input', updateProjects);
-  </script>
+  { id:'hexdrop', title:'Hex Drop Arena', model:'gpt-5.6', type:'game', art:'hex', tech:'Three.js',
+    href:'gpt%205.6/games/Hex-Drop-Arena.html', tags:['hex','3d'],
+    desc:'A frantic drop-tile arena — keep moving as the hexagon floor falls away beneath you.',
+    kw:'hexagon drop tiles arena battle royale fall openai 3d' },
+
+  { id:'hex-grok', title:'Hex-A-Gone', model:'grok-4.6', type:'game', art:'hex', tech:'Three.js',
+    href:'grok%204.6/games/hex-a-gone.html', tags:['hex','3d'],
+    desc:"Grok's run at the vanishing-hexagon survival round, rendered in full 3D.",
+    kw:'hexagon fall guys tiles xai three js survival 3d' },
+
+  { id:'ant', title:'Formica: Ant Simulator', model:'kimi-k3', type:'game', art:'ant', tech:'Simulation',
+    href:'kimi-k3/games/ant-civilization.html', tags:[],
+    desc:'Watch a living ant colony forage, haul food and grow its civilization over time.',
+    kw:'ant colony civilization simulator insects forage food idle simulation nature' },
+
+  { id:'sky', title:'Sky Smashers', model:'kimi-k3', type:'game', art:'shooter', tech:'Canvas',
+    href:'kimi-k3/games/sky-smashers.html', tags:['arcade'],
+    desc:'A fast retro shooter with power-ups, escalating enemy waves and a final boss fight.',
+    kw:'shooter shmup retro arcade power ups waves boss space plane' },
+
+  { id:'invaders', title:'Space Invaders', model:'qwen-3.8-max', type:'game', art:'space', tech:'Canvas',
+    href:'qwen-3.8-max/games/space-invaders.html', tags:['arcade'],
+    desc:'A modern rebuild of the arcade classic — tight lasers, tighter difficulty curve.',
+    kw:'space invaders arcade retro classic aliens laser shooting pixel' },
+
+  { id:'hex-qwen', title:'Hexagone Arena', model:'qwen-3.8-max', type:'game', art:'hex', tech:'Three.js',
+    href:'qwen-3.8-max/games/hexagone-arena.html', tags:['hex','3d'],
+    desc:"Qwen's Fall Guys-style hexagon round — every tile you touch is one you can't touch again.",
+    kw:'hexagon fall guys arena tiles alibaba survival 3d' },
+
+  { id:'voxel-ds', title:'Voxel World: Survival', model:'deepseek-v4', type:'game', art:'voxel', tech:'Three.js',
+    href:'deepseek-v4-flash/games/deepseek-minecraft.html', tags:['sandbox','3d'],
+    desc:'A survival-flavoured block sandbox with mining, building and a world to wander.',
+    kw:'minecraft voxel survival sandbox blocks mining crafting 3d' }
+];
+
+/* ---------- tile rendering ---------- */
+function tile(g, big) {
+  const kind = g.type === 'page' ? 'Web page' : 'Game';
+  return `
+  <a class="tile${big ? ' feature' : ''}" href="${g.href}" data-model="${g.model}" title="${g.title} — built by ${MODELS[g.model]}">
+    <div class="thumb">
+      <svg class="art" viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice"><use href="#art-${g.art}"/></svg>
+      <span class="badge"><span class="dot"></span>${MODELS[g.model]}</span>
+      <span class="kind">${kind}</span>
+      <span class="play-fab"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+      <div class="tile-info">
+        <h3>${g.title}</h3>
+        <p class="by">built by <b>${MODELS[g.model]}</b> · ${g.tech}</p>
+        <p class="desc">${g.desc}</p>
+      </div>
+    </div>
+  </a>`;
+}
+
+function match(g, key) {
+  if (key === 'all') return true;
+  if (key === 'game' || key === 'page') return g.type === key;
+  return g.tags.indexOf(key) > -1;
+}
+
+/* ---------- build curated home ---------- */
+const featured = GAMES.filter(g => g.featured).sort((a, b) => a.featured - b.featured);
+document.getElementById('mosaic').innerHTML = featured.map((g, i) => tile(g, i === 0)).join('');
+
+document.querySelectorAll('.section[data-row]').forEach(sec => {
+  const key = sec.dataset.row;
+  const list = GAMES.filter(g => match(g, key));
+  const rail = sec.querySelector('.rail');
+  rail.innerHTML = list.map(g => tile(g, false)).join('');
+
+  const nav = sec.querySelector('.rail-nav');
+  nav.innerHTML =
+    '<button type="button" aria-label="Scroll left"><svg viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></svg></button>' +
+    '<button type="button" aria-label="Scroll right"><svg viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg></button>';
+  const [prev, next] = nav.querySelectorAll('button');
+  const step = () => Math.max(rail.clientWidth * 0.8, 220);
+  prev.addEventListener('click', () => rail.scrollBy({ left: -step(), behavior: 'smooth' }));
+  next.addEventListener('click', () => rail.scrollBy({ left: step(), behavior: 'smooth' }));
+  const sync = () => {
+    prev.disabled = rail.scrollLeft < 6;
+    next.disabled = rail.scrollLeft + rail.clientWidth >= rail.scrollWidth - 6;
+  };
+  rail.addEventListener('scroll', sync);
+  window.addEventListener('resize', sync);
+  sync();
+});
+
+/* ---------- counts ---------- */
+document.getElementById('sTotal').textContent = GAMES.length;
+document.getElementById('sGames').textContent = GAMES.filter(g => g.type === 'game').length;
+document.querySelectorAll('.n[data-count]').forEach(el => {
+  el.textContent = GAMES.filter(g => match(g, el.dataset.count)).length;
+});
+document.querySelectorAll('#modelNav .nav-item').forEach(el => {
+  el.querySelector('.n').textContent = GAMES.filter(g => g.model === el.dataset.modelFilter).length;
+});
+
+/* ---------- filtering ---------- */
+const state = { filter: 'all', model: null, q: '' };
+const grid = document.getElementById('grid');
+const resultsTitle = document.getElementById('resultsTitle');
+const resultsCount = document.getElementById('resultsCount');
+const searchInput = document.getElementById('search');
+const searchBox = document.getElementById('searchBox');
+
+const LABELS = { all: 'All creations', game: 'All games', page: 'Web pages', '3d': '3D worlds', hex: 'Hex Royale', sandbox: 'Sandbox builders', arcade: 'Arcade classics' };
+
+function render() {
+  const q = state.q.trim().toLowerCase();
+  const filtering = !!q || !!state.model || state.filter !== 'all';
+  document.body.classList.toggle('filtering', filtering);
+  if (!filtering) { document.body.classList.remove('no-results'); return; }
+
+  const list = GAMES.filter(g =>
+    (!state.model || g.model === state.model) &&
+    match(g, state.filter) &&
+    (!q || (g.title + ' ' + g.desc + ' ' + g.kw + ' ' + MODELS[g.model] + ' ' + g.tech).toLowerCase().includes(q))
+  );
+
+  grid.innerHTML = list.map(g => tile(g, false)).join('');
+  document.body.classList.toggle('no-results', list.length === 0);
+
+  let t = state.model ? MODELS[state.model] : (LABELS[state.filter] || 'Results');
+  if (state.model && state.filter !== 'all') t += ' · ' + LABELS[state.filter];
+  if (q) t = '“' + state.q.trim() + '”';
+  resultsTitle.innerHTML = (state.model && !q ? '<span class="swatch"></span>' : '') + t;
+  resultsTitle.setAttribute('data-model', state.model || '');
+  resultsCount.textContent = list.length + (list.length === 1 ? ' result' : ' results');
+  searchBox.classList.toggle('filled', state.q.length > 0);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function setActive(btn) {
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b === btn));
+}
+
+document.querySelectorAll('.nav-item[data-filter]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    state.filter = btn.dataset.filter; state.model = null; state.q = ''; searchInput.value = '';
+    setActive(btn); render(); document.body.classList.remove('nav-open');
+  });
+});
+document.querySelectorAll('.nav-item[data-model-filter]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    state.model = btn.dataset.modelFilter; state.filter = 'all'; state.q = ''; searchInput.value = '';
+    setActive(btn); render(); document.body.classList.remove('nav-open');
+  });
+});
+
+searchInput.addEventListener('input', () => { state.q = searchInput.value; render(); });
+document.getElementById('clearBtn').addEventListener('click', () => {
+  searchInput.value = ''; state.q = ''; render(); searchInput.focus();
+});
+document.getElementById('homeLogo').addEventListener('click', e => {
+  e.preventDefault();
+  state.filter = 'all'; state.model = null; state.q = ''; searchInput.value = '';
+  setActive(document.querySelector('.nav-item[data-filter="all"]'));
+  render(); window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+/* ---------- misc ---------- */
+document.getElementById('randomBtn').addEventListener('click', () => {
+  const pool = GAMES.filter(g => g.type === 'game');
+  location.href = pool[Math.floor(Math.random() * pool.length)].href;
+});
+document.getElementById('menuBtn').addEventListener('click', () => document.body.classList.toggle('nav-open'));
+document.getElementById('scrim').addEventListener('click', () => document.body.classList.remove('nav-open'));
+document.addEventListener('keydown', e => {
+  if (e.key === '/' && document.activeElement !== searchInput) { e.preventDefault(); searchInput.focus(); }
+  if (e.key === 'Escape') { document.body.classList.remove('nav-open'); if (document.activeElement === searchInput) { searchInput.value = ''; state.q = ''; render(); } }
+});
+
+render();
+</script>
 </body>
 </html>
