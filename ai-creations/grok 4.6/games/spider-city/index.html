@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+<title>ARACHNID // Vertical City</title>
+<link rel="stylesheet" href="./styles/hud.css" />
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+
+<canvas id="viewport"></canvas>
+
+<!-- ============================ BOOT / LOADING ============================ -->
+<div id="boot" class="overlay">
+  <div class="boot-inner">
+    <div class="boot-mark">
+      <svg viewBox="0 0 120 120" width="86" height="86">
+        <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+          <path d="M60 8 L60 112 M8 60 L112 60 M23 23 L97 97 M97 23 L23 97"/>
+          <path d="M60 26 L82 40 L90 60 L82 80 L60 94 L38 80 L30 60 L38 40 Z"/>
+          <path d="M60 40 L74 49 L79 60 L74 71 L60 80 L46 71 L41 60 L46 49 Z"/>
+          <path d="M60 54 L67 58 L69 60 L67 65 L60 68 L53 65 L51 60 L53 58 Z"/>
+        </g>
+      </svg>
+    </div>
+    <h1 class="boot-title">ARACHNID</h1>
+    <div class="boot-sub">VERTICAL CITY &mdash; OPEN WORLD PROTOTYPE</div>
+    <div class="boot-bar"><i id="boot-fill"></i></div>
+    <div class="boot-status" id="boot-status">Initialising renderer&hellip;</div>
+    <div class="boot-tip" id="boot-tip"></div>
+    <button id="boot-play" class="btn-primary" disabled>ENTER THE CITY</button>
+  </div>
+</div>
+
+<!-- ================================= HUD ================================= -->
+<div id="hud" class="hidden">
+
+  <div id="vignette"></div>
+  <div id="dmg-flash"></div>
+
+  <!-- top-left: mission -->
+  <div id="objective" class="panel">
+    <div class="obj-tag" id="obj-tag">CITY PATROL</div>
+    <div class="obj-title" id="obj-title">Explore the city</div>
+    <div class="obj-desc" id="obj-desc">Hold <b>RMB</b> or tap <b>X</b> to swing. Look for trouble.</div>
+    <div class="obj-progress"><i id="obj-fill"></i></div>
+  </div>
+
+  <!-- top-right: minimap -->
+  <div id="minimap-wrap">
+    <canvas id="minimap" width="360" height="360"></canvas>
+    <div id="compass"><span>N</span></div>
+    <div id="clock">08:00</div>
+    <div id="weather-chip">CLEAR</div>
+  </div>
+
+  <!-- bottom-left: vitals -->
+  <div id="vitals">
+    <div class="bar health"><i id="health-fill"></i><span class="bar-label">VITALITY</span></div>
+    <div class="bar focus"><i id="focus-fill"></i><span class="bar-label">FOCUS</span></div>
+    <div id="xp-row">
+      <div class="xp-bar"><i id="xp-fill"></i></div>
+      <div id="level">LV <b>1</b></div>
+    </div>
+  </div>
+
+  <!-- bottom-right: abilities -->
+  <div id="abilities">
+    <div class="ability" data-key="LMB"><div class="ico">✊</div><div class="k">LMB</div><div class="n">Strike</div></div>
+    <div class="ability" data-key="E"><div class="ico">➶</div><div class="k">E</div><div class="n">Web Pull</div></div>
+    <div class="ability" data-key="Q"><div class="ico">✷</div><div class="k">Q</div><div class="n">Web Trap</div></div>
+    <div class="ability" data-key="F"><div class="ico">⇡</div><div class="k">F</div><div class="n">Zip</div></div>
+    <div class="ability" data-key="SPACE"><div class="ico">⤒</div><div class="k">SPC</div><div class="n">Jump</div></div>
+  </div>
+
+  <!-- center: reticle + combo -->
+  <div id="reticle"><i></i></div>
+  <div id="combo"><span id="combo-count">0</span><small>HIT COMBO</small><div id="combo-timer"><i></i></div></div>
+
+  <!-- speed / altitude telemetry -->
+  <div id="telemetry">
+    <div><b id="tel-speed">0</b><span>KM/H</span></div>
+    <div><b id="tel-alt">0</b><span>M ALT</span></div>
+  </div>
+
+  <div id="toasts"></div>
+  <div id="markers"></div>
+  <div id="subtitle"></div>
+  <div id="cine-bars"><i class="top"></i><i class="bot"></i></div>
+  <div id="title-card"><h2></h2><p></p></div>
+</div>
+
+<!-- ============================== PAUSE MENU ============================== -->
+<div id="pause" class="overlay hidden">
+  <div class="menu-shell">
+    <nav id="menu-tabs">
+      <button class="tab active" data-tab="resume">RESUME</button>
+      <button class="tab" data-tab="map">MAP</button>
+      <button class="tab" data-tab="missions">MISSIONS</button>
+      <button class="tab" data-tab="abilities">ABILITIES</button>
+      <button class="tab" data-tab="settings">SETTINGS</button>
+    </nav>
+    <section class="tab-body" id="tab-map">
+      <div id="bigmap-wrap"><canvas id="bigmap" width="1100" height="1100"></canvas></div>
+      <div id="map-legend"></div>
+    </section>
+    <section class="tab-body hidden" id="tab-missions"><div id="mission-list"></div></section>
+    <section class="tab-body hidden" id="tab-abilities"><div id="ability-list"></div></section>
+    <section class="tab-body hidden" id="tab-settings"><div id="settings-list"></div></section>
+  </div>
+</div>
+
+<div id="fps"></div>
+
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>
