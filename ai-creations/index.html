@@ -35,6 +35,7 @@
 [data-model="kimi-k3"]      {--m1:#4da6ff;--m2:#8b6bff}
 [data-model="qwen-3.8-max"] {--m1:#ff6fc0;--m2:#a855f7}
 [data-model="deepseek-v4"]  {--m1:#3d8bff;--m2:#22d3ee}
+[data-model="glm-5.3"]      {--m1:#c6f24a;--m2:#63c40a}
 
 html{scroll-behavior:smooth}
 body{
@@ -476,7 +477,7 @@ body.filtering #hero,body.filtering #featuredSec{display:none}
   <div class="badges">
     <span class="badge88">NO DOWNLOADS<br>REQUIRED!</span>
     <span class="badge88 b2">100% FREE<br>FOREVER</span>
-    <span class="badge88 b3">7 AI MODELS<br>1 ARCADE</span>
+    <span class="badge88 b3">8 AI MODELS<br>1 ARCADE</span>
     <span class="badge88 b4">WORKS IN<br>YOUR BROWSER</span>
   </div>
 </header>
@@ -514,6 +515,7 @@ body.filtering #hero,body.filtering #featuredSec{display:none}
           <li><button type="button" data-model-filter="kimi-k3" data-model="kimi-k3"><span class="sw"></span>Kimi K3<span class="ct"></span></button></li>
           <li><button type="button" data-model-filter="qwen-3.8-max" data-model="qwen-3.8-max"><span class="sw"></span>Qwen 3.8 Max<span class="ct"></span></button></li>
           <li><button type="button" data-model-filter="deepseek-v4" data-model="deepseek-v4"><span class="sw"></span>DeepSeek V4<span class="ct"></span></button></li>
+          <li><button type="button" data-model-filter="glm-5.3" data-model="glm-5.3"><span class="sw"></span>GLM 5.3<span class="ct"></span></button></li>
         </ul>
         <button class="btn pink wide" type="button" id="randomBtn">&#9733; RANDOM GAME</button>
       </div>
@@ -525,7 +527,7 @@ body.filtering #hero,body.filtering #featuredSec{display:none}
         <div class="statline">Creations <b id="sTotal">0</b></div>
         <div class="statline">Games <b id="sGames">0</b></div>
         <div class="statline">Web toys <b id="sPages">0</b></div>
-        <div class="statline">AI models <b>7</b></div>
+        <div class="statline">AI models <b>8</b></div>
         <div class="statline">Human code <b>0</b></div>
         <div class="counter" id="counter"></div>
         <div class="counter-cap">LINES OF AI CODE</div>
@@ -578,11 +580,11 @@ body.filtering #hero,body.filtering #featuredSec{display:none}
 <script>
 const MODELS = {
   'opus-5':'Claude Opus 5','fable-5':'Claude Fable 5','gpt-5.6':'GPT-5.6','grok-4.6':'Grok 4.6',
-  'kimi-k3':'Kimi K3','qwen-3.8-max':'Qwen 3.8 Max','deepseek-v4':'DeepSeek V4 Flash'
+  'kimi-k3':'Kimi K3','qwen-3.8-max':'Qwen 3.8 Max','deepseek-v4':'DeepSeek V4 Flash','glm-5.3':'GLM 5.3'
 };
 const SHORT = {
   'opus-5':'OPUS 5','fable-5':'FABLE 5','gpt-5.6':'GPT-5.6','grok-4.6':'GROK 4.6',
-  'kimi-k3':'KIMI K3','qwen-3.8-max':'QWEN 3.8','deepseek-v4':'DEEPSEEK V4'
+  'kimi-k3':'KIMI K3','qwen-3.8-max':'QWEN 3.8','deepseek-v4':'DEEPSEEK V4','glm-5.3':'GLM 5.3'
 };
 
 const GAMES = [
@@ -658,7 +660,14 @@ const GAMES = [
     href:'deepseek-v4-flash/games/deepseek-minecraft.html', tags:['sandbox','3d'],
     desc:'A survival-flavoured block sandbox with mining, building and a world to wander.',
     kw:'minecraft voxel survival sandbox blocks mining crafting 3d' }
-];
+  { id:'stillframe', title:'STILLFRAME: Red Light Protocol', model:'glm-5.3', type:'game', art:'doll', tech:'Three.js', kb:61, loc:825,
+    href:'glm%205.3/games/rl-gl-glm.html', tags:['3d','arcade'],
+    desc:"GLM's run at the red light / green light standoff — freeze on the turn, sprint on the call, and hope the sentinel's optics blink first.",
+    kw:'stillframe red light green light protocol doll sentinel freeze stop sprint survival elimination three js 3d glm' },
+  { id:'hex-glm', title:'Hex-A-Gone', model:'glm-5.3', type:'game', art:'hex', tech:'Three.js', kb:23, loc:551,
+    href:'glm%205.3/games/hexagone.html', tags:['hex','3d'],
+    desc:'The leanest build of the hexagon brief on the site — 551 lines and the floor still falls out from under you.',
+    kw:'hexagon fall guys tiles survival battle royale platform 3d glm zhipu' },];
 
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
 const art = g => `<svg class="art" viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice"><use href="#art-${g.art}"/></svg>`;

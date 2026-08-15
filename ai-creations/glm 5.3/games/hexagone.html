@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hex-A-Gone — Three.js</title>
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #87d4f5;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            user-select: none
+        }
+
+        #hud {
+            position: fixed;
+            top: 14px;
+            left: 16px;
+            color: #fff;
+            font-weight: 800;
+            font-size: 20px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, .45);
+            z-index: 5
+        }
+
+        #timer {
+            position: fixed;
+            top: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            font-weight: 800;
+            font-size: 26px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, .45);
+            z-index: 5
+        }
+
+        #help {
+            position: fixed;
+            bottom: 12px;
+            left: 16px;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            opacity: .85;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, .5);
+            z-index: 5
+        }
+
+        #toasts {
+            position: fixed;
+            top: 64px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            z-index: 5;
+            pointer-events: none
+        }
+
+        .toast {
+            background: rgba(20, 20, 30, .75);
+            color: #fff;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 14px;
+            animation: fade 3.4s forwards
+        }
+
+        @keyframes fade {
+            0% {
+                opacity: 0;
+                transform: translateY(-8px)
+            }
+
+            10% {
+                opacity: 1;
+                transform: none
+            }
+
+            80% {
+                opacity: 1
+            }
+
+            100% {
+                opacity: 0
+            }
+        }
+
+        #overlay {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            background: rgba(10, 10, 25, .66);
+            z-index: 10;
+            color: #fff;
+            text-align: center
+        }
+
+        #overlay h1 {
+            font-size: 56px;
+            margin: 0 0 8px;
+            text-shadow: 0 4px 0 rgba(0, 0, 0, .35)
+        }
+
+        #overlay p {
+            font-size: 20px;
+            margin: 0 0 24px;
+            font-weight: 600;
+            opacity: .9
+        }
+
+        #overlay button {
+            font-size: 20px;
+            font-weight: 800;
+            padding: 12px 36px;
+            border: none;
+            border-radius: 30px;
+            background: #ffd23e;
+            color: #3a2a00;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #c9a416
+        }
+
+        #overlay button:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #c9a416
+        }
+
+        #spectate {
+            position: fixed;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            font-weight: 800;
+            font-size: 15px;
+            background: rgba(20, 20, 30, .6);
+            padding: 6px 18px;
+            border-radius: 20px;
+            display: none;
+            z-index: 5
+        }
+    </style>
+</head>
+
+<body>
+    <div id="hud">Players: 12</div>
+    <div id="timer">5:00</div>
+    <div id="help">WASD / Arrows — move · SPACE — jump · drag mouse — camera · R — restart</div>
+    <div id="toasts"></div>
+    <div id="spectate">Spectating…</div>
+    <div id="overlay">
+        <h1 id="ovTitle"></h1>
+        <p id="ovSub"></p>
+        <button onclick="location.reload()">Play Again</button>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        (function () {
+            "use strict";
+
+            const S = 1.1, RINGS = 8, LAYERS = 6, GAP = 2.6, TILE_H = 0.5;
+            const layerTop = i => -i * GAP + TILE_H / 2;
+            const slimeY = -(LAYERS - 1) * GAP - 2.6;
+            const GRAV = 34, JUMP = 12.5, PSPEED = 7.6, TIME_LIMIT = 300;
+
+            const scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x8fd8f8);
+            scene.fog = new THREE.Fog(0x8fd8f8, 40, 110);
+
+            const camera = new THREE.PerspectiveCamera(62, innerWidth / innerHeight, 0.1, 300);
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(innerWidth, innerHeight);
+            renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+            document.body.appendChild(renderer.domElement);
+
+            scene.add(new THREE.HemisphereLight(0xffffff, 0x7799bb, 0.95));
+            const sun = new THREE.DirectionalLight(0xfff4d6, 0.75);
+            sun.position.set(14, 30, 10);
+            scene.add(sun);
+
+            const slime = new THREE.Mesh(new THREE.PlaneGeometry(260, 260), new THREE.MeshBasicMaterial({ color: 0xff5bd0 }));
+            slime.rotation.x = -Math.PI / 2;
+            slime.position.y = slimeY;
+            scene.add(slime);
+            const bubbles = [];
+            for (let i = 0; i < 26; i++) {
+                const b = new THREE.Mesh(new THREE.SphereGeometry(0.22 + Math.random() * 0.3, 8, 8), new THREE.MeshBasicMaterial({ color: 0xff8ee0 }));
+                b.position.set((Math.random() - 0.5) * 40, slimeY, (Math.random() - 0.5) * 40);
+                b.userData.ph = Math.random() * 6.28;
+                scene.add(b); bubbles.push(b);
+            }
+
+            const layerColors = [0x2ec4b6, 0x3ba7ff, 0x5f7cff, 0x8a63ff, 0xb34df0, 0xff4fb0];
+            const matNormal = layerColors.map(c => new THREE.MeshLambertMaterial({ color: c }));
+            const matWhite = new THREE.MeshLambertMaterial({ color: 0xffffff, emissive: 0x666666 });
+            const hexGeo = new THREE.CylinderGeometry(S * 0.93, S * 0.93, TILE_H, 6);
+
+            const tiles = new Map();
+            const key = (l, q, r) => l + ":" + q + ":" + r;
+            function buildArena() {
+                for (let l = 0; l < LAYERS; l++) {
+                    for (let q = -RINGS; q <= RINGS; q++) {
+                        for (let r = -RINGS; r <= RINGS; r++) {
+                            if ((Math.abs(q) + Math.abs(r) + Math.abs(q + r)) / 2 > RINGS) continue;
+                            const m = new THREE.Mesh(hexGeo, matNormal[l]);
+                            m.position.set(S * 1.5 * q, -l * GAP, S * Math.sqrt(3) * (r + q / 2));
+                            m.rotation.y = Math.PI / 6;
+                            scene.add(m);
+                            tiles.set(key(l, q, r), { mesh: m, state: 0, t: 0, bx: m.position.x, bz: m.position.z, layer: l });
+                        }
+                    }
+                }
+            }
+            buildArena();
+
+            function axialAt(x, z) {
+                let q = x / (1.5 * S), r = z / (S * Math.sqrt(3)) - q / 2;
+                let rx = Math.round(q), rz = Math.round(r), ry = Math.round(-q - r);
+                const dx = Math.abs(rx - q), dz = Math.abs(rz - r), dy = Math.abs(ry + q + r);
+                if (dx > dz && dx > dy) rx = -ry - rz; else if (dz > dy) rz = -rx - ry;
+                return { q: rx, r: rz };
+            }
+            function floorAt(x, z, feetY, minY) {
+                let best = -Infinity, bl = -1;
+                const a = axialAt(x, z);
+                for (let l = 0; l < LAYERS; l++) {
+                    const t = tiles.get(key(l, a.q, a.r));
+                    if (!t || t.state >= 3) continue;
+                    const top = layerTop(l);
+                    if (top <= feetY + 0.45 && top >= minY && top > best) { best = top; bl = l; }
+                }
+                return { y: best, layer: bl, q: a.q, r: a.r };
+            }
+
+            const activeTiles = new Set();
+            function activateTile(l, q, r) {
+                const t = tiles.get(key(l, q, r));
+                if (!t || t.state !== 0) return;
+                t.state = 1; t.t = 0;
+                t.mesh.material = matWhite;
+                activeTiles.add(t);
+            }
+            function updateTiles(dt) {
+                for (const t of activeTiles) {
+                    t.t += dt;
+                    if (t.state === 1) {
+                        t.mesh.position.x = t.bx + (Math.random() - 0.5) * 0.07;
+                        t.mesh.position.z = t.bz + (Math.random() - 0.5) * 0.07;
+                        if (t.t > 0.55) { t.state = 3; t.t = 0; t.mesh.position.x = t.bx; t.mesh.position.z = t.bz; }
+                    } else if (t.state === 3) {
+                        const s = Math.max(0.001, 1 - t.t / 0.25);
+                        t.mesh.scale.set(s, Math.max(0.01, s), s);
+                        t.mesh.position.y = -t.layer * GAP - (1 - s) * 0.2;
+                        if (t.t > 0.25) { t.mesh.visible = false; t.state = 4; activeTiles.delete(t); }
+                    }
+                }
+            }
+
+            function makeBean(color) {
+                const g = new THREE.Group();
+                const body = new THREE.Mesh(new THREE.SphereGeometry(0.55, 18, 16), new THREE.MeshLambertMaterial({ color }));
+                body.scale.set(0.82, 1.05, 0.75);
+                body.position.y = 0.62;
+                g.add(body);
+                const belly = new THREE.Mesh(new THREE.SphereGeometry(0.42, 14, 12), new THREE.MeshLambertMaterial({ color: 0xfff3e0 }));
+                belly.scale.set(0.7, 0.8, 0.5);
+                belly.position.set(0, 0.5, 0.28);
+                g.add(belly);
+                for (const sx of [-0.17, 0.17]) {
+                    const eye = new THREE.Mesh(new THREE.SphereGeometry(0.1, 10, 10), new THREE.MeshLambertMaterial({ color: 0xffffff }));
+                    eye.position.set(sx, 0.86, 0.42);
+                    g.add(eye);
+                    const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.05, 8, 8), new THREE.MeshLambertMaterial({ color: 0x222222 }));
+                    pupil.position.set(sx, 0.86, 0.5);
+                    g.add(pupil);
+                }
+                for (const sx of [-0.3, 0.3]) {
+                    const foot = new THREE.Mesh(new THREE.SphereGeometry(0.16, 8, 8), new THREE.MeshLambertMaterial({ color: 0xff8c00 }));
+                    foot.scale.set(1, 0.55, 1.3);
+                    foot.position.set(sx, 0.08, 0.08);
+                    g.add(foot);
+                }
+                scene.add(g);
+                return g;
+            }
+
+            const splashes = [];
+            function splashAt(x, z) {
+                const ring = new THREE.Mesh(new THREE.RingGeometry(0.2, 0.5, 24), new THREE.MeshBasicMaterial({ color: 0xffb0e8, side: THREE.DoubleSide, transparent: true }));
+                ring.rotation.x = -Math.PI / 2;
+                ring.position.set(x, slimeY + 0.05, z);
+                scene.add(ring); splashes.push(ring);
+            }
+            function updateSplashes(dt) {
+                for (let i = splashes.length - 1; i >= 0; i--) {
+                    const s = splashes[i];
+                    s.scale.x += dt * 6; s.scale.y += dt * 6;
+                    s.material.opacity -= dt * 1.6;
+                    if (s.material.opacity <= 0) { scene.remove(s); splashes.splice(i, 1); }
+                }
+            }
+
+            const npcNames = ["Blaze", "Wobble", "Turbo", "Noodle", "Bouncy", "Slick", "Mango", "Pogo", "Zippy", "Chonk", "Pip"];
+            const npcColors = [0xff5252, 0xffd166, 0x06d6a0, 0xf77f00, 0x9b5de5, 0x00bbf9, 0xf15bb5, 0x8ac926, 0xffca3a, 0x1982c4, 0x6a4c93];
+
+            class Player {
+                constructor(name, color, x, z, pc, type) {
+                    this.name = name; this.pc = pc; this.type = type || 'runner';
+                    this.pos = new THREE.Vector3(x, 0.3, z);
+                    this.vel = new THREE.Vector3();
+                    this.grounded = false; this.floorY = layerTop(0); this.floorLayer = 0;
+                    this.alive = true; this.heading = Math.random() * 6.28;
+                    this.decideT = Math.random(); this.jumpCd = 0;
+                    this.targetYaw = Math.random() * 6.28;
+                    this.mesh = makeBean(color);
+                    this.baseColor = color;
+                }
+                eliminate() {
+                    if (!this.alive) return;
+                    this.alive = false;
+                    splashAt(this.pos.x, this.pos.z);
+                    scene.remove(this.mesh);
+                    toast(this.pc ? "You fell into the slime!" : this.name + " was eliminated");
+                    updateHUD();
+                    checkEnd();
+                }
+            }
+
+            const players = [];
+            const pc = new Player("You", 0x3558e0, 0, -RINGS * S * 0.75, true);
+            players.push(pc);
+            for (let i = 0; i < 11; i++) {
+                const ang = i / 11 * 6.283 + 0.3;
+                const rad = RINGS * S * (0.4 + (i % 3) * 0.22);
+                const type = i % 4 === 3 ? 'jumper' : 'runner';
+                players.push(new Player(npcNames[i], npcColors[i], Math.cos(ang) * rad, Math.sin(ang) * rad, false, type));
+            }
+
+            function aliveList() { return players.filter(p => p.alive); }
+            function updateHUD() { document.getElementById('hud').textContent = "Players: " + aliveList().length; }
+
+            let camYaw = 0, camDist = 8.5, camPitch = 0.62, dragging = false, lastMX = 0, lastMY = 0;
+            renderer.domElement.addEventListener('mousedown', e => { dragging = true; lastMX = e.clientX; lastMY = e.clientY; });
+            addEventListener('mouseup', () => dragging = false);
+            addEventListener('mousemove', e => {
+                if (!dragging) return;
+                camYaw -= (e.clientX - lastMX) * 0.007;
+                camPitch = Math.min(1.25, Math.max(0.2, camPitch + (e.clientY - lastMY) * 0.005));
+                lastMX = e.clientX; lastMY = e.clientY;
+            });
+            addEventListener('wheel', e => { camDist = Math.min(16, Math.max(4, camDist + e.deltaY * 0.01)); });
+
+            const keys = {};
+            addEventListener('keydown', e => { keys[e.code] = true; if (e.code === 'Space') e.preventDefault(); if (e.code === 'KeyR') location.reload(); });
+            addEventListener('keyup', e => keys[e.code] = false);
+
+            let timeLeft = TIME_LIMIT, gameOver = false;
+            function toast(msg) {
+                const d = document.createElement('div');
+                d.className = 'toast'; d.textContent = msg;
+                document.getElementById('toasts').appendChild(d);
+                setTimeout(() => d.remove(), 3500);
+            }
+            function endGame(title, sub) {
+                if (gameOver) return;
+                gameOver = true;
+                document.getElementById('ovTitle').textContent = title;
+                document.getElementById('ovSub').textContent = sub;
+                document.getElementById('overlay').style.display = 'flex';
+            }
+            function checkEnd() {
+                if (gameOver) return;
+                const a = aliveList();
+                if (a.length === 1) {
+                    if (a[0].pc) endGame("WINNER!", "You are the last one standing — Crown secured!");
+                    else endGame("ELIMINATED", "" + a[0].name + " wins. Better luck next time!");
+                } else if (a.length === 0) {
+                    endGame("DRAW", "Everybody fell!");
+                }
+            }
+
+            function updatePlayer(p, dt) {
+                if (!p.alive) return;
+                let moveX = 0, moveZ = 0;
+                if (p.pc) {
+                    if (keys.KeyW || keys.ArrowUp) moveZ += 1;
+                    if (keys.KeyS || keys.ArrowDown) moveZ -= 1;
+                    if (keys.KeyA || keys.ArrowLeft) moveX -= 1;
+                    if (keys.KeyD || keys.ArrowRight) moveX += 1;
+                    const len = Math.hypot(moveX, moveZ);
+                    if (len > 0) { moveX /= len; moveZ /= len; }
+                } else {
+                    p.decideT -= dt;
+                    if (p.decideT <= 0) {
+                        p.decideT = 0.7 + Math.random() * 1.2;
+                        if (p.type === 'jumper' && Math.random() < 0.7) {
+                            p.targetYaw += (Math.random() - 0.5) * 1.2;
+                        } else {
+                            p.targetYaw = Math.random() * 6.28;
+                            if (Math.random() < 0.35) {
+                                const a = aliveList();
+                                if (a.length > 1) { const t = a[Math.floor(Math.random() * a.length)]; if (t !== p) p.targetYaw = Math.atan2(t.pos.x - p.pos.x, t.pos.z - p.pos.z); }
+                            }
+                        }
+                    }
+                    let d = p.targetYaw - p.heading;
+                    while (d > Math.PI) d -= 6.283; while (d < -Math.PI) d += 6.283;
+                    p.heading += d * Math.min(1, dt * 6);
+                    moveX = Math.sin(p.heading); moveZ = Math.cos(p.heading);
+                    if (p.type === 'jumper') {
+                        moveX *= 0.35; moveZ *= 0.35;
+                        p.jumpCd -= dt;
+                        if (p.grounded && p.jumpCd <= 0) { p.vel.y = JUMP * 0.75; p.jumpCd = 0.5 + Math.random() * 0.5; }
+                    } else if (p.grounded && Math.random() < dt * 0.25) {
+                        p.vel.y = JUMP;
+                    }
+                    if (p.grounded) {
+                        const ax = p.pos.x + moveX * 1.4, az = p.pos.z + moveZ * 1.4;
+                        const f = floorAt(ax, az, p.floorY, p.floorY - GAP - 0.6);
+                        if (f.y === -Infinity) {
+                            p.targetYaw = p.heading + Math.PI * (0.6 + Math.random() * 0.8);
+                        }
+                    }
+                }
+
+                const fwd = new THREE.Vector3(-Math.sin(camYaw), 0, -Math.cos(camYaw));
+                const right = new THREE.Vector3(-fwd.z, 0, fwd.x);
+                const targetV = new THREE.Vector3()
+                    .addScaledVector(fwd, moveZ)
+                    .addScaledVector(right, moveX);
+                const speed = p.pc ? PSPEED : (p.type === 'jumper' ? 3.2 : 4.6 + Math.random() * 0);
+                if (targetV.lengthSq() > 0) targetV.normalize().multiplyScalar(speed);
+                const k = 1 - Math.exp(-(p.grounded ? 11 : 3.5) * dt);
+                p.vel.x += (targetV.x - p.vel.x) * k;
+                p.vel.z += (targetV.z - p.vel.z) * k;
+
+                if (p.pc && keys.Space && p.grounded) p.vel.y = JUMP;
+
+                p.vel.y -= GRAV * dt;
+                p.pos.addScaledVector(p.vel, dt);
+
+                const f = floorAt(p.pos.x, p.pos.z, p.pos.y, p.pos.y - GAP * 1.5);
+                p.grounded = false;
+                if (p.vel.y <= 0 && f.y > -Infinity && p.pos.y <= f.y + 0.02 && p.pos.y > f.y - 1.2) {
+                    p.pos.y = f.y; p.vel.y = 0; p.grounded = true;
+                    p.floorY = f.y; p.floorLayer = f.layer;
+                    activateTile(f.layer, f.q, f.r);
+                }
+                if (p.pos.y < slimeY - 0.6) p.eliminate();
+
+                const hv = Math.hypot(p.vel.x, p.vel.z);
+                if (hv > 0.5) {
+                    const h = Math.atan2(p.vel.x, p.vel.z);
+                    p.mesh.rotation.y = h;
+                } else if (!p.pc) {
+                    p.mesh.rotation.y = p.heading;
+                }
+                p.mesh.position.copy(p.pos);
+                const lean = Math.min(0.22, hv * 0.03);
+                p.mesh.rotation.x = lean;
+            }
+
+            function separate() {
+                const a = aliveList();
+                for (let i = 0; i < a.length; i++)for (let j = i + 1; j < a.length; j++) {
+                    const A = a[i], B = a[j];
+                    const dx = B.pos.x - A.pos.x, dz = B.pos.z - A.pos.z;
+                    const d = Math.hypot(dx, dz);
+                    if (d < 0.95 && d > 0.001) {
+                        const push = (0.95 - d) / 2;
+                        const nx = dx / d, nz = dz / d;
+                        A.pos.x -= nx * push; A.pos.z -= nz * push;
+                        B.pos.x += nx * push; B.pos.z += nz * push;
+                    }
+                }
+            }
+
+            let spectateTarget = null;
+            const clock = new THREE.Clock();
+            function loop() {
+                requestAnimationFrame(loop);
+                const dt = Math.min(0.033, clock.getDelta());
+
+                if (!gameOver) {
+                    timeLeft -= dt;
+                    if (timeLeft <= 0) {
+                        timeLeft = 0;
+                        const a = aliveList();
+                        if (a.some(p => p.pc)) endGame("TIME'S UP", "You survived to the end — everybody remaining wins!");
+                        else endGame("TIME'S UP", "The round ended in a shared victory.");
+                    }
+                    for (const p of players) updatePlayer(p, dt);
+                    separate();
+                }
+
+                updateTiles(dt);
+                updateSplashes(dt);
+                for (const b of bubbles) {
+                    b.position.y = slimeY + Math.abs(Math.sin(clock.elapsedTime * 1.4 + b.userData.ph)) * 0.5;
+                    b.scale.setScalar(0.8 + Math.sin(clock.elapsedTime * 2 + b.userData.ph) * 0.2);
+                }
+
+                let camT = pc;
+                if (!pc.alive && !gameOver) {
+                    if (!spectateTarget || !spectateTarget.alive) {
+                        const a = aliveList();
+                        spectateTarget = a.length ? a[0] : null;
+                        if (spectateTarget) toast("Spectating: " + spectateTarget.name);
+                    }
+                    if (spectateTarget) camT = spectateTarget;
+                    document.getElementById('spectate').style.display = camT === pc ? 'none' : 'block';
+                } else {
+                    document.getElementById('spectate').style.display = 'none';
+                }
+
+                const targetPos = camT.pos;
+                const cx = targetPos.x + Math.sin(camYaw) * Math.cos(camPitch) * camDist;
+                const cy = targetPos.y + Math.sin(camPitch) * camDist;
+                const cz = targetPos.z + Math.cos(camYaw) * Math.cos(camPitch) * camDist;
+                camera.position.lerp(new THREE.Vector3(cx, cy, cz), 1 - Math.exp(-12 * dt));
+                camera.lookAt(targetPos.x, targetPos.y + 1.1, targetPos.z);
+
+                const m = Math.floor(timeLeft / 60), s = Math.floor(timeLeft % 60);
+                document.getElementById('timer').textContent = m + ":" + String(s).padStart(2, '0');
+
+                renderer.render(scene, camera);
+            }
+            updateHUD();
+            loop();
+
+            addEventListener('resize', () => {
+                camera.aspect = innerWidth / innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(innerWidth, innerHeight);
+            });
+        })();
+    </script>
+</body>
+
+</html>
