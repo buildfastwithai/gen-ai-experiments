@@ -659,7 +659,7 @@ const GAMES = [
   { id:'voxel-ds', title:'Voxel World: Survival', model:'deepseek-v4', type:'game', art:'voxel', tech:'Three.js', kb:32, loc:916,
     href:'deepseek-v4-flash/games/deepseek-minecraft.html', tags:['sandbox','3d'],
     desc:'A survival-flavoured block sandbox with mining, building and a world to wander.',
-    kw:'minecraft voxel survival sandbox blocks mining crafting 3d' }
+    kw:'minecraft voxel survival sandbox blocks mining crafting 3d' },
   { id:'stillframe', title:'STILLFRAME: Red Light Protocol', model:'glm-5.3', type:'game', art:'doll', tech:'Three.js', kb:61, loc:825,
     href:'glm%205.3/games/rl-gl-glm.html', tags:['3d','arcade'],
     desc:"GLM's run at the red light / green light standoff — freeze on the turn, sprint on the call, and hope the sentinel's optics blink first.",
@@ -667,7 +667,8 @@ const GAMES = [
   { id:'hex-glm', title:'Hex-A-Gone', model:'glm-5.3', type:'game', art:'hex', tech:'Three.js', kb:23, loc:551,
     href:'glm%205.3/games/hexagone.html', tags:['hex','3d'],
     desc:'The leanest build of the hexagon brief on the site — 551 lines and the floor still falls out from under you.',
-    kw:'hexagon fall guys tiles survival battle royale platform 3d glm zhipu' },];
+    kw:'hexagon fall guys tiles survival battle royale platform 3d glm zhipu' }
+];
 
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
 const art = g => `<svg class="art" viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice"><use href="#art-${g.art}"/></svg>`;
