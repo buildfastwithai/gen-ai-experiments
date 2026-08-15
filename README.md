@@ -393,7 +393,7 @@ Found a bug or have a feature request? Please create a [GitHub Issue](https://gi
 
 Show your support by starring this repository!
 
-[![Star History Chart](https://api.star-history.com/svg?repos=buildfastwithai/gen-ai-experiments&type=Date)](https://star-history.com/#buildfastwithai/gen-ai-experiments&Date)
+[![Star History Chart](https://star-history.dera.page/svg?repos=buildfastwithai/gen-ai-experiments&type=Date)](https://star-history.dera.page/#buildfastwithai/gen-ai-experiments&Date)
 
 ---
 
