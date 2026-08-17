@@ -439,6 +439,35 @@ body.filtering #hero,body.filtering #featuredSec{display:none}
     <circle cx="76" cy="72" r="14" fill="var(--m1)" opacity=".22"/>
   </symbol>
 
+  <symbol id="art-fps" viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice">
+    <rect width="200" height="150" fill="#140f0c"/>
+    <rect width="200" height="86" fill="var(--m2)" opacity=".3"/>
+    <circle cx="118" cy="70" r="30" fill="var(--m1)" opacity=".55"/>
+    <circle cx="118" cy="70" r="52" fill="var(--m1)" opacity=".18"/>
+    <path d="M0 86h200v64H0z" fill="#0b0806"/>
+    <g fill="#191210">
+      <path d="M0 86h34l6-20h16l5 20h30l7-26h14l6 26h26l5-16h15l6 16h30v-8h-200z" opacity=".9"/>
+      <rect x="8" y="60" width="22" height="26"/><rect x="56" y="52" width="18" height="34"/>
+      <rect x="140" y="56" width="24" height="30"/><rect x="176" y="66" width="18" height="20"/>
+    </g>
+    <g fill="var(--m1)" opacity=".7">
+      <rect x="13" y="66" width="4" height="4"/><rect x="22" y="74" width="4" height="4"/>
+      <rect x="61" y="60" width="4" height="4"/><rect x="66" y="72" width="4" height="4"/>
+      <rect x="146" y="64" width="4" height="4"/><rect x="154" y="74" width="4" height="4"/>
+    </g>
+    <g fill="#0a0705">
+      <path d="M96 150v-28l10-8h16l8 8v28z"/>
+      <rect x="104" y="98" width="8" height="20"/>
+      <path d="M112 112h44v9h-44z"/>
+    </g>
+    <rect x="150" y="108" width="18" height="6" fill="var(--m1)" opacity=".8"/>
+    <g stroke="#fff" stroke-width="2" opacity=".95" stroke-linecap="round">
+      <path d="M100 62v-11M100 82v11M80 72h-11M120 72h11"/>
+    </g>
+    <circle cx="100" cy="72" r="2.6" fill="#fff"/>
+    <circle cx="100" cy="72" r="19" fill="none" stroke="#fff" stroke-width="1.2" opacity=".45"/>
+  </symbol>
+
   <symbol id="art-shooter" viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice">
     <rect width="200" height="150" fill="#050914"/>
     <path d="M0 118h200v32H0z" fill="var(--m2)" opacity=".3"/>
@@ -667,7 +696,11 @@ const GAMES = [
   { id:'hex-glm', title:'Hex-A-Gone', model:'glm-5.3', type:'game', art:'hex', tech:'Three.js', kb:23, loc:551,
     href:'glm%205.3/games/hexagone.html', tags:['hex','3d'],
     desc:'The leanest build of the hexagon brief on the site — 551 lines and the floor still falls out from under you.',
-    kw:'hexagon fall guys tiles survival battle royale platform 3d glm zhipu' }
+    kw:'hexagon fall guys tiles survival battle royale platform 3d glm zhipu' },
+  { id:'ironveil', title:'IRONVEIL: Sector 9', model:'qwen-3.8-max', type:'game', art:'fps', tech:'Three.js', kb:45, loc:996,
+    href:'qwen-3.8-max/games/cod.html', tags:['3d','arcade'],
+    desc:'A pointer-locked first-person firefight through Sector 9 at daybreak — sprint between cover, watch your ammo and hold the line as the waves escalate.',
+    kw:'ironveil sector 9 daybreak fps first person shooter military combat waves enemies pointer lock sprint ammo cod call of duty three js 3d qwen' }
 ];
 
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
