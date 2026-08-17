@@ -1,0 +1,37 @@
+{
+  "name": "customer-finder",
+  "version": "0.1.1",
+  "description": "A Codex skill that finds evidence-backed potential first customers from recent public signals.",
+  "license": "MIT",
+  "author": "Build Fast with AI",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Avi112005/customer-finder-skill.git"
+  },
+  "homepage": "https://github.com/Avi112005/customer-finder-skill#readme",
+  "bugs": {
+    "url": "https://github.com/Avi112005/customer-finder-skill/issues"
+  },
+  "bin": {
+    "customer-finder": "scripts/install.js"
+  },
+  "files": [
+    "customer-finder",
+    "scripts/install.js",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "codex",
+    "skill",
+    "startup",
+    "customers",
+    "early-adopters",
+    "prospecting",
+    "customer-discovery",
+    "founders"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

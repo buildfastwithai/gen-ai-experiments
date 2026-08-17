@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='14' fill='%2306060a'/%3E%3Cpath d='M20 16v30h20' fill='none' stroke='%23d7ff3f' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M33 46l9-28 11 28M37 36h10' fill='none' stroke='%234de3ff' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<title>Sarvam AI — Early Customer Finder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#06060a; --bg-2:#0b0b12; --panel:rgba(255,255,255,.028); --line:rgba(255,255,255,.09);
+    --ink:#f3f1ea; --muted:#9794a2; --faint:#6d6a78; --acid:#d7ff3f; --cyan:#4de3ff; --violet:#8b7bff;
+    --orange:#ff5c33; --green:#3ddc97; --amber:#ffb020; --red:#ff5252;
+    --mono:"JetBrains Mono",ui-monospace,monospace; --disp:"Space Grotesk",Inter,sans-serif; --body:"Inter",system-ui,sans-serif;
+  }
+  body[data-theme="light"]{--bg:#f4f6fb;--bg-2:#e9edf7;--panel:rgba(255,255,255,.86);--line:rgba(17,21,42,.12);--ink:#11152a;--muted:#5e6982;--faint:#7b849a;--acid:#5d7200;--cyan:#087e9c;--violet:#6558d9;--orange:#db4728;--green:#087c58;--amber:#9a6500;--red:#bb3232}
+  body[data-theme="light"] aside{background:linear-gradient(180deg,#fff,#e9edff);color:var(--ink);border-color:var(--line)}
+  body[data-theme="light"] nav a{color:var(--muted)} body[data-theme="light"] nav a:hover{color:var(--ink);background:rgba(17,21,42,.06)}
+  body[data-theme="light"] .card>p,body[data-theme="light"] .fix .fix-body>p,body[data-theme="light"] .fix-side,body[data-theme="light"] .dimension .dim-note,body[data-theme="light"] .table-wrap td{color:#4f5b74}
+  body[data-theme="light"] .fix-num{color:var(--acid);-webkit-text-stroke:0;text-shadow:none}
+  body[data-theme="light"] .verdict h2,body[data-theme="light"] .verdict .lede2,body[data-theme="light"] .verdict .mini p,body[data-theme="light"] .verdict .score-value,body[data-theme="light"] .experiment h3,body[data-theme="light"] .experiment .cell p{color:#fff}
+  body[data-theme="light"] .experiment{color:#fff;background:linear-gradient(135deg,#171b35,#43358b)}
+  .theme-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;margin-top:auto;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.04);color:var(--muted);font:600 10px var(--mono);letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
+  @property --a{syntax:'<angle>';initial-value:0deg;inherits:false}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  ::selection{background:var(--acid);color:#0a0a0a}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:#23232d;border-radius:99px;border:2px solid var(--bg)}
+  ::-webkit-scrollbar-thumb:hover{background:var(--acid)}
+  a{color:inherit}
+  h1,h2,h3,p{margin:0}
+  ul{margin:0}
+  .grain{position:fixed;inset:-60%;width:220%;height:220%;pointer-events:none;z-index:2000;opacity:.05;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.7'/%3E%3C/svg%3E");animation:grain 7s steps(8) infinite}
+  @keyframes grain{0%,100%{transform:translate(0,0)}20%{transform:translate(-4%,3%)}40%{transform:translate(3%,-4%)}60%{transform:translate(-3%,-2%)}80%{transform:translate(4%,3%)}}
+  .progress{position:fixed;top:0;left:0;height:2px;width:0;z-index:1500;background:linear-gradient(90deg,var(--acid),var(--cyan));box-shadow:0 0 14px rgba(215,255,63,.55)}
+  .cursor-dot,.cursor-ring{position:fixed;top:0;left:0;pointer-events:none;z-index:3000;border-radius:50%}
+  .cursor-dot{width:6px;height:6px;background:var(--acid);margin:-3px 0 0 -3px}
+  .cursor-ring{width:34px;height:34px;border:1px solid rgba(215,255,63,.45);margin:-17px 0 0 -17px;transition:width .25s,height .25s,margin .25s,border-color .25s,background .25s}
+  body.c-hover .cursor-ring{width:58px;height:58px;margin:-29px 0 0 -29px;border-color:var(--acid);background:rgba(215,255,63,.06)}
+  @media (hover:none),(pointer:coarse){.cursor-dot,.cursor-ring{display:none}}
+  .preloader{position:fixed;inset:0;background:var(--bg);z-index:5000;display:grid;place-items:center;transition:transform .85s cubic-bezier(.75,0,.2,1)}
+  .preloader.done{transform:translateY(-101%)}
+  .pre-inner{display:grid;justify-items:center;gap:20px}
+  .pre-logo{font:700 44px var(--disp);letter-spacing:-.04em;color:var(--acid);text-shadow:0 0 40px rgba(215,255,63,.4)}
+  .pre-bar{width:190px;height:2px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden}
+  .pre-fill{height:100%;width:0;background:linear-gradient(90deg,var(--acid),var(--cyan))}
+  .pre-num{font:500 11px var(--mono);letter-spacing:.35em;color:var(--muted)}
+  .layout{display:grid;grid-template-columns:266px minmax(0,1fr);min-height:100vh}
+  main{min-width:0}
+  aside{position:sticky;top:0;height:100vh;padding:30px 22px;display:flex;flex-direction:column;gap:26px;border-right:1px solid var(--line);background:rgba(9,9,15,.72);backdrop-filter:blur(14px);z-index:60}
+  .brand{display:flex;align-items:center;gap:14px}
+  .mark{width:46px;height:46px;border-radius:13px;background:var(--acid);color:#0a0a0a;display:grid;place-items:center;font:700 15px var(--disp);letter-spacing:-.02em;flex-shrink:0;box-shadow:0 0 0 1px rgba(215,255,63,.35),0 0 32px rgba(215,255,63,.22);transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+  .mark:hover{transform:rotate(-8deg) scale(1.07)}
+  .side-name{font:700 17px var(--disp);letter-spacing:-.02em}
+  .side-sub{font:500 10px var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-top:5px}
+  nav{display:grid;gap:3px}
+  nav a{display:flex;align-items:baseline;gap:12px;padding:9px 12px;border-radius:10px;text-decoration:none;color:var(--muted);font:500 11.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;transition:color .25s,background .25s,transform .25s}
+  nav a span{font-size:9.5px;color:var(--faint);transition:color .25s;min-width:16px}
+  nav a:hover{color:var(--ink);background:rgba(255,255,255,.045);transform:translateX(5px)}
+  nav a.active{color:var(--acid);background:rgba(215,255,63,.07)}
+  nav a.active span{color:var(--acid)}
+  .side-foot{margin-top:auto;font:400 10.5px var(--mono);letter-spacing:.06em;color:var(--faint);line-height:1.7;border-top:1px solid var(--line);padding-top:18px}
+  .side-foot b{color:var(--muted);font-weight:500}
+  .eyebrow{font:600 10.5px var(--mono);letter-spacing:.24em;text-transform:uppercase;color:var(--acid)}
+  .reveal{opacity:0;transform:translateY(28px);transition:opacity .85s ease var(--d,0s),transform .85s cubic-bezier(.16,.8,.24,1) var(--d,0s)}
+  .reveal.in{opacity:1;transform:none}
+  .grid>.reveal:nth-child(2){--d:.06s}
+  .grid>.reveal:nth-child(3){--d:.12s}
+  .grid>.reveal:nth-child(4){--d:.18s}
+  .grid>.reveal:nth-child(5){--d:.24s}
+  .grid>.reveal:nth-child(6){--d:.3s}
+  .spot{position:relative;overflow:hidden}
+  .spot::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .4s;background:radial-gradient(340px circle at var(--mx,50%) var(--my,50%),rgba(215,255,63,.07),transparent 65%)}
+  .spot:hover::before{opacity:1}
+  .spot>*{position:relative;z-index:1}
+  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+  .span-3{grid-column:span 3}.span-4{grid-column:span 4}.span-5{grid-column:span 5}
+  .span-6{grid-column:span 6}.span-7{grid-column:span 7}.span-8{grid-column:span 8}.span-12{grid-column:span 12}
+  .card{position:relative;border:1px solid var(--line);border-radius:20px;padding:24px;background:var(--panel);transition:transform .35s cubic-bezier(.2,.8,.2,1),border-color .35s,box-shadow .35s}
+  .card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.2);box-shadow:0 18px 44px rgba(0,0,0,.4)}
+  .card>.eyebrow{color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:9px}
+  .card>.eyebrow::before{content:"";width:6px;height:6px;background:var(--acid);transform:rotate(45deg);flex-shrink:0}
+  .card p{font-size:15px;line-height:1.6;color:#cfcdd6}
+  .card h3{font:600 21px var(--disp);letter-spacing:-.02em;margin:8px 0}
+  .card ul{list-style:none;padding:0;display:grid;gap:9px;margin-top:14px}
+  .card ul li{position:relative;padding-left:18px;font-size:13.5px;line-height:1.55;color:var(--muted)}
+  .card ul li::before{content:"";position:absolute;left:0;top:7px;width:6px;height:6px;background:var(--acid);transform:rotate(45deg);border-radius:1px}
+  section{position:relative;padding:clamp(64px,7vw,110px) clamp(24px,5vw,72px);border-bottom:1px solid var(--line);overflow:hidden;scroll-margin-top:10px}
+  section:nth-of-type(even){background:rgba(255,255,255,.014)}
+  .watermark{position:absolute;top:8px;right:8px;font:700 clamp(130px,17vw,230px)/.8 var(--disp);color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.045);pointer-events:none;user-select:none;letter-spacing:-.05em}
+  .section-head{display:flex;align-items:flex-end;gap:26px;margin-bottom:48px;padding-bottom:24px;border-bottom:1px solid var(--line);position:relative;z-index:1}
+  .section-head .idx{font:700 12px var(--mono);letter-spacing:.24em;color:var(--acid);padding-bottom:8px;white-space:nowrap}
+  .section-head h2{font:700 clamp(38px,4.6vw,68px)/.96 var(--disp);letter-spacing:-.035em}
+  .sub-label{font:600 11px var(--mono);letter-spacing:.26em;text-transform:uppercase;color:var(--acid);display:flex;align-items:center;gap:16px;margin:56px 0 20px}
+  .sub-label::after{content:"";flex:1;height:1px;background:var(--line)}
+  .frame{position:relative;border-radius:26px;overflow:hidden;background:linear-gradient(165deg,#101019,#0a0a11 65%)}
+  .frame::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;background:conic-gradient(from var(--a),transparent 0%,var(--c1,var(--acid)) 10%,transparent 24%,transparent 52%,var(--c2,var(--cyan)) 64%,transparent 78%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:spin-a 7s linear infinite}
+  .frame>*{position:relative;z-index:1}
+  @keyframes spin-a{to{--a:360deg}}
+  header{position:relative;min-height:100vh;display:flex;flex-direction:column;border-bottom:1px solid var(--line);overflow:hidden}
+  header::before{content:"";position:absolute;inset:0;z-index:0;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:54px 54px;-webkit-mask-image:radial-gradient(ellipse at 32% 18%,black,transparent 72%);mask-image:radial-gradient(ellipse at 32% 18%,black,transparent 72%)}
+  #fx{position:absolute;inset:0;z-index:1;pointer-events:none}
+  .blob{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0}
+  .b1{width:540px;height:540px;top:-180px;right:-140px;background:radial-gradient(circle,rgba(139,123,255,.32),transparent 65%);animation:drift1 15s ease-in-out infinite}
+  .b2{width:480px;height:480px;bottom:-160px;left:-120px;background:radial-gradient(circle,rgba(215,255,63,.14),transparent 65%);animation:drift2 19s ease-in-out infinite}
+  .b3{width:300px;height:300px;top:38%;left:44%;background:radial-gradient(circle,rgba(77,227,255,.14),transparent 65%);animation:drift1 22s ease-in-out infinite reverse}
+  @keyframes drift1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-46px,36px) scale(1.12)}}
+  @keyframes drift2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(52px,-30px) scale(1.08)}}
+  .hero-inner{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;justify-content:center;gap:30px;padding:clamp(48px,6vw,90px) clamp(24px,5vw,72px)}
+  .hero-eyebrow{display:inline-flex;align-items:center;gap:12px;font:600 11px var(--mono);letter-spacing:.3em;text-transform:uppercase;color:var(--muted)}
+  .hero-eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--acid);box-shadow:0 0 14px var(--acid);animation:pulse-dot 1.8s ease-in-out infinite}
+  @keyframes pulse-dot{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:.5}}
+  h1{font:700 clamp(54px,9.2vw,148px)/.92 var(--disp);letter-spacing:-.045em;text-transform:uppercase}
+  h1 .line{display:block;overflow:hidden;padding-bottom:.06em;margin-bottom:-.06em}
+  h1 .line-inner{display:block;transform:translateY(112%);transition:transform 1.1s cubic-bezier(.16,.8,.24,1) var(--d,0s)}
+  body.loaded h1 .line-inner{transform:none}
+  .outline{color:transparent;-webkit-text-stroke:2px var(--ink)}
+  .acid-dot{color:var(--acid);text-shadow:0 0 34px rgba(215,255,63,.55)}
+  .lede{max-width:640px;font-size:clamp(16px,1.5vw,21px);line-height:1.55;color:var(--muted)}
+  .hero-meta{display:flex;gap:14px;flex-wrap:wrap}
+  .hero-meta>div{min-width:180px;padding:16px 18px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.02);backdrop-filter:blur(6px);transition:transform .3s,border-color .3s,box-shadow .3s}
+  .hero-meta>div:hover{transform:translateY(-4px);border-color:rgba(215,255,63,.4);box-shadow:0 12px 30px rgba(0,0,0,.35)}
+  .hero-meta .eyebrow{color:var(--faint);font-size:9.5px}
+  .hero-meta strong{display:block;margin-top:7px;font:500 12.5px var(--mono);font-weight:500;word-break:break-all;color:var(--ink)}
+  .hero-meta a{color:var(--acid);text-decoration:none}
+  .hero-meta a:hover{text-decoration:underline}
+  .h-fade{opacity:0;transform:translateY(22px);transition:opacity .9s ease var(--d,0s),transform .9s cubic-bezier(.16,.8,.24,1) var(--d,0s)}
+  body.loaded .h-fade{opacity:1;transform:none}
+  .scroll-hint{position:absolute;right:clamp(24px,5vw,72px);bottom:86px;z-index:3;display:flex;flex-direction:column;align-items:center;gap:10px;font:600 9.5px var(--mono);letter-spacing:.34em;color:var(--faint);text-transform:uppercase;writing-mode:vertical-rl}
+  .scroll-hint::after{content:"";width:1px;height:52px;background:linear-gradient(var(--acid),transparent);animation:hint 1.8s ease-in-out infinite}
+  @keyframes hint{0%,100%{transform:scaleY(.4);transform-origin:top;opacity:.4}50%{transform:scaleY(1);opacity:1}}
+  .ticker{position:relative;z-index:2;border-top:1px solid var(--line);background:rgba(255,255,255,.015);overflow:hidden;padding:15px 0}
+  .ticker-track{display:flex;width:max-content;animation:ticker 28s linear infinite}
+  .ticker:hover .ticker-track{animation-play-state:paused}
+  .ticker span{font:600 11px var(--mono);letter-spacing:.24em;text-transform:uppercase;color:var(--muted);padding:0 26px;white-space:nowrap}
+  .ticker b{color:var(--acid);font-weight:700;padding-left:26px}
+  @keyframes ticker{to{transform:translateX(-50%)}}
+  .verdict{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:44px;padding:clamp(30px,4.5vw,58px);--c1:var(--orange);--c2:var(--violet)}
+  .verdict h2{font:700 clamp(36px,4.2vw,62px)/1 var(--disp);letter-spacing:-.035em;margin:16px 0 20px}
+  .verdict .lede2{max-width:680px;color:var(--muted);font-size:16.5px;line-height:1.6}
+  .verdict .lede2 strong{color:var(--ink);font-weight:600}
+  .verdict .mini{margin-top:36px}
+  .verdict .mini .cell{padding:18px 20px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.02)}
+  .verdict .mini .eyebrow{color:var(--faint);font-size:9.5px;margin-bottom:9px}
+  .verdict .mini p{font-size:13.5px;line-height:1.55;color:#cfcdd6}
+  .verdict .mini .cell strong{display:block;margin-top:8px;font:500 13px var(--mono);color:var(--ink)}
+  .score-col{display:grid;place-content:center;justify-items:center;gap:18px}
+  .score-wrap{position:relative;display:grid;place-items:center}
+  .ring{width:216px;height:216px;transform:rotate(-90deg)}
+  .ring circle{fill:none;stroke-width:10;stroke-linecap:round}
+  .ring-bg{stroke:rgba(255,255,255,.08)}
+  .ring-fg{stroke:url(#rg);filter:drop-shadow(0 0 12px rgba(215,255,63,.35))}
+  .score-value{position:absolute;text-align:center;font:700 62px/1 var(--disp);letter-spacing:-.05em}
+  .score-value small{display:block;margin-top:10px;font:600 9.5px var(--mono);letter-spacing:.3em;text-transform:uppercase;color:var(--muted)}
+  .coverage{font:500 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:99px;padding:8px 16px;background:rgba(255,255,255,.02)}
+  .coverage b{color:var(--acid);font-weight:700}
+  .improvements{display:grid;gap:12px;position:relative;z-index:1}
+  .fix{display:grid;grid-template-columns:92px minmax(0,1fr) 120px;gap:26px;align-items:start;padding:26px;border:1px solid var(--line);border-radius:20px;background:var(--panel);transition:transform .3s,border-color .3s,box-shadow .3s}
+  .fix:hover{transform:translateX(7px);border-color:rgba(215,255,63,.24);box-shadow:0 16px 44px rgba(0,0,0,.4)}
+  .fix-num{font:700 46px/1 var(--disp);color:transparent;-webkit-text-stroke:1.5px rgba(255,255,255,.22);transition:color .3s,-webkit-text-stroke .3s,text-shadow .3s}
+  .fix:hover .fix-num{color:var(--acid);-webkit-text-stroke:1.5px transparent;text-shadow:0 0 26px rgba(215,255,63,.45)}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+  .chip{padding:5px 10px;border:1px solid var(--line);border-radius:99px;font:600 9px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .c-crit{color:#ff7b7b;border-color:rgba(255,82,82,.45);background:rgba(255,82,82,.08)}
+  .c-pass{color:var(--green);border-color:rgba(61,220,151,.45);background:rgba(61,220,151,.08)}
+  .c-warm{color:var(--amber);border-color:rgba(255,176,32,.4);background:rgba(255,176,32,.07)}
+  .fix h3{font:600 21px var(--disp);letter-spacing:-.02em;margin-bottom:8px}
+  .fix .fix-body>p{font-size:14px;color:var(--muted);line-height:1.55}
+  .fix .fix-body blockquote{margin:18px 0 0;padding:16px;border:1px dashed rgba(215,255,63,.45);border-radius:12px;color:#eaf6c6;font-size:14px;line-height:1.55}
+  .fix .fix-body .mini{margin-top:18px}
+  .fix .fix-body details{margin-top:18px}
+  .fix .fix-body details summary{list-style:none;cursor:pointer;color:var(--acid);font:600 10.5px var(--mono);letter-spacing:.24em;text-transform:uppercase}
+  .fix .fix-body details summary::before{content:"+ ";font-weight:700}
+  .fix .fix-body details[open] summary::before{content:"- "}
+  .fix-side{font-size:13px;color:var(--muted)}
+  .experiment{margin-top:14px;padding:clamp(28px,4vw,48px);--c1:var(--violet);--c2:var(--acid)}
+  .experiment .eyebrow{color:var(--violet)}
+  .experiment h3{font:700 clamp(26px,3.4vw,46px)/1.08 var(--disp);letter-spacing:-.03em;max-width:840px;margin:14px 0 28px}
+  .experiment .cell{padding:4px 0}
+  .experiment .cell strong{display:block;font:600 10px var(--mono);letter-spacing:.22em;text-transform:uppercase;color:var(--acid);margin-bottom:8px}
+  .experiment .cell p{font-size:13.5px;line-height:1.55;color:var(--muted)}
+  .dimension{display:grid;grid-template-columns:145px minmax(0,1fr) 50px;gap:20px;align-items:center;padding:16px 20px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+  .dimension-name{font:600 15px var(--disp);letter-spacing:-.01em}
+  .track{height:6px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden}
+  .fill{height:100%;width:0;border-radius:99px;background:var(--c);box-shadow:0 0 12px var(--c);transition:width 1.3s cubic-bezier(.2,.8,.2,1) .2s}
+  .in .fill{width:var(--w)}
+  .dim-score{text-align:right;font:700 24px var(--disp)}
+  .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:18px;background:var(--panel);margin-top:18px}
+  table{width:100%;border-collapse:collapse;min-width:620px}
+  th,td{padding:14px 16px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+  th{color:var(--muted);background:rgba(255,255,255,.04);font:600 10px var(--mono);letter-spacing:.12em;text-transform:uppercase}
+  tr:last-child td{border-bottom:0}
+  td{font-size:14px;color:var(--muted)}
+  .source-list{display:grid;gap:10px}
+  .source-list .card{display:grid;gap:6px}
+  .source-list strong{font:600 15px var(--disp);letter-spacing:-.01em}
+  .source-list .desc{font-size:13px;color:var(--muted);line-height:1.55}
+  .source-list a{font:500 12px var(--mono);color:var(--cyan);text-decoration:none;word-break:break-all;transition:text-shadow .3s}
+  .source-list a:hover{text-shadow:0 0 16px rgba(77,227,255,.6);text-decoration:underline}
+  .source-list a::after{content:" ↗"}
+  footer{padding:34px clamp(24px,5vw,72px);font:400 11px var(--mono);letter-spacing:.05em;color:var(--faint);line-height:1.7;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+  footer b{color:var(--acid);font-weight:700}
+  @media (max-width:1024px){
+    .layout{display:block}
+    aside{position:relative;height:auto;flex-direction:row;align-items:center;flex-wrap:wrap;gap:14px;padding:16px 20px}
+    nav{display:flex;overflow-x:auto;width:100%;order:3;padding-bottom:6px;gap:6px}
+    nav a{white-space:nowrap;flex-shrink:0}
+    .side-foot{display:none}
+    .scroll-hint{display:none}
+    .section-head{flex-direction:column;align-items:flex-start;gap:10px}
+    .span-3,.span-4,.span-5,.span-6,.span-7,.span-8{grid-column:span 12}
+    .verdict{grid-template-columns:1fr}
+    .fix{grid-template-columns:54px 1fr}
+    .fix-side{grid-column:2;border-left:none;padding-left:0;border-top:1px solid var(--line);padding-top:14px;text-align:left}
+    .watermark{display:none}
+    h1{font-size:clamp(44px,13vw,90px)}
+  }
+  @media print{aside,.cursor-dot,.cursor-ring,.grain,.progress,.preloader,#fx,.ticker,.scroll-hint,.blob{display:none!important}.layout{display:block}.reveal,.h-fade{opacity:1!important;transform:none!important}h1 .line-inner{transform:none}section,.card,.fix{break-inside:avoid}}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}.reveal,.h-fade{opacity:1;transform:none}h1 .line-inner{transform:none}.preloader{display:none}}
+</style>
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+<div class="progress" id="progress" aria-hidden="true"></div>
+<div class="cursor-dot" id="cDot" aria-hidden="true"></div>
+<div class="cursor-ring" id="cRing" aria-hidden="true"></div>
+
+<div class="preloader" id="preloader" aria-hidden="true">
+  <div class="pre-inner">
+    <div class="pre-logo">CF</div>
+    <div class="pre-bar"><div class="pre-fill" id="preFill"></div></div>
+    <div class="pre-num" id="preNum">00</div>
+  </div>
+</div>
+
+<div class="layout">
+  <aside>
+    <div class="brand">
+      <div class="mark">CF</div>
+      <div>
+        <div class="side-name">Customer Finder</div>
+        <div class="side-sub">Sarvam AI</div>
+      </div>
+    </div>
+    <nav id="nav">
+      <a href="#prospects"><span>◆</span>Prospects</a>
+      <a href="#patterns"><span>01</span>Patterns</a>
+      <a href="#plan"><span>02</span>7-day plan</a>
+      <a href="#limits"><span>03</span>Limits</a>
+    </nav>
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle color theme" aria-pressed="false"><span>Theme</span><span>◐</span></button>
+    <div class="side-foot"><b>Public signals only</b><br>Early-customer report</div>
+  </aside>
+
+  <main>
+    <header>
+      <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+      <canvas id="fx" aria-hidden="true"></canvas>
+      <div class="hero-inner">
+        <div class="hero-eyebrow h-fade" style="--d:.15s">Early-customer report · 2026-08-16</div>
+        <h1 aria-label="Sarvam AI — Early Customer Finder">
+          <span class="line"><span class="line-inner" style="--d:.25s">Sarvam AI</span></span>
+          <span class="line"><span class="line-inner outline" style="--d:.37s">Customer Finder</span></span>
+        </h1>
+        <p class="lede h-fade" style="--d:.62s">Sarvam has reachable early-customer signals, especially where a public team is already investing in multilingual voice, conversational payments, or AI-assisted support. The best near-term targets are SBI’s explicit chatbot/fintech onboarding requirement and NPCI’s continuing voice-payment and AI roadmap. Banks and commerce platforms with existing English/Hindi systems are expansion or benchmark opportunities, not blank-slate buyers.</p>
+        <div class="hero-meta h-fade" style="--d:.74s">
+          <div><span class="eyebrow">Product</span><strong><a href="https://www.sarvam.ai" rel="noreferrer" target="_blank">Sarvam AI’s Indic-language sovereign AI platform: multilingual LLMs, speech recognition, text-to-speech, translation, document digitisation, and voice/agent workflows.</a></strong></div>
+          <div><span class="eyebrow">Target customer</span><strong>Indian enterprises and public digital platforms with high-volume customer, payment, commerce, or citizen-service workflows where English/Hindi-only automation leaves regional-language users underserved.</strong></div>
+          <div><span class="eyebrow">High intent</span><strong>1</strong></div>
+          <div><span class="eyebrow">Average fit score</span><strong>74/100</strong></div>
+        </div>
+      </div>
+      <div class="scroll-hint h-fade" style="--d:1s" aria-hidden="true">Scroll</div>
+      <div class="ticker" aria-hidden="true">
+        <div class="ticker-track">
+          <span>Early-customer report · 2026-08-16<b>✦</b></span><span>8 qualified prospects<b>✦</b></span><span>Average fit 74/100<b>✦</b></span><span>Best prospect: State Bank of India (SBI)<b>✦</b></span>
+          <span>Early-customer report · 2026-08-16<b>✦</b></span><span>8 qualified prospects<b>✦</b></span><span>Average fit 74/100<b>✦</b></span><span>Best prospect: State Bank of India (SBI)<b>✦</b></span>
+        </div>
+      </div>
+    </header>
+
+    <section id="best"><div class="watermark">00</div><div class="section-head"><div class="idx">00 / TOP PROSPECT</div><h2>State Bank of India (SBI)</h2></div><div class="frame verdict reveal" style="--c1:var(--orange);--c2:var(--violet)"><div><div class="eyebrow">Highest-confidence prospect</div><h2>State Bank of India (SBI)</h2><p class="lede2">The RFE is an explicit buying/procurement signal and the requirements map directly to Sarvam’s current API and enterprise product surface.</p><div class="coverage" style="margin-top:28px"><b>Fit score</b> 90/100</div></div><div class="score-col"><div class="score-wrap"><svg class="ring" viewBox="0 0 100 100"><defs><linearGradient id="rg" x1="0" x2="1"><stop stop-color="#d7ff3f"/><stop offset="1" stop-color="#4de3ff"/></linearGradient></defs><circle class="ring-bg" cx="50" cy="50" r="41"/><circle class="ring-fg" cx="50" cy="50" r="41" stroke-dasharray="257.6" stroke-dashoffset="25.8"/></svg><div class="score-value">90<small>Fit</small></div></div></div></div></section>
+
+    <section id="prospects"><div class="watermark">01</div><div class="section-head"><div class="idx">01 / PROSPECTS</div><h2>People with a reason to care now.</h2></div><div class="improvements">
+    <article class="fix reveal" id="prospect-01">
+      <div class="fix-num">01</div>
+      <div class="fix-body">
+        <div class="chips"><span class="chip">Company</span><span class="chip c-pass">High intent</span></div>
+        <h3>State Bank of India (SBI)</h3>
+        <p>SBI issued an RFE requiring an LLM-enabled chatbot integrated with bank systems, voice-message speech-to-text, multilingual language switching, security controls, transcripts, analytics, and agent handoff.</p>
+        <div class="grid mini" style="margin-top:18px"><div class="cell"><div class="eyebrow">Why it fits</div><p>Sarvam can offer Indic speech recognition, translation, LLM reasoning, document handling, and enterprise controls for a bank workflow.</p></div>
+<div class="cell"><div class="eyebrow">Why now</div><p>The RFE is an explicit buying/procurement signal and the requirements map directly to Sarvam’s current API and enterprise product surface.</p></div>
+<div class="cell"><div class="eyebrow">Suggested channel</div><p>Respond through SBI’s published procurement/startup onboarding route; identify the current owner before any approach.</p></div>
+<div class="cell"><div class="eyebrow">Caution</div><p>Confirm whether the RFE is still open or has been awarded; do not assume procurement availability from the 2025 document.</p></div></div>
+        <blockquote style="margin-top:18px"><span class="eyebrow" style="margin-bottom:8px;display:block">Suggested opener</span>Your contact-centre RFE calls for LLM conversations, voice-message speech-to-text, multilingual switching, secure integrations, analytics, and agent handoff. Sarvam builds Indic-language speech and language infrastructure for exactly this kind of regulated workflow. Is SBI still evaluating a pilot or language-expansion partner for the requirement?</blockquote>
+        <details>
+<summary class="eyebrow" style="cursor:pointer;margin-top:10px">Evidence and score breakdown</summary>
+<div class="grid source-list"><div class="card"><span class="eyebrow">Evidence</span><p>The official RFE labels the core chatbot and speech-to-text capabilities mandatory and asks bidders to demonstrate Indian-language deployments.</p></div><div class="card"><span class="eyebrow">Source</span><p>Official procurement/RFE · 2025-01-30</p><a href="https://sbi.co.in/webfiles/uploads/files_2425/300120251520-FinTech%20Onboarding%20RFE_CONTACT%20CENTRE3.pdf" rel="noreferrer" target="_blank">RFE for onboarding of Startups, Fintechs and DCPs — Contact Centre chatbot ↗</a></div></div>
+<div class="improvements"><div class="dimension"><div class="dim-top"><div class="dimension-name">Pain strength</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:100%;--c:var(--acid)"></div></div></div><div class="dim-score">5/5</div></div><div class="dimension"><div class="dim-top"><div class="dimension-name">Product fit</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:100%;--c:var(--acid)"></div></div></div><div class="dim-score">5/5</div></div><div class="dimension"><div class="dim-top"><div class="dimension-name">Timing</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:80%;--c:var(--acid)"></div></div></div><div class="dim-score">4/5</div></div><div class="dimension"><div class="dim-top"><div class="dimension-name">Reachability</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:80%;--c:var(--acid)"></div></div></div><div class="dim-score">4/5</div></div><div class="dimension"><div class="dim-top"><div class="dimension-name">Evidence quality</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:100%;--c:var(--acid)"></div></div></div><div class="dim-score">5/5</div></div></div>
+</details>
+      </div>
+      <div class="fix-side" style="border-left:1px solid var(--line);padding-left:22px;text-align:center">
+        <div class="eyebrow" style="margin-bottom:10px">Fit score</div>
+        <div style="font:700 52px/1 var(--disp);letter-spacing:-.05em">90</div>
+        <div style="font:600 10px var(--mono);color:var(--muted);letter-spacing:.14em;text-transform:uppercase">/100</div>
+      </div>
+    </article>
+    <article class="fix reveal" id="prospect-02">
+      <div class="fix-num">02</div>
+      <div class="fix-body">
+        <div class="chips"><span class="chip">Public infrastructure company</span><span class="chip c-warm">Trigger present</span></div>
+        <h3>National Payments Corporation of India (NPCI)</h3>
+        <p>NPCI’s Hello! UPI product explicitly aims to let users navigate UPI and make payments by voice in regional Indian languages, including telecom-call and feature-phone contexts; NPCI also highlights AI conversational support for UPI.</p>
+        <div class="grid mini" style="margin-top:18px"><div class="cell"><div class="eyebrow">Why it fits</div><p>Sarvam’s streaming speech recognition supports 22 Indian languages and code-mixing, with Indic LLM/TTS components suitable for voice-first payment journeys.</p></div>
+<div class="cell"><div class="eyebrow">Why now</div><p>NPCI’s current AI and accessibility roadmap creates a natural opening for language coverage, code-mixed robustness, evaluation, or adjacent UPI support pilots.</p></div>
+<div class="cell"><div class="eyebrow">Suggested channel</div><p>Public NPCI partnership/product contact or an official ecosystem/innovation program.</p></div>
+<div class="cell"><div class="eyebrow">Caution</div><p>NPCI already has language-model and Bhashini relationships; position Sarvam as an evaluation or complementary infrastructure option, not an assumed replacement.</p></div></div>
+        <blockquote style="margin-top:18px"><span class="eyebrow" style="margin-bottom:8px;display:block">Suggested opener</span>Hello! UPI is designed around regional-language voice interaction across apps, telecom calls, and feature phones. Sarvam’s speech stack is built for Indic languages and code-mixed input. Would NPCI be open to a narrowly scoped evaluation of language coverage and recognition quality for a UPI support or accessibility flow?</blockquote>
+        <details>
+<summary class="eyebrow" style="cursor:pointer;margin-top:10px">Evidence and score breakdown</summary>
+<div class="grid source-list"><div class="card"><span class="eyebrow">Evidence</span><p>NPCI’s product page describes the accessibility problem and the regional-language voice-payment design, while its UPI page lists UPI Help as an AI assistant.</p></div><div class="card"><span class="eyebrow">Source</span><p>Official product page · date unavailable</p><a href="https://www.npci.org.in/product/upi/hello-upi" rel="noreferrer" target="_blank">Hello! UPI — Conversational Payments on UPI ↗</a></div></div>
+<div class="improvements"><div class="dimension"><div class="dim-top"><div class="dimension-name">Pain strength</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:100%;--c:var(--acid)"></div></div></div><div class="dim-score">5/5</div></div><div class="dimension"><div class="dim-top"><div class="dimension-name">Product fit</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:100%;--c:var(--acid)"></div></div></div><div class="dim-score">5/5</div></div><div class="dimension"><div class="dim-top"><div class="dimension-name">Timing</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:80%;--c:var(--acid)"></div></div></div><div class="dim-score">4/5</div></div><div class="dimension"><div class="dim-top"><div class="dimension-name">Reachability</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:60%;--c:var(--acid)"></div></div></div><div class="dim-score">3/5</div></div><div class="dimension"><div class="dim-top"><div class="dimension-name">Evidence quality</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:100%;--c:var(--acid)"></div></div></div><div class="dim-score">5/5</div></div></div>
+</details>
+      </div>
+      <div class="fix-side" style="border-left:1px solid var(--line);padding-left:22px;text-align:center">
+        <div class="eyebrow" style="margin-bottom:10px">Fit score</div>
+        <div style="font:700 52px/1 var(--disp);letter-spacing:-.05em">84</div>
+        <div style="font:600 10px var(--mono);color:var(--muted);letter-spacing:.14em;text-transform:uppercase">/100</div>
+      </div>
+    </article>
+    <article class="fix reveal" id="prospect-03">
+      <div class="fix-num">03</div>
+      <div class="fix-body">
+        <div class="chips"><span class="chip">Company</span><span class="chip c-warm">Problem aware</span></div>
+        <h3>HDFC Bank</h3>
+        <p>HDFC ChatBanking supports 200+ services on WhatsApp and accepts voice notes, but its published language support is English, Hindi, and Hinglish; separate 2025 card documentation points customers to regional-language terms.</p>
+        <div class="grid mini" style="margin-top:18px"><div class="cell"><div class="eyebrow">Why it fits</div><p>Sarvam can help test expansion from Hindi/Hinglish to more Indian languages while preserving voice input, retrieval, and regulated handoff patterns.</p></div>
+<div class="cell"><div class="eyebrow">Why now</div><p>A live voice-support channel plus India’s regional-language service expectations makes language expansion a concrete product experiment.</p></div>
+<div class="cell"><div class="eyebrow">Suggested channel</div><p>HDFC Bank innovation, digital banking, or customer-experience partnership channel.</p></div>
+<div class="cell"><div class="eyebrow">Caution</div><p>The public page does not prove unmet demand or internal ownership; validate the language-volume and compliance case in conversation.</p></div></div>
+        <blockquote style="margin-top:18px"><span class="eyebrow" style="margin-bottom:8px;display:block">Suggested opener</span>HDFC ChatBanking already accepts voice notes for 200+ services in English, Hindi, and Hinglish. Sarvam’s Indic speech and language models could make a focused next-language pilot possible without redesigning the whole journey. Is HDFC exploring regional-language voice expansion for ChatBanking?</blockquote>
+        <details>
+<summary class="eyebrow" style="cursor:pointer;margin-top:10px">Evidence and score breakdown</summary>
+<div class="grid source-list"><div class="card"><span class="eyebrow">Evidence</span><p>HDFC’s public ChatBanking page describes the voice-note workflow and the current three-language boundary.</p></div><div class="card"><span class="eyebrow">Source</span><p>Official product page · date unavailable</p><a href="https://v.hdfcbank.com/new-age-banking/whatsapp-details-page.html?icid=website_organic_hpca" rel="noreferrer" target="_blank">WhatsApp — HDFC Bank ChatBanking ↗</a></div></div>
+<div class="improvements"><div class="dimension"><div class="dim-top"><div class="dimension-name">Pain strength</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:80%;--c:var(--acid)"></div></div></div><div class="dim-score">4/5</div></div><div class="dimension"><div class="dim-top"><div class="dimension-name">Product fit</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:100%;--c:var(--acid)"></div></div></div><div class="dim-score">5/5</div></div><div class="dimension"><div class="dim-top"><div class="dimension-name">Timing</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:80%;--c:var(--acid)"></div></div></div><div class="dim-score">4/5</div></div><div class="dimension"><div class="dim-top"><div class="dimension-name">Reachability</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:60%;--c:var(--acid)"></div></div></div><div class="dim-score">3/5</div></div><div class="dimension"><div class="dim-top"><div class="dimension-name">Evidence quality</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:80%;--c:var(--acid)"></div></div></div><div class="dim-score">4/5</div></div></div>
+</details>
+      </div>
+      <div class="fix-side" style="border-left:1px solid var(--line);padding-left:22px;text-align:center">
+        <div class="eyebrow" style="margin-bottom:10px">Fit score</div>
+        <div style="font:700 52px/1 var(--disp);letter-spacing:-.05em">76</div>
+        <div style="font:600 10px var(--mono);color:var(--muted);letter-spacing:.14em;text-transform:uppercase">/100</div>
+      </div>
+    </article>
+    <article class="fix reveal" id="prospect-04">
+      <div class="fix-num">04</div>
+      <div class="fix-body">
+        <div class="chips"><span class="chip">Company</span><span class="chip c-warm">Trigger present</span></div>
+        <h3>Meesho</h3>
+        <p>Meesho publicly reported a multilingual GenAI voice bot handling 60,000+ daily calls, with 95% resolution and support initially in Hindi and English; its 2026 Vaani launch describes tier-2+ shopping friction and regional-language nuance.</p>
+        <div class="grid mini" style="margin-top:18px"><div class="cell"><div class="eyebrow">Why it fits</div><p>Sarvam could be evaluated for additional Indic languages, accent/code-mix robustness, TTS naturalness, or model-cost/latency improvements in a high-volume commerce workflow.</p></div>
+<div class="cell"><div class="eyebrow">Why now</div><p>Meesho is actively expanding conversational shopping and has already shown measurable operational value from voice automation.</p></div>
+<div class="cell"><div class="eyebrow">Suggested channel</div><p>Meesho engineering/product partnerships or public technology leadership channel.</p></div>
+<div class="cell"><div class="eyebrow">Caution</div><p>Meesho has an active internal voice stack; ask about a measurable gap rather than pitching a wholesale replacement.</p></div></div>
+        <blockquote style="margin-top:18px"><span class="eyebrow" style="margin-bottom:8px;display:block">Suggested opener</span>Meesho’s Vaani launch highlights how typing and structured browsing can block tier-2+ shoppers, and your earlier voice bot showed the scale of the support opportunity. Sarvam could be useful as a benchmark for additional Indic languages and code-mixed speech. Would a small side-by-side language evaluation be useful?</blockquote>
+        <details>
+<summary class="eyebrow" style="cursor:pointer;margin-top:10px">Evidence and score breakdown</summary>
+<div class="grid source-list"><div class="card"><span class="eyebrow">Evidence</span><p>Meesho’s public announcement and investor-relations release identify the scale, language gap, and voice-shopping use case.</p></div><div class="card"><span class="eyebrow">Source</span><p>Official investor-relations release · 2026-03-24</p><a href="https://static-assets.meesho.com/investor-relations/1774340938631/Intimationw.r.tPressRelease.pdf" rel="noreferrer" target="_blank">Meesho Launches Vaani — Gen-AI Conversational Voice Shopping Assistant ↗</a></div></div>
+<div class="improvements"><div class="dimension"><div class="dim-top"><div class="dimension-name">Pain strength</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:80%;--c:var(--acid)"></div></div></div><div class="dim-score">4/5</div></div><div class="dimension"><div class="dim-top"><div class="dimension-name">Product fit</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:100%;--c:var(--acid)"></div></div></div><div class="dim-score">5/5</div></div><div class="dimension"><div class="dim-top"><div class="dimension-name">Timing</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:100%;--c:var(--acid)"></div></div></div><div class="dim-score">5/5</div></div><div class="dimension"><div class="dim-top"><div class="dimension-name">Reachability</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:60%;--c:var(--acid)"></div></div></div><div class="dim-score">3/5</div></div><div class="dimension"><div class="dim-top"><div class="dimension-name">Evidence quality</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:80%;--c:var(--acid)"></div></div></div><div class="dim-score">4/5</div></div></div>
+</details>
+      </div>
+      <div class="fix-side" style="border-left:1px solid var(--line);padding-left:22px;text-align:center">
+        <div class="eyebrow" style="margin-bottom:10px">Fit score</div>
+        <div style="font:700 52px/1 var(--disp);letter-spacing:-.05em">74</div>
+        <div style="font:600 10px var(--mono);color:var(--muted);letter-spacing:.14em;text-transform:uppercase">/100</div>
+      </div>
+    </article>
+    <article class="fix reveal" id="prospect-05">
+      <div class="fix-num">05</div>
+      <div class="fix-body">
+        <div class="chips"><span class="chip">Company</span><span class="chip c-warm">Trigger present</span></div>
+        <h3>PhonePe / Indus Appstore</h3>
+        <p>PhonePe launched natural-language text and voice actions for payments and support, while Indus Appstore is built around 12 Indian languages and voice search to address an underserved, language-first discovery gap.</p>
+        <div class="grid mini" style="margin-top:18px"><div class="cell"><div class="eyebrow">Why it fits</div><p>Sarvam’s low-latency Indic speech, translation, and language models could support language-quality benchmarking, coverage expansion, or selected voice/search experiences.</p></div>
+<div class="cell"><div class="eyebrow">Why now</div><p>PhonePe is actively shipping AI-native interfaces and extending localized distribution through Motorola, creating multiple current product surfaces.</p></div>
+<div class="cell"><div class="eyebrow">Suggested channel</div><p>PhonePe/Indus product or AI partnerships channel.</p></div>
+<div class="cell"><div class="eyebrow">Caution</div><p>PhonePe has an announced Microsoft implementation; treat this as a complementary evaluation hypothesis only.</p></div></div>
+        <blockquote style="margin-top:18px"><span class="eyebrow" style="margin-bottom:8px;display:block">Suggested opener</span>PhonePe’s new voice-and-intent search and Indus Appstore’s 12-language voice discovery both point to the same challenge: natural Indian-language interaction at scale. Sarvam could provide a focused benchmark for code-mixed recognition or regional-language quality. Is there a language or latency slice you are actively trying to improve?</blockquote>
+        <details>
+<summary class="eyebrow" style="cursor:pointer;margin-top:10px">Evidence and score breakdown</summary>
+<div class="grid source-list"><div class="card"><span class="eyebrow">Evidence</span><p>PhonePe’s official launch and design pages describe the voice-command workflow, privacy requirements, and the reason for multilingual voice search.</p></div><div class="card"><span class="eyebrow">Source</span><p>Official product announcement · 2026-02-20</p><a href="https://www.phonepe.com/press/phonepe-launches-ai-powered-search-built-using-microsoft-foundry/" rel="noreferrer" target="_blank">PhonePe Launches AI-Powered Search built using Microsoft Foundry ↗</a></div></div>
+<div class="improvements"><div class="dimension"><div class="dim-top"><div class="dimension-name">Pain strength</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:80%;--c:var(--acid)"></div></div></div><div class="dim-score">4/5</div></div><div class="dimension"><div class="dim-top"><div class="dimension-name">Product fit</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:80%;--c:var(--acid)"></div></div></div><div class="dim-score">4/5</div></div><div class="dimension"><div class="dim-top"><div class="dimension-name">Timing</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:100%;--c:var(--acid)"></div></div></div><div class="dim-score">5/5</div></div><div class="dimension"><div class="dim-top"><div class="dimension-name">Reachability</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:60%;--c:var(--acid)"></div></div></div><div class="dim-score">3/5</div></div><div class="dimension"><div class="dim-top"><div class="dimension-name">Evidence quality</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:80%;--c:var(--acid)"></div></div></div><div class="dim-score">4/5</div></div></div>
+</details>
+      </div>
+      <div class="fix-side" style="border-left:1px solid var(--line);padding-left:22px;text-align:center">
+        <div class="eyebrow" style="margin-bottom:10px">Fit score</div>
+        <div style="font:700 52px/1 var(--disp);letter-spacing:-.05em">72</div>
+        <div style="font:600 10px var(--mono);color:var(--muted);letter-spacing:.14em;text-transform:uppercase">/100</div>
+      </div>
+    </article>
+    <article class="fix reveal" id="prospect-06">
+      <div class="fix-num">06</div>
+      <div class="fix-body">
+        <div class="chips"><span class="chip">Public company</span><span class="chip c-warm">Problem aware</span></div>
+        <h3>IRCTC</h3>
+        <p>IRCTC’s 139 railway enquiry service already handles high-frequency PNR, fare, timetable, and train-status queries with Hindi, English, and regional-language agents.</p>
+        <div class="grid mini" style="margin-top:18px"><div class="cell"><div class="eyebrow">Why it fits</div><p>Sarvam could help automate or assist repetitive railway enquiries with speech recognition, translation, TTS, and human handoff while preserving regional-language access.</p></div>
+<div class="cell"><div class="eyebrow">Why now</div><p>The workflow is stable and repetitive, and voice-first service can reduce pressure on agents, though the public evidence is older than the other leads.</p></div>
+<div class="cell"><div class="eyebrow">Suggested channel</div><p>IRCTC digital services, customer-care technology, or public tender channel.</p></div>
+<div class="cell"><div class="eyebrow">Caution</div><p>The page does not show current automation plans; confirm that 139 modernization is an active priority.</p></div></div>
+        <blockquote style="margin-top:18px"><span class="eyebrow" style="margin-bottom:8px;display:block">Suggested opener</span>IRCTC’s 139 service centralizes PNR, fare, timetable, and running-status enquiries through multilingual agents. Sarvam builds speech and language components for Indic, code-mixed conversations. Would IRCTC consider a small assisted-automation pilot for one repetitive enquiry flow?</blockquote>
+        <details>
+<summary class="eyebrow" style="cursor:pointer;margin-top:10px">Evidence and score breakdown</summary>
+<div class="grid source-list"><div class="card"><span class="eyebrow">Evidence</span><p>The official service page describes the single-window workflow and multilingual agent operation.</p></div><div class="card"><span class="eyebrow">Source</span><p>Official service page · date unavailable</p><a href="https://contents.irctc.co.in/en/SMS139.html" rel="noreferrer" target="_blank">Railway Enquiry — 139 ↗</a></div></div>
+<div class="improvements"><div class="dimension"><div class="dim-top"><div class="dimension-name">Pain strength</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:80%;--c:var(--acid)"></div></div></div><div class="dim-score">4/5</div></div><div class="dimension"><div class="dim-top"><div class="dimension-name">Product fit</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:100%;--c:var(--acid)"></div></div></div><div class="dim-score">5/5</div></div><div class="dimension"><div class="dim-top"><div class="dimension-name">Timing</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:60%;--c:var(--acid)"></div></div></div><div class="dim-score">3/5</div></div><div class="dimension"><div class="dim-top"><div class="dimension-name">Reachability</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:60%;--c:var(--acid)"></div></div></div><div class="dim-score">3/5</div></div><div class="dimension"><div class="dim-top"><div class="dimension-name">Evidence quality</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:80%;--c:var(--acid)"></div></div></div><div class="dim-score">4/5</div></div></div>
+</details>
+      </div>
+      <div class="fix-side" style="border-left:1px solid var(--line);padding-left:22px;text-align:center">
+        <div class="eyebrow" style="margin-bottom:10px">Fit score</div>
+        <div style="font:700 52px/1 var(--disp);letter-spacing:-.05em">69</div>
+        <div style="font:600 10px var(--mono);color:var(--muted);letter-spacing:.14em;text-transform:uppercase">/100</div>
+      </div>
+    </article>
+    <article class="fix reveal" id="prospect-07">
+      <div class="fix-num">07</div>
+      <div class="fix-body">
+        <div class="chips"><span class="chip">Company</span><span class="chip c-warm">Trigger present</span></div>
+        <h3>Axis Bank</h3>
+        <p>Axis has a history of multilingual voice-bot deployment for high-volume phone banking and continues to publish AI-led customer-service and employee-assistance initiatives; its public Axis OK service supports 11 regional languages.</p>
+        <div class="grid mini" style="margin-top:18px"><div class="cell"><div class="eyebrow">Why it fits</div><p>Sarvam may fit as a modern Indic speech/LLM layer for language expansion, quality improvement, or a new workflow alongside existing automation.</p></div>
+<div class="cell"><div class="eyebrow">Why now</div><p>RBI’s 2025 regional-language customer-service guidance and Axis’s ongoing AI investment create a timely reason to revisit older voice infrastructure.</p></div>
+<div class="cell"><div class="eyebrow">Suggested channel</div><p>Axis Bank digital banking/AI innovation or vendor partnership channel.</p></div>
+<div class="cell"><div class="eyebrow">Caution</div><p>The direct voice-bot evidence is old; use the 2025 regional-language policy context as a reason to verify current relevance, not as proof of a live project.</p></div></div>
+        <blockquote style="margin-top:18px"><span class="eyebrow" style="margin-bottom:8px;display:block">Suggested opener</span>Axis’s AXAA launch showed an early commitment to multilingual voice banking, and your current digital services span 11 regional languages. Sarvam’s newer Indic speech and language models could be tested on one language or code-mix slice. Is Axis currently refreshing any phone-banking or regional-language automation?</blockquote>
+        <details>
+<summary class="eyebrow" style="cursor:pointer;margin-top:10px">Evidence and score breakdown</summary>
+<div class="grid source-list"><div class="card"><span class="eyebrow">Evidence</span><p>Axis’s official materials describe AXAA’s scale objective, multilingual voice automation, and current regional-language service footprint; the voice-bot announcement is from 2020, so freshness is limited.</p></div><div class="card"><span class="eyebrow">Source</span><p>Official press release · 2020-07-30</p><a href="https://www.axisbank.com/docs/default-source/press-releases/axis-bank-unveils-automated-voice-assistant-axaa.pdf" rel="noreferrer" target="_blank">Axis Bank unveils AXAA — an AI powered conversational banking IVR ↗</a></div></div>
+<div class="improvements"><div class="dimension"><div class="dim-top"><div class="dimension-name">Pain strength</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:60%;--c:var(--acid)"></div></div></div><div class="dim-score">3/5</div></div><div class="dimension"><div class="dim-top"><div class="dimension-name">Product fit</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:100%;--c:var(--acid)"></div></div></div><div class="dim-score">5/5</div></div><div class="dimension"><div class="dim-top"><div class="dimension-name">Timing</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:60%;--c:var(--acid)"></div></div></div><div class="dim-score">3/5</div></div><div class="dimension"><div class="dim-top"><div class="dimension-name">Reachability</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:60%;--c:var(--acid)"></div></div></div><div class="dim-score">3/5</div></div><div class="dimension"><div class="dim-top"><div class="dimension-name">Evidence quality</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:80%;--c:var(--acid)"></div></div></div><div class="dim-score">4/5</div></div></div>
+</details>
+      </div>
+      <div class="fix-side" style="border-left:1px solid var(--line);padding-left:22px;text-align:center">
+        <div class="eyebrow" style="margin-bottom:10px">Fit score</div>
+        <div style="font:700 52px/1 var(--disp);letter-spacing:-.05em">66</div>
+        <div style="font:600 10px var(--mono);color:var(--muted);letter-spacing:.14em;text-transform:uppercase">/100</div>
+      </div>
+    </article>
+    <article class="fix reveal" id="prospect-08">
+      <div class="fix-num">08</div>
+      <div class="fix-body">
+        <div class="chips"><span class="chip">Company</span><span class="chip c-warm">Trigger present</span></div>
+        <h3>Motorola Mobility India</h3>
+        <p>Motorola publicly partnered with Indus Appstore to deliver a locally relevant app-discovery experience, including access to 12 Indian languages and voice search for vernacular queries.</p>
+        <div class="grid mini" style="margin-top:18px"><div class="cell"><div class="eyebrow">Why it fits</div><p>Sarvam could be relevant for OEM-side language QA, on-device/edge speech evaluation, or future voice discovery and accessibility features beyond the app-store integration.</p></div>
+<div class="cell"><div class="eyebrow">Why now</div><p>The December 2025 distribution partnership expands the user surface and creates a current localization/voice product trigger.</p></div>
+<div class="cell"><div class="eyebrow">Suggested channel</div><p>Motorola India product partnerships/accessibility team, through the public partnership context.</p></div>
+<div class="cell"><div class="eyebrow">Caution</div><p>This is an adjacent partner hypothesis, not evidence of a stated Motorola buying process; keep outreach exploratory and low-pressure.</p></div></div>
+        <blockquote style="margin-top:18px"><span class="eyebrow" style="margin-bottom:8px;display:block">Suggested opener</span>Motorola’s Indus Appstore partnership is explicitly about culturally relevant discovery in 12 Indian languages, including voice search. Sarvam could help benchmark Indic speech quality or future on-device language experiences. Is Motorola evaluating additional voice or accessibility surfaces for Indian users?</blockquote>
+        <details>
+<summary class="eyebrow" style="cursor:pointer;margin-top:10px">Evidence and score breakdown</summary>
+<div class="grid source-list"><div class="card"><span class="eyebrow">Evidence</span><p>The joint official announcement says the partnership is intended to make app discovery culturally and linguistically relevant for Indian users.</p></div><div class="card"><span class="eyebrow">Source</span><p>Official partnership announcement · 2025-12-03</p><a href="https://www.phonepe.com/press/phonepes-indus-appstore-and-motorola-india-announce-partnership/" rel="noreferrer" target="_blank">PhonePe’s Indus Appstore and Motorola India announce Partnership ↗</a></div></div>
+<div class="improvements"><div class="dimension"><div class="dim-top"><div class="dimension-name">Pain strength</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:60%;--c:var(--acid)"></div></div></div><div class="dim-score">3/5</div></div><div class="dimension"><div class="dim-top"><div class="dimension-name">Product fit</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:60%;--c:var(--acid)"></div></div></div><div class="dim-score">3/5</div></div><div class="dimension"><div class="dim-top"><div class="dimension-name">Timing</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:100%;--c:var(--acid)"></div></div></div><div class="dim-score">5/5</div></div><div class="dimension"><div class="dim-top"><div class="dimension-name">Reachability</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:60%;--c:var(--acid)"></div></div></div><div class="dim-score">3/5</div></div><div class="dimension"><div class="dim-top"><div class="dimension-name">Evidence quality</div></div><div class="dim-mid"><div class="track"><div class="fill" style="--w:80%;--c:var(--acid)"></div></div></div><div class="dim-score">4/5</div></div></div>
+</details>
+      </div>
+      <div class="fix-side" style="border-left:1px solid var(--line);padding-left:22px;text-align:center">
+        <div class="eyebrow" style="margin-bottom:10px">Fit score</div>
+        <div style="font:700 52px/1 var(--disp);letter-spacing:-.05em">58</div>
+        <div style="font:600 10px var(--mono);color:var(--muted);letter-spacing:.14em;text-transform:uppercase">/100</div>
+      </div>
+    </article>
+    </div></section>
+
+    <section id="patterns"><div class="watermark">02</div><div class="section-head"><div class="idx">02 / PATTERNS</div><h2>Signals that repeat.</h2></div><div class="grid">
+<article class="card reveal"><div class="eyebrow">Pattern 01</div><h3>Voice is becoming the access layer</h3><p>Payments, commerce, banking, and public enquiry systems are moving beyond menus and typing toward voice-led navigation and task completion.</p></article>
+<article class="card reveal"><div class="eyebrow">Pattern 02</div><h3>Hindi/Hinglish is the current floor, not the finish line</h3><p>Several organizations have live English/Hindi systems but public product pages point to broader regional-language coverage, code-mixing, or local-language accessibility as the next gap.</p></article>
+<article class="card reveal"><div class="eyebrow">Pattern 03</div><h3>Regulated, high-volume workflows are the strongest wedge</h3><p>Banking and payments combine large repetitive volumes, authentication and audit requirements, and a clear business case for better language access.</p></article>
+<article class="card reveal"><div class="eyebrow">Pattern 04</div><h3>Incumbent AI creates expansion opportunities</h3><p>Several prospects already have bots or voice experiences, so the realistic motion is a language-quality benchmark, new-language pilot, or complementary API—not a rip-and-replace sale.</p></article>
+    </div></section>
+
+    <section id="plan"><div class="watermark">03</div><div class="section-head"><div class="idx">03 / PLAN</div><h2>Seven-day manual plan</h2></div><div class="frame experiment reveal"><div class="eyebrow">Seven-day manual plan</div><h3>Offer a narrowly scoped, manual evaluation or language-quality benchmark tied to the prospect’s public workflow; ask one discovery question before proposing a pilot.</h3><div class="grid">
+<div class="cell span-6"><strong>First step</strong><p>Manually contact SBI and NPCI first because their public requirements are closest to an explicit need. Follow with HDFC and Meesho using a specific language/voice expansion hypothesis.</p></div>
+<div class="cell span-6"><strong>Follow-up</strong><p>Only after a prospect confirms the pain, share a short comparison on one language, one workflow, latency, accuracy, escalation, and data-handling requirements.</p></div>
+<div class="cell span-6"><strong>Success signal</strong><p>Three source-grounded conversations, one technical evaluation, and one scoped design-partner or procurement next step within seven days.</p></div>
+<div class="cell span-6"><strong>Research scope</strong><p>Public English-language company pages, official procurement/RFE documents, public product announcements, and public professional posts; primarily 2024–2026, with older evidence marked where relevant.</p></div>
+    </div></div></section>
+
+    <section id="limits"><div class="watermark">04</div><div class="section-head"><div class="idx">04 / LIMITS</div><h2>Use this shortlist responsibly</h2></div><div class="card reveal"><ul>
+<li>These are potential customers based on public signals, not confirmed buyers or willing participants.</li>
+<li>Several organizations already operate AI or multilingual systems; current ownership, vendor status, budgets, and procurement windows must be confirmed directly.</li>
+<li>Public pages rarely expose language-level call volumes, defect rates, decision-makers, or security constraints.</li>
+<li>Some signals are older (especially IRCTC and Axis); their timing scores are reduced and must be revalidated before outreach.</li>
+<li>Public contact routes are recommended at the organization or product-team level; no private emails, phone numbers, or personal data were collected.</li>
+    </ul></div></section>
+
+    <footer><span>Generated by <b>Customer Finder</b>.</span><span>Outreach is never sent automatically.</span></footer>
+  </main>
+</div>
+<script>
+  (() => { const body=document.body, preloader=document.getElementById('preloader'), fill=document.getElementById('preFill'), num=document.getElementById('preNum'); let value=0; const timer=setInterval(()=>{value+=Math.ceil((100-value)/5);fill.style.width=value+'%';num.textContent=String(value).padStart(2,'0');if(value>=100){clearInterval(timer);setTimeout(()=>{preloader.classList.add('done');body.classList.add('loaded')},180)}},28); const reveal=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('in');reveal.unobserve(entry.target)}}),{threshold:.12}); document.querySelectorAll('.reveal').forEach(item=>reveal.observe(item)); const progress=document.getElementById('progress'); addEventListener('scroll',()=>{const max=document.documentElement.scrollHeight-innerHeight;progress.style.width=(scrollY/Math.max(max,1)*100)+'%'},{passive:true}); const theme=document.getElementById('themeToggle'); const apply=mode=>{body.dataset.theme=mode;theme.querySelector('span:last-child').textContent=mode==='light'?'☼':'◐'}; const saved=localStorage.getItem('customerfinder-theme'); apply(saved||(matchMedia('(prefers-color-scheme:light)').matches?'light':'dark')); theme.addEventListener('click',()=>{const next=body.dataset.theme==='light'?'dark':'light';localStorage.setItem('customerfinder-theme',next);apply(next)}); document.querySelectorAll('.card, .fix').forEach((item)=>{item.addEventListener('pointermove',(event)=>{const box=item.getBoundingClientRect();item.style.setProperty('--mx',(event.clientX-box.left)+'px');item.style.setProperty('--my',(event.clientY-box.top)+'px');});}); })();
+</script>
+</body>
+</html>
