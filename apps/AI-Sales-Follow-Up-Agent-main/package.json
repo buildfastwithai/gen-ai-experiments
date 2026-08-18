@@ -1,0 +1,14 @@
+{
+  "name": "ai-sales-follow-up-agent",
+  "version": "0.1.0",
+  "private": true,
+  "description": "An AI sales follow-up agent powered by Composio that finds cold leads, drafts follow-ups, updates CRM, and notifies the team",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

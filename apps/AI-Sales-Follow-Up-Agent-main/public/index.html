@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#16211f" />
+    <title>Signal | Sales follow-up agent</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/overrides.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="logo-row"><div class="logo-mark"><i></i><i></i><i></i></div><strong>signal</strong><span>AI SALES</span></div>
+        <div class="workspace"><div class="workspace-avatar">WS</div><div><small>Workspace</small><b>Your workspace</b></div><span class="chevron">⌄</span></div>
+        <nav>
+          <p class="nav-label">Workspace</p>
+          <a class="nav-link active" href="#overview"><span class="nav-icon">◈</span>Overview</a>
+          <a class="nav-link" href="#leads"><span class="nav-icon">◎</span>Leads<span class="nav-badge">--</span></a>
+          <a class="nav-link" href="#activity"><span class="nav-icon">↗</span>Activity</a>
+          <p class="nav-label integrations-label">Integrations</p>
+          <a class="nav-link" href="#connections"><span class="integration-dot gmail"><img src="https://logos.composio.dev/api/gmail" alt="" /></span>Gmail<span class="connection-state"></span></a>
+          <a class="nav-link" href="#connections"><span class="integration-dot zoho"><img src="https://logos.composio.dev/api/zoho" alt="" /></span>Zoho<span class="connection-state"></span></a>
+          <a class="nav-link" href="#connections"><span class="integration-dot calendar"><img src="https://logos.composio.dev/api/googlecalendar" alt="" /></span>Calendar<span class="connection-state"></span></a>
+          <a class="nav-link" href="#connections"><span class="integration-dot slack"><img src="https://logos.composio.dev/api/slack" alt="" /></span>Slack<span class="connection-state"></span></a>
+        </nav>
+        <div class="sidebar-bottom"><button class="nav-link theme-toggle" id="theme-toggle" type="button"><span class="nav-icon">◐</span>Theme <span class="theme-mode">Light</span></button><div class="profile"><div class="profile-avatar">--</div><div><b>Your profile</b><small>Configured user</small></div><span>•••</span></div></div>
+      </aside>
+      <main class="main" id="overview">
+        <header class="topbar"><div class="crumbs"><span>Workspace</span><b>/</b><strong>Overview</strong></div><div class="top-actions"><span class="live-status"><i></i> Agent ready</span><button class="notification">♧<em></em></button><div class="top-avatar">--</div></div></header>
+        <div class="page-wrap">
+          <section class="heading"><div><p class="eyebrow"><span></span><span id="current-date">Today</span></p><h1>Your pipeline has<br /><em>quietly gone cold.</em></h1><p class="intro">Signal watches the spaces between conversations and gives your team the next best move before good leads disappear.</p></div><button class="run-button" id="run-agent"><span class="run-spark">✦</span><span><b>Analyze pipeline</b><small>Draft actions, send nothing</small></span><strong>↗</strong></button></section>
+          <section class="metric-grid"><article class="metric lead-metric"><div class="metric-top"><span>Leads needing attention</span><span class="metric-up">latest run</span></div><strong>--</strong><div class="metric-bottom"><span>Waiting for data</span><div class="spark-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div></article><article class="metric"><div class="metric-top"><span>Emails analyzed</span><span class="metric-period">latest run</span></div><strong>--</strong><div class="metric-bottom"><span>Waiting for data</span><span class="metric-arrow">↗</span></div></article><article class="metric"><div class="metric-top"><span>Follow-ups sent</span><span class="metric-good">latest run</span></div><strong>--</strong><div class="metric-bottom"><span>Waiting for data</span><span class="metric-arrow">↗</span></div></article><article class="metric dark-metric"><div class="metric-top"><span>Pipeline coverage</span><span class="coverage-ring">--</span></div><strong>--</strong><div class="coverage-bar"><i></i></div><div class="metric-bottom"><span>Waiting for data</span></div></article></section>
+          <section class="dashboard-grid">
+            <article class="card attention-card" id="leads"><div class="card-head"><div><p class="card-kicker"><span></span>Needs attention</p><h2>Cold leads worth saving</h2></div><button class="filter-button">Configured window <span>⌄</span></button></div><p class="card-subtitle">The conversations that stopped moving, ranked by opportunity.</p><div class="lead-list" id="lead-list"><div class="empty-state">Run the agent to load real leads.</div></div><button class="view-all">View all leads <span>→</span></button></article>
+            <article class="card agent-card" id="activity"><div class="card-head"><div><p class="card-kicker"><span></span>Agent activity</p><h2>What happened today</h2></div><span class="activity-date">Latest run</span></div><div class="timeline"><div class="empty-state">No agent run yet.</div></div><button class="activity-link">Open activity log <span>↗</span></button></article>
+          </section>
+          <section class="bottom-grid"><article class="card insight-card"><div class="insight-label"><span>✦</span> Agent insight</div><blockquote>Run the agent to see an insight grounded in your real sales activity.</blockquote><div class="insight-footer"><span>No pipeline run completed</span><button id="draft-button">Draft follow-ups <span>↗</span></button></div></article><article class="card connections-card" id="connections"><div class="card-head"><div><p class="card-kicker"><span></span>Connected stack</p><h2>Your integrations</h2></div><button class="manage-button">Manage <span>↗</span></button></div><div class="connection-grid"><div><span class="integration-dot gmail"><img src="https://logos.composio.dev/api/gmail" alt="" /></span><b>Gmail</b><small>Waiting for run</small></div><div><span class="integration-dot zoho"><img src="https://logos.composio.dev/api/zoho" alt="" /></span><b>Zoho CRM</b><small>Waiting for run</small></div><div><span class="integration-dot calendar"><img src="https://logos.composio.dev/api/googlecalendar" alt="" /></span><b>Calendar</b><small>Waiting for run</small></div><div><span class="integration-dot slack"><img src="https://logos.composio.dev/api/slack" alt="" /></span><b>Slack</b><small>Waiting for run</small></div></div></article></section>
+          <footer class="footer"><span>Signal beta</span><i></i><span>Built with Composio + OpenAI</span><span class="footer-right">System status <b></b></span></footer>
+        </div>
+      </main>
+    </div>
+    <div class="all-leads-backdrop" id="activity-modal" aria-hidden="true">
+      <section class="all-leads-modal activity-modal" role="dialog" aria-modal="true" aria-labelledby="activity-title">
+        <button class="modal-close" id="close-activity" aria-label="Close activity">×</button>
+        <div class="modal-kicker"><span>↗</span> Run history</div>
+        <div class="all-leads-heading"><div><h2 id="activity-title">Activity log</h2><p>Every action from the latest agent run</p></div></div>
+        <div class="all-leads-list" id="activity-log-list"><div class="empty-state">No activity yet.</div></div>
+      </section>
+    </div>
+    <div class="all-leads-backdrop" id="all-leads-modal" aria-hidden="true">
+      <section class="all-leads-modal" role="dialog" aria-modal="true" aria-labelledby="all-leads-title">
+        <button class="modal-close" id="close-all-leads" aria-label="Close all leads">×</button>
+        <div class="modal-kicker"><span>◎</span> CRM directory</div>
+        <div class="all-leads-heading"><div><h2 id="all-leads-title">All leads</h2><p id="all-leads-count">Loading CRM records...</p></div><input id="lead-search" type="search" placeholder="Search name or email" aria-label="Search leads" /></div>
+        <div class="all-leads-list" id="all-leads-list"><div class="empty-state">Run the agent to load CRM records.</div></div>
+      </section>
+    </div>
+    <div class="lead-modal-backdrop" id="lead-modal" aria-hidden="true">
+      <section class="lead-modal" role="dialog" aria-modal="true" aria-labelledby="modal-lead-name">
+        <button class="modal-close" id="close-modal" aria-label="Close review">×</button>
+        <div class="modal-kicker"><span>✦</span> AI follow-up review</div>
+        <div class="modal-identity"><div class="modal-avatar" id="modal-avatar">--</div><div><h2 id="modal-lead-name">Lead review</h2><p id="modal-lead-email">Loading lead details...</p></div><span class="modal-priority" id="modal-priority">--</span></div>
+        <div class="modal-grid"><div class="modal-section"><span class="modal-index">01</span><div><small>Why it needs attention</small><p id="modal-reason">Loading conversation signals...</p></div></div><div class="modal-section"><span class="modal-index">02</span><div><small>Recommended move</small><p id="modal-action">Preparing a next step...</p></div></div></div>
+        <div class="draft-box"><div class="draft-head"><span>Suggested follow-up</span><span class="draft-status" id="draft-status">Generating...</span></div><input class="draft-subject-input" id="draft-subject" value="Preparing draft..." aria-label="Email subject" /><textarea id="draft-body" aria-label="Email body">Signal is reading the lead context and composing a personalized follow-up.</textarea></div>
+        <div class="modal-footer"><span class="modal-source">Generated from the latest Gmail + CRM context</span><div><button class="button-secondary" id="close-modal-footer">Keep for later</button><button class="button-primary" id="send-draft">Send follow-up <span>↗</span></button></div></div>
+      </section>
+    </div>
+    <div class="toast" id="toast"><span>✓</span><b id="toast-text">Agent run complete</b></div>
+    <script src="/app.js"></script>
+  </body>
+</html>
