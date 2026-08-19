@@ -468,6 +468,39 @@ body.filtering #hero,body.filtering #featuredSec{display:none}
     <circle cx="100" cy="72" r="19" fill="none" stroke="#fff" stroke-width="1.2" opacity=".45"/>
   </symbol>
 
+  <symbol id="art-harbor" viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice">
+    <rect width="200" height="150" fill="#170f1e"/>
+    <rect width="200" height="94" fill="var(--m2)" opacity=".34"/>
+    <circle cx="44" cy="84" r="20" fill="var(--m1)" opacity=".9"/>
+    <circle cx="44" cy="84" r="38" fill="var(--m1)" opacity=".22"/>
+    <g fill="#120b1a">
+      <rect x="0" y="58" width="20" height="52"/><rect x="24" y="72" width="16" height="38"/>
+      <rect x="62" y="46" width="22" height="64"/><rect x="88" y="64" width="14" height="46"/>
+      <rect x="106" y="34" width="26" height="76"/><rect x="136" y="56" width="18" height="54"/>
+      <rect x="158" y="42" width="24" height="68"/><rect x="186" y="70" width="14" height="40"/>
+    </g>
+    <g fill="var(--m1)" opacity=".8">
+      <rect x="6" y="66" width="4" height="4"/><rect x="12" y="80" width="4" height="4"/>
+      <rect x="68" y="54" width="4" height="4"/><rect x="76" y="68" width="4" height="4"/>
+      <rect x="68" y="86" width="4" height="4"/><rect x="112" y="44" width="4" height="4"/>
+      <rect x="122" y="58" width="4" height="4"/><rect x="112" y="78" width="4" height="4"/>
+      <rect x="164" y="52" width="4" height="4"/><rect x="172" y="70" width="4" height="4"/>
+      <rect x="140" y="66" width="4" height="4"/>
+    </g>
+    <path d="M0 110h200v40H0z" fill="#0c0714"/>
+    <g stroke="var(--m1)" stroke-width="1.6" opacity=".45">
+      <path d="M0 118h200M0 128h200M0 138h200"/>
+    </g>
+    <g stroke="#fff" stroke-width="1.5" opacity=".9" fill="none" stroke-linecap="round">
+      <path d="M118 38 92 68"/><path d="M92 68 152 50"/>
+    </g>
+    <g fill="var(--m1)">
+      <circle cx="92" cy="74" r="6"/>
+      <path d="M92 80l-7 13M92 80l8 12M88 72l-14-6M96 72l13-8" stroke="var(--m1)" stroke-width="3.4" stroke-linecap="round" fill="none"/>
+    </g>
+    <circle cx="92" cy="74" r="15" fill="var(--m1)" opacity=".2"/>
+  </symbol>
+
   <symbol id="art-shooter" viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice">
     <rect width="200" height="150" fill="#050914"/>
     <path d="M0 118h200v32H0z" fill="var(--m2)" opacity=".3"/>
@@ -700,7 +733,11 @@ const GAMES = [
   { id:'ironveil', title:'IRONVEIL: Sector 9', model:'qwen-3.8-max', type:'game', art:'fps', tech:'Three.js', kb:45, loc:996,
     href:'qwen-3.8-max/games/cod.html', tags:['3d','arcade'],
     desc:'A pointer-locked first-person firefight through Sector 9 at daybreak — sprint between cover, watch your ammo and hold the line as the waves escalate.',
-    kw:'ironveil sector 9 daybreak fps first person shooter military combat waves enemies pointer lock sprint ammo cod call of duty three js 3d qwen' }
+    kw:'ironveil sector 9 daybreak fps first person shooter military combat waves enemies pointer lock sprint ammo cod call of duty three js 3d qwen' },
+  { id:'newharbor', title:'NEW HARBOR: Web of Dawn', model:'qwen-3.8-max', type:'game', art:'harbor', tech:'Three.js', kb:71, loc:1592,
+    href:'qwen-3.8-max/games/new-harbor-web-of-dawn.html', tags:['3d','sandbox'],
+    desc:'Swing across a harbour city as the sun comes up — momentum-based web traversal, combo melee, a day-to-night cycle and rain you can switch on.',
+    kw:'new harbor web of dawn swing traversal grapple city skyline superhero combo combat rain day night cycle spider three js 3d qwen' }
 ];
 
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
