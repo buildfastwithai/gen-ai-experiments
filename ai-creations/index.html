@@ -501,6 +501,38 @@ body.filtering #hero,body.filtering #featuredSec{display:none}
     <circle cx="92" cy="74" r="15" fill="var(--m1)" opacity=".2"/>
   </symbol>
 
+  <symbol id="art-slime" viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice">
+    <rect width="200" height="150" fill="#0b1410"/>
+    <circle cx="100" cy="66" r="72" fill="var(--m2)" opacity=".22"/>
+    <g fill="#101d18">
+      <path d="M0 108h200v42H0z"/>
+      <path d="M84 108V64l16-14 16 14v44z"/>
+      <path d="M78 64h44v-8H78z"/>
+    </g>
+    <g fill="var(--m1)" opacity=".85">
+      <rect x="94" y="76" width="12" height="16" rx="2"/>
+      <rect x="86" y="52" width="6" height="8"/><rect x="108" y="52" width="6" height="8"/>
+    </g>
+    <g stroke="var(--m1)" stroke-width="2" opacity=".5" fill="none"><path d="M0 108h200"/></g>
+    <g fill="var(--m1)">
+      <path d="M22 108c0-11 7-19 16-19s16 8 16 19z" opacity=".95"/>
+      <path d="M52 108c0-8 5-14 12-14s12 6 12 14z" opacity=".7"/>
+      <path d="M146 108c0-13 8-22 19-22s19 9 19 22z" opacity=".95"/>
+      <path d="M126 108c0-8 5-13 11-13s11 5 11 13z" opacity=".7"/>
+    </g>
+    <g fill="#08110d">
+      <circle cx="33" cy="99" r="2.4"/><circle cx="44" cy="99" r="2.4"/>
+      <circle cx="159" cy="97" r="2.8"/><circle cx="172" cy="97" r="2.8"/>
+    </g>
+    <g fill="var(--m2)" opacity=".8">
+      <circle cx="66" cy="128" r="7"/><circle cx="112" cy="134" r="5"/><circle cx="182" cy="126" r="6"/>
+      <circle cx="14" cy="132" r="5"/>
+    </g>
+    <g fill="#fff" opacity=".75">
+      <circle cx="30" cy="93" r="2"/><circle cx="155" cy="90" r="2.4"/>
+    </g>
+  </symbol>
+
   <symbol id="art-shooter" viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice">
     <rect width="200" height="150" fill="#050914"/>
     <path d="M0 118h200v32H0z" fill="var(--m2)" opacity=".3"/>
@@ -650,40 +682,45 @@ const SHORT = {
 };
 
 const GAMES = [
+  { id:'slime-siege', title:'Slime Siege', model:'qwen-3.8-max', credit:'Qwen 3.8 27B', creditShort:'QWEN 3.8 27B',
+    type:'game', art:'slime', tech:'Canvas', kb:643, loc:1659,
+    href:'qwen-3.8-max/games/slime-siege.html', tags:['arcade'], featured:1,
+    desc:'A ForgeKit arena survivor — hold the keep as waves of slimes pour in, and stack upgrades between rounds to stay alive one wave longer.',
+    kw:'slime siege forgekit arena survivor waves horde defence upgrades roguelite canvas qwen 27b' },
   { id:'arachnid', title:'ARACHNID: Vertical City', model:'grok-4.6', type:'game', art:'spider', tech:'Three.js', kb:488, loc:10210,
-    href:'grok%204.6/games/spider-city/index.html', tags:['3d','sandbox'], featured:1,
+    href:'grok%204.6/games/spider-city/index.html', tags:['3d','sandbox'], featured:2,
     desc:'An open-world traversal prototype: ~1,300 procedural buildings across eight districts, a physics-driven web-swing, wall running, melee combos, traffic, crowds and dynamic weather. Every texture, mesh and sound is generated in code at boot.',
     kw:'arachnid vertical city spider web swing open world superhero traversal three js 3d procedural city skyscrapers parkour wall run combat missions grok' },
   { id:'neon-invaders', title:'Neon Invaders', model:'grok-4.6', type:'game', art:'space', tech:'Canvas', kb:28, loc:970,
-    href:'grok%204.6/games/space-invaders.html', tags:['arcade'], featured:2,
+    href:'grok%204.6/games/space-invaders.html', tags:['arcade'], featured:3,
     desc:'Grok\'s neon-drenched take on the arcade original — glowing alien ranks, tight laser fire and a difficulty curve that keeps climbing.',
     kw:'neon space invaders arcade retro classic aliens laser shooting shooter grok xai glow' },
   { id:'signal47', title:'Signal 47', model:'opus-5', type:'game', art:'doll', tech:'Three.js', kb:105, loc:2567,
-    href:'opus-5/games/rl-gl.html', tags:['3d','arcade'], featured:3,
+    href:'opus-5/games/rl-gl.html', tags:['3d','arcade'], featured:4,
     desc:'Red light, green light. A giant robotic doll turns its head — and its optics read movement, not intent. Momentum will get you shot.',
     kw:'red light green light doll sentinel squid survival stop freeze running elimination three js 3d race finish line' },
   { id:'hex-opus', title:'Hex-A-Gone', model:'opus-5', type:'game', art:'hex', tech:'Three.js', kb:1341, loc:56679,
-    href:'opus-5/games/hex-a-gone.html', tags:['hex','3d'], featured:4,
+    href:'opus-5/games/hex-a-gone.html', tags:['hex','3d'], featured:5,
     desc:'Hexagon tiles vanish the second you touch them. Outlast the collapsing floor and be the last one standing.',
     kw:'hexagon fall guys tiles survival battle royale platform 3d' },
   { id:'yaadon', title:'Yaadon Ki Cassette', model:'opus-5', type:'page', art:'cassette', tech:'Video / JS', kb:55, loc:1903,
-    href:'opus-5/landing-pages/yaadon-ki-cassette/index.html', tags:[], featured:5,
+    href:'opus-5/landing-pages/yaadon-ki-cassette/index.html', tags:[], featured:6,
     desc:'A cinematic 90s Bollywood cassette player — spinning deck, song requests and a full retro playlist.',
     kw:'yaadon ki cassette bollywood 90s hindi radio music player retro nostalgia tape deck' },
   { id:'pulse', title:'Pulse Drift', model:'opus-5', type:'game', art:'pulse', tech:'Canvas', kb:65, loc:1934,
-    href:'opus-5/games/pulse-drift.html', tags:['arcade'], featured:6,
+    href:'opus-5/games/pulse-drift.html', tags:['arcade'], featured:7,
     desc:'A synthwave rhythm racer about sharp turns, clean drifts and perfectly timed boosts.',
     kw:'rhythm racer synthwave neon driving music drift boost' },
   { id:'summit', title:'Summit Runner', model:'opus-5', type:'game', art:'summit', tech:'Canvas', kb:100, loc:2060,
-    href:'opus-5/games/SummitRunner.html', tags:['arcade'], featured:7,
+    href:'opus-5/games/SummitRunner.html', tags:['arcade'], featured:8,
     desc:'Climb procedural peaks, ration your stamina and push through shifting weather.',
     kw:'mountain climbing platformer stamina weather procedural runner' },
   { id:'lumi', title:'LUMI: Spirit of the Aurora', model:'fable-5', type:'game', art:'runner', tech:'Canvas', kb:39, loc:852,
-    href:'fable-5/games/lumi_aurora_runner.html', tags:['arcade'], featured:8,
+    href:'fable-5/games/lumi_aurora_runner.html', tags:['arcade'], featured:9,
     desc:'Run through a glowing aurora landscape, gather energy and dodge drifting void crystals.',
     kw:'endless runner aurora spirit lights collect energy crystals atmospheric' },
   { id:'hexdrop', title:'Hex Drop Arena', model:'gpt-5.6', type:'game', art:'hex', tech:'Three.js', kb:738, loc:4706,
-    href:'gpt%205.6/games/Hex-Drop-Arena.html', tags:['hex','3d'], featured:9,
+    href:'gpt%205.6/games/Hex-Drop-Arena.html', tags:['hex','3d'], featured:10,
     desc:'A frantic drop-tile arena — keep moving as the hexagon floor falls away beneath you.',
     kw:'hexagon drop tiles arena battle royale fall openai 3d' },
   { id:'voxel-opus', title:'Voxel World', model:'opus-5', type:'game', art:'voxel', tech:'Three.js', kb:23, loc:669,
@@ -740,6 +777,9 @@ const GAMES = [
     kw:'new harbor web of dawn swing traversal grapple city skyline superhero combo combat rain day night cycle spider three js 3d qwen' }
 ];
 
+/* a build can override its displayed credit without changing its folder/colour */
+const full = g => g.credit || MODELS[g.model];
+const abbr = g => g.creditShort || SHORT[g.model];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
 const art = g => `<svg class="art" viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice"><use href="#art-${g.art}"/></svg>`;
 
@@ -747,11 +787,11 @@ function card(g) {
   const flag = g.type === 'page' ? '<span class="flag page">TOY</span>'
              : (g.featured ? '<span class="flag">HOT!</span>' : '<span class="flag">PLAY</span>');
   return `
-  <a class="card" href="${g.href}" data-model="${g.model}" title="${esc(g.title)} — built by ${MODELS[g.model]}">
-    <div class="shot">${art(g)}<span class="ribbon">${SHORT[g.model]}</span>${flag}</div>
+  <a class="card" href="${g.href}" data-model="${g.model}" title="${esc(g.title)} — built by ${full(g)}">
+    <div class="shot">${art(g)}<span class="ribbon">${abbr(g)}</span>${flag}</div>
     <div class="info">
       <h3>${esc(g.title)}</h3>
-      <p class="by">by <b>${MODELS[g.model]}</b></p>
+      <p class="by">by <b>${full(g)}</b></p>
       <p class="stats"><span>${g.tech}</span><span>${g.kb} KB</span></p>
       <div class="playbar">&#9654; PLAY NOW</div>
     </div>
@@ -767,7 +807,7 @@ document.getElementById('hero').innerHTML = `
   <div class="hero-meta" data-model="${hero.model}">
     <div class="hero-kicker">&#9654; NOW PLAYING</div>
     <h2>${esc(hero.title)}</h2>
-    <span class="maker">BUILT BY ${SHORT[hero.model]}</span>
+    <span class="maker">BUILT BY ${abbr(hero)}</span>
     <p>${esc(hero.desc)}</p>
     <ul class="speclist">
       <li><span>ENGINE</span>${hero.tech}</li>

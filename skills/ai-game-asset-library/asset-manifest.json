@@ -1,0 +1,26 @@
+{
+  "name": "ForgeKit AI Game Asset Library",
+  "version": "1.0.0",
+  "license": "MIT",
+  "spriteAtlases": [
+    {
+      "id": "fantasy-adventure-01",
+      "src": "/assets/fantasy-sprite-atlas.png",
+      "source": "/assets/fantasy-sprite-atlas-source.png",
+      "columns": 6,
+      "rows": 4,
+      "width": 1536,
+      "height": 1024,
+      "frameWidth": 256,
+      "frameHeight": 256,
+      "frames": ["hero-idle", "hero-run", "hero-back", "hero-attack", "slime-idle", "slime-happy", "slime-attack", "slime-swarm", "sword", "bow", "shield", "potion", "coin", "crystal", "crate", "chest", "grass", "stone", "water", "dirt", "tree", "rock", "campfire", "portal"]
+    }
+  ],
+  "modules": [
+    { "id": "core", "src": "/lib/forgekit-core.js", "exports": 29 },
+    { "id": "canvas", "src": "/lib/forgekit-canvas.js", "exports": 12 },
+    { "id": "three", "src": "/lib/forgekit-three.js", "exports": 11 },
+    { "id": "audio", "src": "/lib/forgekit-audio.js", "exports": 2 },
+    { "id": "procedural", "src": "/lib/forgekit-procedural.js", "exports": 8 }
+  ]
+}
