@@ -1,26 +1,75 @@
 {
   "name": "ForgeKit AI Game Asset Library",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "license": "MIT",
+  "totals": { "spriteAtlases": 6, "spriteFrames": 144, "modules": 10, "exports": 116 },
+  "atlasFormat": { "columns": 6, "rows": 4, "width": 1536, "height": 1024, "frameWidth": 256, "frameHeight": 256, "alpha": true },
   "spriteAtlases": [
     {
-      "id": "fantasy-adventure-01",
+      "id": "fantasy-adventure",
+      "name": "Fantasy Adventure",
+      "style": "32-bit pixel art",
+      "games": ["rpg", "roguelike", "adventure"],
       "src": "/assets/fantasy-sprite-atlas.png",
       "source": "/assets/fantasy-sprite-atlas-source.png",
-      "columns": 6,
-      "rows": 4,
-      "width": 1536,
-      "height": 1024,
-      "frameWidth": 256,
-      "frameHeight": 256,
-      "frames": ["hero-idle", "hero-run", "hero-back", "hero-attack", "slime-idle", "slime-happy", "slime-attack", "slime-swarm", "sword", "bow", "shield", "potion", "coin", "crystal", "crate", "chest", "grass", "stone", "water", "dirt", "tree", "rock", "campfire", "portal"]
+      "frames": ["hero-idle", "hero-run", "hero-back", "hero-attack", "slime-idle", "slime-happy", "slime-attack", "slime-swarm", "silver-sword", "hunter-bow", "knight-shield", "health-potion", "gold-coin", "mana-crystal", "wooden-crate", "treasure-chest", "grass-tile", "stone-tile", "water-tile", "dirt-tile", "forest-tree", "mossy-rock", "campfire", "magic-portal"]
+    },
+    {
+      "id": "sci-fi-outpost",
+      "name": "Sci-Fi Outpost",
+      "style": "cel-shaded 2D",
+      "games": ["survival", "tactics", "base-builder"],
+      "src": "/assets/sci-fi-outpost-atlas.png",
+      "source": "/assets/sci-fi-outpost-atlas-source.png",
+      "frames": ["astronaut-idle", "astronaut-run", "astronaut-back", "astronaut-fire", "friendly-alien", "hostile-alien", "scout-drone", "attack-drone", "plasma-rifle", "energy-pistol", "shield-battery", "sci-fi-medkit", "credit-chip", "energy-crystal", "cargo-crate", "computer-terminal", "metal-floor", "hazard-floor", "reactor-core", "comms-antenna", "lunar-rover", "defense-turret", "sealed-airlock", "teleport-pad"]
+    },
+    {
+      "id": "space-shooter",
+      "name": "Space Shooter",
+      "style": "neon arcade",
+      "games": ["shmup", "arcade", "bullet-hell"],
+      "src": "/assets/space-shooter-atlas.png",
+      "source": "/assets/space-shooter-atlas-source.png",
+      "frames": ["hero-fighter", "red-interceptor", "heavy-bomber", "nimble-scout", "enemy-drone", "enemy-beetle", "enemy-manta", "boss-core", "red-laser", "blue-laser", "guided-missile", "shield-power-up", "energy-pickup", "repair-pickup", "small-asteroid", "large-asteroid", "station-module", "satellite", "starfield-tile", "space-debris", "warp-ring", "small-explosion", "large-explosion", "black-hole"]
+    },
+    {
+      "id": "cozy-farm",
+      "name": "Cozy Farm",
+      "style": "painted storybook",
+      "games": ["farming", "life-sim", "tycoon"],
+      "src": "/assets/cozy-farm-atlas.png",
+      "source": "/assets/cozy-farm-atlas-source.png",
+      "frames": ["farmer-idle", "farmer-walk", "farmer-back", "farmer-tool", "cheerful-cow", "small-chicken", "pink-pig", "fluffy-sheep", "garden-hoe", "watering-can", "seed-bag", "milk-bottle", "red-apple", "hay-bale", "wooden-fence", "red-barn", "tilled-soil", "bright-grass", "pond-water", "cobblestone-path", "apple-tree", "pumpkin-patch", "wooden-windmill", "market-stall"]
+    },
+    {
+      "id": "arcade-racing",
+      "name": "Arcade Racing",
+      "style": "top-down 3D art",
+      "games": ["racing", "chase", "stunts"],
+      "src": "/assets/arcade-racing-atlas.png",
+      "source": "/assets/arcade-racing-atlas-source.png",
+      "frames": ["red-sports-car", "blue-rally-car", "yellow-formula-car", "green-compact", "racing-motorbike", "heavy-truck", "police-pursuit", "city-taxi", "nitro-bottle", "repair-kit", "metal-wrench", "traffic-cone", "racing-token", "checkpoint-beacon", "track-barrier", "tire-stack", "pit-garage", "grandstand", "asphalt-road", "grass-verge", "desert-track", "icy-road", "finish-arch", "launch-ramp"]
+    },
+    {
+      "id": "gothic-horror",
+      "name": "Gothic Horror",
+      "style": "gothic pixel art",
+      "games": ["horror", "dungeon", "survival"],
+      "src": "/assets/gothic-horror-atlas.png",
+      "source": "/assets/gothic-horror-atlas-source.png",
+      "frames": ["survivor-idle", "survivor-run", "survivor-back", "survivor-attack", "decayed-zombie", "armored-skeleton", "pale-ghost", "cave-spider", "old-shotgun", "woodcutter-axe", "oil-lantern", "medical-satchel", "iron-key", "cursed-skull", "broken-crate", "gothic-chest", "dungeon-floor", "dungeon-wall", "murky-swamp", "molten-lava", "dead-tree", "tombstone", "wall-torch", "ritual-portal"]
     }
   ],
   "modules": [
-    { "id": "core", "src": "/lib/forgekit-core.js", "exports": 29 },
+    { "id": "core", "src": "/lib/forgekit-core.js", "exports": 28 },
     { "id": "canvas", "src": "/lib/forgekit-canvas.js", "exports": 12 },
-    { "id": "three", "src": "/lib/forgekit-three.js", "exports": 11 },
+    { "id": "three", "src": "/lib/forgekit-three.js", "exports": 12 },
     { "id": "audio", "src": "/lib/forgekit-audio.js", "exports": 2 },
-    { "id": "procedural", "src": "/lib/forgekit-procedural.js", "exports": 8 }
+    { "id": "procedural", "src": "/lib/forgekit-procedural.js", "exports": 8 },
+    { "id": "ai", "src": "/lib/forgekit-ai.js", "exports": 15 },
+    { "id": "world", "src": "/lib/forgekit-world.js", "exports": 10 },
+    { "id": "physics", "src": "/lib/forgekit-physics.js", "exports": 10 },
+    { "id": "shaders", "src": "/lib/forgekit-shaders.js", "exports": 11 },
+    { "id": "palettes", "src": "/lib/forgekit-palettes.js", "exports": 8 }
   ]
 }
