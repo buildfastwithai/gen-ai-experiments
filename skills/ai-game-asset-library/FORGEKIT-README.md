@@ -2,6 +2,10 @@
 
 ForgeKit is a dependency-free starter library for AI-generated HTML Canvas and Three.js games. Version 2 expands the vault to six visually distinct worlds, 144 original transparent sprite frames and ten reusable game-code modules.
 
+## MCP access for AI game builders
+
+This directory is also a Model Context Protocol server for Codex, Claude Code, Claude Desktop, and other MCP clients. It exposes sprite search, transparent frame extraction, full atlases, code modules, genre-aware recommendations, starter generation, resources, prompts, and safe local project export. See `README.md` for installation and connection instructions.
+
 ## Visual worlds
 
 Every atlas is a transparent 1536 × 1024 PNG arranged as 6 columns × 4 rows. Every frame is 256 × 256 pixels.

@@ -1,0 +1,6 @@
+node_modules
+dist
+tests
+.git
+.forgekit-cache
+npm-debug.log*

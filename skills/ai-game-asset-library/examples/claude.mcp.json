@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "forgekit": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["${FORGEKIT_MCP_ROOT}/dist/stdio.js"],
+      "env": {}
+    }
+  }
+}

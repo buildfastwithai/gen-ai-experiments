@@ -1,0 +1,46 @@
+{
+  "name": "forgekit-game-assets-mcp",
+  "version": "2.1.0",
+  "description": "MCP server that gives Codex, Claude, and other agents access to ForgeKit game sprites and browser-game utilities.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "bin": {
+    "forgekit-mcp": "./dist/stdio.js",
+    "forgekit-mcp-http": "./dist/http.js"
+  },
+  "files": [
+    "dist",
+    "assets",
+    "lib",
+    "asset-manifest.json",
+    "FORGEKIT-README.md",
+    "README.md",
+    "LICENSE.txt"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/stdio.ts",
+    "dev:http": "tsx src/http.ts",
+    "start": "node dist/stdio.js",
+    "start:http": "node dist/http.js",
+    "inspect": "npx @modelcontextprotocol/inspector node dist/stdio.js",
+    "test": "npm run build && node --test tests/*.test.mjs",
+    "check": "npm test",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/node": "^2.0.0",
+    "@modelcontextprotocol/server": "^2.0.0",
+    "sharp": "^0.35.3",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/client": "^2.0.0",
+    "@types/node": "^26.2.0",
+    "tsx": "^4.23.12",
+    "typescript": "^7.0.2"
+  }
+}

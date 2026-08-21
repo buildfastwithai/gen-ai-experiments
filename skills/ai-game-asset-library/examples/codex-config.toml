@@ -1,0 +1,6 @@
+[mcp_servers.forgekit]
+command = "node"
+args = ["/absolute/path/to/gen-ai-experiments/skills/ai-game-asset-library/dist/stdio.js"]
+env = { FORGEKIT_OUTPUT_ROOT = "/absolute/path/to/your/game-projects" }
+startup_timeout_sec = 20
+tool_timeout_sec = 60
