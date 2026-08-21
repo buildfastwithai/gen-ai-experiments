@@ -3,7 +3,17 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 
-export const LIBRARY_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const moduleLibraryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+
+// Vercel bundles the server entrypoint into its function directory while keeping
+// traced project files under the function working directory. Local builds keep
+// using the directory next to dist/src so the npm and Docker transports behave
+// exactly as before.
+export const LIBRARY_ROOT = process.env.FORGEKIT_LIBRARY_ROOT
+  ? path.resolve(process.env.FORGEKIT_LIBRARY_ROOT)
+  : process.env.VERCEL
+    ? process.cwd()
+    : moduleLibraryRoot;
 export const DEFAULT_PUBLIC_BASE_URL =
   "https://cdn.jsdelivr.net/gh/buildfastwithai/gen-ai-experiments@main/skills/ai-game-asset-library";
 

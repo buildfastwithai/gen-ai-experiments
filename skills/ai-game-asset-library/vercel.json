@@ -1,0 +1,10 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm run check:vercel",
+  "functions": {
+    "server.ts": {
+      "includeFiles": "{assets/**,lib/**,asset-manifest.json,FORGEKIT-README.md,README.md,LICENSE.txt}",
+      "maxDuration": 60
+    }
+  }
+}

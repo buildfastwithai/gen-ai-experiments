@@ -94,7 +94,29 @@ Add the server to the `mcpServers` object in Claude Desktop's configuration, usi
 
 Restart Claude Desktop after saving the configuration.
 
-## Run a remote Streamable HTTP server
+## Connect to the public MCP server
+
+The production deployment is public and does not require an API key:
+
+- MCP: `https://ai-game-asset-library.vercel.app/mcp`
+- Health: `https://ai-game-asset-library.vercel.app/health`
+- Manifest: `https://ai-game-asset-library.vercel.app/asset-manifest.json`
+- Assets: `https://ai-game-asset-library.vercel.app/assets/<atlas-name>.png`
+- Modules: `https://ai-game-asset-library.vercel.app/lib/<module-name>.js`
+
+Connect Codex:
+
+```bash
+codex mcp add forgekit --url https://ai-game-asset-library.vercel.app/mcp
+```
+
+Connect Claude Code:
+
+```bash
+claude mcp add --transport http --scope user forgekit https://ai-game-asset-library.vercel.app/mcp
+```
+
+## Run a self-hosted Streamable HTTP server
 
 GitHub stores the source and assets but does not run an MCP process. Deploy `dist/http.js` to a Node host for a URL that anyone can connect to.
 
@@ -124,13 +146,13 @@ npm run start:http
 
 For multiple public hostnames, use a comma-separated `FORGEKIT_ALLOWED_HOSTS` value. Put HTTPS and authentication in front of the Node process when exposing it publicly.
 
-Connect Codex to a deployed endpoint:
+Connect Codex to a self-hosted endpoint:
 
 ```bash
 codex mcp add forgekit --url https://mcp.example.com/mcp
 ```
 
-Connect Claude Code:
+Connect Claude Code to a self-hosted endpoint:
 
 ```bash
 claude mcp add --transport http --scope user forgekit https://mcp.example.com/mcp

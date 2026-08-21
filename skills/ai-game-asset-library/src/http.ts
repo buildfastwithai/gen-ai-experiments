@@ -8,7 +8,8 @@ import { hostHeaderValidation, originValidation, toNodeHandler } from "@modelcon
 import { LIBRARY_ROOT, localLibraryPath, manifest } from "./catalog.js";
 import { catalogStats, createForgeKitServer, SERVER_NAME, SERVER_VERSION } from "./server.js";
 
-const host = process.env.HOST || process.env.FORGEKIT_HOST || "127.0.0.1";
+const isVercel = Boolean(process.env.VERCEL);
+const host = isVercel ? "0.0.0.0" : process.env.HOST || process.env.FORGEKIT_HOST || "127.0.0.1";
 const port = Number(process.env.PORT || process.env.FORGEKIT_PORT || 3333);
 const configuredHosts = (process.env.FORGEKIT_ALLOWED_HOSTS || "localhost,127.0.0.1,[::1]")
   .split(",")
@@ -17,10 +18,21 @@ const configuredHosts = (process.env.FORGEKIT_ALLOWED_HOSTS || "localhost,127.0.
 const validateHost = hostHeaderValidation(configuredHosts);
 const validateOrigin = originValidation(configuredHosts);
 
+function asHttpsUrl(domain: string | undefined): string | undefined {
+  if (!domain) return undefined;
+  return domain.includes("://") ? domain : `https://${domain}`;
+}
+
+const deploymentUrl = asHttpsUrl(process.env.VERCEL_URL);
+const productionUrl = asHttpsUrl(process.env.VERCEL_PROJECT_PRODUCTION_URL);
+const publicBaseUrl =
+  process.env.FORGEKIT_PUBLIC_BASE_URL ||
+  (process.env.VERCEL_ENV === "production" ? productionUrl || deploymentUrl : deploymentUrl || productionUrl);
+
 const mcp = createMcpHandler(
   () => createForgeKitServer({
     allowFilesystemExport: false,
-    ...(process.env.FORGEKIT_PUBLIC_BASE_URL ? { baseUrl: process.env.FORGEKIT_PUBLIC_BASE_URL } : {}),
+    ...(publicBaseUrl ? { baseUrl: publicBaseUrl } : {}),
   }),
   { legacy: "stateless", responseMode: "auto", onerror: (error) => console.error(`[${SERVER_NAME}]`, error) },
 );
@@ -64,7 +76,10 @@ const httpServer = createServer(async (req, res) => {
     const url = new URL(req.url || "/", `http://${req.headers.host || "localhost"}`);
 
     if (url.pathname === "/mcp") {
-      if (!validateHost(req, res) || !validateOrigin(req, res)) return;
+      // Host/origin allowlists protect local network servers from DNS rebinding.
+      // Vercel already terminates public traffic and can serve custom domains, so
+      // applying the localhost allowlist there would reject every remote client.
+      if (!isVercel && (!validateHost(req, res) || !validateOrigin(req, res))) return;
       await handleMcp(req as Parameters<typeof handleMcp>[0], res as Parameters<typeof handleMcp>[1]);
       return;
     }
@@ -101,11 +116,15 @@ const httpServer = createServer(async (req, res) => {
   }
 });
 
-httpServer.listen(port, host, () => {
-  const address = httpServer.address();
-  const activePort = typeof address === "object" && address ? address.port : port;
-  console.error(`[${SERVER_NAME}] v${SERVER_VERSION} listening on http://${host}:${activePort}/mcp`);
-});
+export default httpServer;
+
+if (!isVercel) {
+  httpServer.listen(port, host, () => {
+    const address = httpServer.address();
+    const activePort = typeof address === "object" && address ? address.port : port;
+    console.error(`[${SERVER_NAME}] v${SERVER_VERSION} listening on http://${host}:${activePort}/mcp`);
+  });
+}
 
 async function shutdown(): Promise<void> {
   await mcp.close();
