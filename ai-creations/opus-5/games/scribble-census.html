@@ -1,0 +1,1334 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="A procedurally drawn register of hand-inked faces that blink, watch you, and can be bred together.">
+<title>Scribble Census</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,500;6..96,700&family=Courier+Prime:wght@400;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap">
+
+<style>
+:root{
+  --paper:#E9E7DC;
+  --paper-2:#E1DECF;
+  --paper-3:#D4D1C1;
+  --ink:#17181C;
+  --ink-soft:#4E5049;
+  --ink-faint:#83857A;
+  --rule:#C3BFAE;
+  --stamp:#5E4B8B;
+  --stamp-wash:#DCD3E6;
+  --flag:#A03D2B;
+  --grain:0.055;
+  --tint-a:0.62;
+  --shadow:0 18px 40px -22px rgba(23,24,28,.55);
+  --mast:72px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#15161A;
+    --paper-2:#1C1E23;
+    --paper-3:#25272D;
+    --ink:#E7E4D6;
+    --ink-soft:#A9A79A;
+    --ink-faint:#6E6F68;
+    --rule:#33353C;
+    --stamp:#B9A2E4;
+    --stamp-wash:#2A2438;
+    --flag:#DD7A63;
+    --grain:0.09;
+    --tint-a:0.34;
+    --shadow:0 18px 44px -20px rgba(0,0,0,.75);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#15161A;
+  --paper-2:#1C1E23;
+  --paper-3:#25272D;
+  --ink:#E7E4D6;
+  --ink-soft:#A9A79A;
+  --ink-faint:#6E6F68;
+  --rule:#33353C;
+  --stamp:#B9A2E4;
+  --stamp-wash:#2A2438;
+  --flag:#DD7A63;
+  --grain:0.09;
+  --tint-a:0.34;
+  --shadow:0 18px 44px -20px rgba(0,0,0,.75);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Newsreader",Georgia,serif;
+  font-size:16px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+  position:relative;
+}
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  opacity:var(--grain);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ───────── masthead ───────── */
+.masthead{
+  position:sticky;top:0;z-index:40;
+  background:var(--paper);
+  border-bottom:1px solid var(--ink);
+  box-shadow:0 1px 0 var(--rule), 0 3px 0 -1px var(--paper), 0 4px 0 -1px var(--rule);
+}
+.masthead-inner{
+  max-width:1500px;margin:0 auto;padding:14px 22px 12px;
+  display:flex;align-items:flex-end;gap:26px;flex-wrap:wrap;
+}
+.brand{display:flex;flex-direction:column;gap:2px;margin-right:auto}
+.brand h1{
+  font-family:"Bodoni Moda",Didot,serif;
+  font-weight:700;
+  font-size:clamp(1.45rem,3.2vw,2.15rem);
+  letter-spacing:.055em;
+  text-transform:uppercase;
+  margin:0;line-height:.98;
+}
+.brand p{
+  margin:0;
+  font-family:"Courier Prime",monospace;
+  font-size:.66rem;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.controls{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.field{display:flex;flex-direction:column;gap:4px}
+.field > label{
+  font-family:"Courier Prime",monospace;
+  font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);
+}
+input[type=text],select{
+  font-family:"Courier Prime",monospace;font-size:.82rem;
+  background:transparent;color:var(--ink);
+  border:0;border-bottom:1.5px solid var(--ink);
+  padding:3px 2px;border-radius:0;
+}
+input[type=text]{width:13ch;text-transform:uppercase}
+select{padding-right:14px}
+input:focus-visible,select:focus-visible,button:focus-visible{
+  outline:2px solid var(--stamp);outline-offset:3px;
+}
+.btn{
+  font-family:"Courier Prime",monospace;
+  font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  background:transparent;color:var(--ink);
+  border:1.5px solid var(--ink);
+  padding:7px 13px;cursor:pointer;
+  transition:background .14s ease,color .14s ease,transform .1s ease;
+}
+.btn:hover{background:var(--ink);color:var(--paper)}
+.btn:active{transform:translateY(1px)}
+.btn[aria-pressed="true"]{background:var(--stamp);border-color:var(--stamp);color:var(--paper)}
+.btn.primary{background:var(--ink);color:var(--paper)}
+.btn.primary:hover{background:var(--stamp);border-color:var(--stamp)}
+.btn.breed{border-color:var(--flag);color:var(--flag)}
+.btn.breed:hover{background:var(--flag);color:var(--paper)}
+.btn:disabled{opacity:.32;cursor:not-allowed}
+.btn:disabled:hover{background:transparent;color:var(--ink)}
+
+/* ───────── ledger strip ───────── */
+.ledger{
+  max-width:1500px;margin:0 auto;padding:10px 22px 0;
+  display:flex;gap:18px;flex-wrap:wrap;align-items:baseline;
+  font-family:"Courier Prime",monospace;font-size:.66rem;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);
+}
+.ledger em{font-style:normal;color:var(--ink)}
+.ledger .note{
+  font-family:"Newsreader",serif;font-style:italic;font-size:.9rem;
+  letter-spacing:0;text-transform:none;color:var(--ink-soft);
+}
+
+/* ───────── the wall ───────── */
+.wall{
+  position:relative;z-index:1;
+  max-width:1500px;margin:0 auto;
+  padding:18px 22px 190px;
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(118px,1fr));
+  transition:padding-right .34s cubic-bezier(.3,.8,.3,1);
+  gap:12px 2px;
+}
+.cell{
+  position:relative;
+  background:none;border:0;padding:0 0 12px;margin:0;
+  cursor:pointer;color:var(--ink);
+  display:block;width:100%;
+}
+.cell svg{display:block;width:100%;height:auto;overflow:visible}
+.cell .tag{
+  position:absolute;left:0;right:0;bottom:0;
+  font-family:"Courier Prime",monospace;
+  font-size:.56rem;letter-spacing:.1em;
+  color:var(--ink-faint);
+  text-align:center;
+  opacity:0;transition:opacity .18s ease;
+}
+.cell:hover .tag,.cell:focus-visible .tag{opacity:1}
+.cell:hover .face-art{transform:translateY(-3px) rotate(-.6deg)}
+.face-art{transition:transform .22s cubic-bezier(.2,.9,.3,1.2)}
+body.record-open .wall{padding-right:calc(22px + min(400px,92vw))}
+@media (max-width:720px){body.record-open .wall{padding-right:22px}}
+.cell.picked::after{
+  content:"";position:absolute;inset:2px 0 8px;
+  border:1.5px solid var(--stamp);
+  background:color-mix(in srgb,var(--stamp) 8%,transparent);
+  pointer-events:none;
+}
+.cell.fresh::before{
+  content:"NEW";position:absolute;top:2px;right:4px;z-index:2;
+  font-family:"Courier Prime",monospace;font-size:.52rem;letter-spacing:.12em;
+  color:var(--flag);border:1px solid var(--flag);padding:0 3px;
+}
+
+/* stroke animation */
+.face-art path.stroke{stroke-dasharray:1;stroke-dashoffset:1;animation:ink var(--dur,.3s) linear var(--del,0s) forwards}
+.face-art path.fill{opacity:0;animation:soak .38s ease var(--del,0s) forwards}
+@keyframes ink{to{stroke-dashoffset:0}}
+@keyframes soak{to{opacity:var(--o,1)}}
+.face-art.still path.stroke{animation:none;stroke-dashoffset:0}
+.face-art.still path.fill{animation:none;opacity:var(--o,1)}
+
+.breather{transform-origin:50% 88%;animation:breathe var(--bd,5s) ease-in-out var(--bdl,0s) infinite alternate}
+@keyframes breathe{from{transform:scale(1) translateY(0)}to{transform:scale(1.014) translateY(-1.5px)}}
+body.paused .breather{animation-play-state:paused}
+
+.eye .closed{opacity:0}
+.eye.blink .open{opacity:0}
+.eye.blink .closed{opacity:1}
+
+/* ───────── specimen drawer ───────── */
+.drawer{
+  position:fixed;top:var(--mast,72px);right:0;bottom:0;width:min(400px,92vw);z-index:60;
+  background:var(--paper-2);
+  border-left:1px solid var(--ink);
+  box-shadow:var(--shadow);
+  transform:translateX(101%);
+  transition:transform .34s cubic-bezier(.3,.8,.3,1);
+  display:flex;flex-direction:column;
+  overflow:hidden;
+}
+.drawer.open{transform:none}
+.drawer-scroll{overflow-y:auto;padding:20px 24px 30px}
+.drawer-head{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:12px 18px 12px 24px;border-bottom:1px solid var(--rule);
+  font-family:"Courier Prime",monospace;font-size:.66rem;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);
+  flex:0 0 auto;
+}
+.x{background:none;border:0;color:var(--ink);font-size:1.15rem;cursor:pointer;line-height:1;padding:4px 6px}
+.portrait{
+  background:var(--paper);
+  border:1px solid var(--rule);
+  padding:8px;margin-bottom:16px;
+  display:flex;justify-content:center;
+}
+.portrait svg{width:100%;max-width:230px;height:auto}
+.spec-name{
+  font-family:"Bodoni Moda",Didot,serif;font-weight:500;
+  font-size:1.72rem;line-height:1.08;margin:0 0 2px;text-wrap:balance;
+}
+.spec-job{
+  font-family:"Courier Prime",monospace;font-size:.66rem;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--stamp);
+  margin:0 0 12px;
+}
+.spec-bio{margin:0 0 18px;font-size:1rem;line-height:1.62;color:var(--ink-soft);max-width:60ch}
+.spec-bio em{color:var(--ink);font-style:italic}
+.sect{
+  font-family:"Courier Prime",monospace;font-size:.6rem;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);
+  border-top:1px solid var(--rule);padding-top:8px;margin:0 0 8px;
+}
+.traits{display:grid;grid-template-columns:auto 1fr;gap:3px 14px;margin:0 0 20px;font-size:.9rem}
+.traits dt{font-family:"Courier Prime",monospace;font-size:.63rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);padding-top:3px}
+.traits dd{margin:0;color:var(--ink)}
+.genome{
+  font-family:"Courier Prime",monospace;font-size:.86rem;letter-spacing:.16em;
+  background:var(--paper);border:1px dashed var(--rule);
+  padding:9px 11px;margin:0 0 8px;cursor:copy;color:var(--ink);
+  width:100%;text-align:left;word-break:break-all;
+}
+.genome:hover{border-color:var(--stamp);color:var(--stamp)}
+.drawer-actions{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 4px}
+.lineage{display:flex;gap:10px;align-items:center;margin-bottom:18px}
+.lineage figure{margin:0;width:66px;text-align:center}
+.lineage svg{width:100%;height:auto}
+.lineage figcaption{font-family:"Courier Prime",monospace;font-size:.55rem;letter-spacing:.06em;color:var(--ink-faint);margin-top:2px}
+.lineage .x-mark{font-family:"Bodoni Moda",serif;font-size:1.1rem;color:var(--ink-faint)}
+
+/* ───────── pairing tray ───────── */
+.tray{
+  position:fixed;left:0;right:0;bottom:0;z-index:50;
+  background:var(--paper-2);
+  border-top:1px solid var(--ink);
+  box-shadow:0 -14px 34px -26px rgba(0,0,0,.6);
+  transform:translateY(101%);
+  transition:transform .3s cubic-bezier(.3,.8,.3,1);
+}
+.tray.up{transform:none}
+.tray-inner{
+  max-width:1500px;margin:0 auto;padding:12px 22px;
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+}
+.tray-label{
+  font-family:"Courier Prime",monospace;font-size:.6rem;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);
+}
+.slots{display:flex;align-items:center;gap:10px}
+.slot{
+  width:58px;height:64px;border:1.5px dashed var(--rule);
+  display:flex;align-items:center;justify-content:center;
+  background:var(--paper);position:relative;
+}
+.slot.full{border-style:solid;border-color:var(--ink)}
+.slot svg{width:100%;height:100%}
+.slot .empty{font-family:"Courier Prime",monospace;font-size:.55rem;color:var(--ink-faint)}
+.cross{font-family:"Bodoni Moda",serif;font-size:1.3rem;color:var(--flag)}
+.tray-names{font-size:.92rem;color:var(--ink-soft);font-style:italic;flex:1 1 160px;min-width:0}
+.tray-actions{display:flex;gap:8px;margin-left:auto}
+
+/* ───────── toast ───────── */
+.toast{
+  position:fixed;left:50%;bottom:96px;transform:translate(-50%,14px);
+  background:var(--ink);color:var(--paper);
+  font-family:"Courier Prime",monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:8px 15px;z-index:80;opacity:0;pointer-events:none;
+  transition:opacity .2s ease,transform .2s ease;
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+.credit{
+  position:relative;z-index:1;
+  max-width:1500px;margin:0 auto;padding:0 22px 30px;
+  font-family:"Courier Prime",monospace;font-size:.6rem;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);
+}
+
+@media (max-width:720px){
+  .wall{grid-template-columns:repeat(auto-fill,minmax(96px,1fr));padding-bottom:220px}
+  .drawer{width:100%;top:auto;height:86vh;border-left:0;border-top:1px solid var(--ink);transform:translateY(101%)}
+  .drawer.open{transform:none}
+  .brand h1{font-size:1.3rem}
+  .tray-actions{margin-left:0}
+}
+@media (prefers-reduced-motion:reduce){
+  .face-art path.stroke{animation:none;stroke-dashoffset:0}
+  .face-art path.fill{animation:none;opacity:var(--o,1)}
+  .breather{animation:none}
+  .cell:hover .face-art{transform:none}
+  .drawer,.tray{transition:none}
+}
+</style>
+
+</head>
+<body>
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="brand">
+      <h1>Scribble Census</h1>
+      <p>Register of persons drawn into being &middot; est. this page load</p>
+    </div>
+    <div class="controls">
+      <div class="field">
+        <label for="seed">Census seed</label>
+        <input type="text" id="seed" spellcheck="false" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="pop">Heads</label>
+        <select id="pop">
+          <option>24</option>
+          <option selected>48</option>
+          <option>84</option>
+          <option>120</option>
+        </select>
+      </div>
+      <button class="btn primary" id="redraw">Take census</button>
+      <button class="btn" id="life" aria-pressed="false">Hold still</button>
+      <button class="btn" id="theme" title="Switch between paper, slate, and your system setting">Paper &middot; day</button>
+    </div>
+  </div>
+</header>
+
+<div class="ledger">
+  <span>Enumerated <em id="count">0</em></span>
+  <span>Bred here <em id="bred">0</em></span>
+  <span class="note">Every face is a number that learned to have a nose. Click one to meet it; pick two to see what they'd make.</span>
+</div>
+
+<main class="wall" id="wall"></main>
+
+<p class="credit">Drawn live in your browser — no images, no faces of anyone real. Same seed, same crowd, forever.</p>
+
+<aside class="drawer" id="drawer" aria-hidden="true" aria-label="Specimen record">
+  <div class="drawer-head">
+    <span id="d-num">SC-0000</span>
+    <button class="x" id="d-close" aria-label="Close record">&times;</button>
+  </div>
+  <div class="drawer-scroll" id="d-body"></div>
+</aside>
+
+<div class="tray" id="tray">
+  <div class="tray-inner">
+    <span class="tray-label">Pairing</span>
+    <div class="slots">
+      <div class="slot" id="slot0"><span class="empty">A</span></div>
+      <span class="cross">&times;</span>
+      <div class="slot" id="slot1"><span class="empty">B</span></div>
+    </div>
+    <span class="tray-names" id="tray-names">Pick two heads.</span>
+    <div class="tray-actions">
+      <button class="btn breed" id="do-breed" disabled>Breed</button>
+      <button class="btn" id="clear-pair">Clear</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+const NS="http://www.w3.org/2000/svg";
+const TAU=Math.PI*2;
+const VX=30, VY=38, VW=140, VH=168;
+
+/* ══════════ deterministic randomness ══════════ */
+function hash32(s){let h=2166136261>>>0;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
+function mulberry(seed){let a=seed>>>0;return function(){a=(a+0x6D2B79F5)|0;let t=Math.imul(a^(a>>>15),1|a);t=(t+Math.imul(t^(t>>>7),61|t))^t;return ((t^(t>>>14))>>>0)/4294967296;};}
+
+/* ══════════ genome ══════════ */
+const ALPH="0123456789ABCDEFGHJKLMNPQRSTUVWXYZ"; // 34 glyphs, no I/O
+const GENES=["head","width","height","jaw","hairStyle","hairMass","hairLine","eyeStyle","eyeSize","eyeSpace","asym","brow","nose","noseSize","mouth","mouthW","ear","beard","hat","glass","tint","hue","wobble","tilt"];
+const GI={}; GENES.forEach((g,i)=>GI[g]=i);
+function randomGenome(R){let s="";for(let i=0;i<GENES.length;i++)s+=ALPH[(R()*34)|0];return s;}
+function gene(g,name){const c=g[GI[name]];const v=ALPH.indexOf(c);return v<0?0:v;}
+function norm(g,name){return gene(g,name)/33;}
+function pick(g,name,list){return list[gene(g,name)%list.length];}
+function fmtGenome(g){return g.match(/.{1,6}/g).join(" ");}
+
+/* ══════════ geometry ══════════ */
+const f=n=>Math.round(n*100)/100;
+function toPath(pts,closed){
+  if(pts.length<2)return"";
+  const p=closed?[pts[pts.length-1],...pts,pts[0],pts[1]]:[pts[0],...pts,pts[pts.length-1]];
+  let d="M"+f(pts[0][0])+","+f(pts[0][1]);
+  for(let i=1;i<p.length-2;i++){
+    const p0=p[i-1],p1=p[i],p2=p[i+1],p3=p[i+2];
+    const c1x=p1[0]+(p2[0]-p0[0])/6, c1y=p1[1]+(p2[1]-p0[1])/6;
+    const c2x=p2[0]-(p3[0]-p1[0])/6, c2y=p2[1]-(p3[1]-p1[1])/6;
+    d+="C"+f(c1x)+","+f(c1y)+" "+f(c2x)+","+f(c2y)+" "+f(p2[0])+","+f(p2[1]);
+  }
+  if(closed)d+="Z";
+  return d;
+}
+function plen(pts,closed){
+  let L=0;
+  for(let i=1;i<pts.length;i++)L+=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);
+  if(closed&&pts.length>2)L+=Math.hypot(pts[0][0]-pts[pts.length-1][0],pts[0][1]-pts[pts.length-1][1]);
+  return L;
+}
+function arc(cx,cy,r,a0,a1,n,squash){
+  const pts=[];squash=squash||1;
+  for(let i=0;i<=n;i++){const a=a0+(a1-a0)*i/n;pts.push([cx+Math.cos(a)*r,cy+Math.sin(a)*r*squash]);}
+  return pts;
+}
+function ring(cx,cy,r,n,squash){
+  const pts=[];squash=squash||1;
+  for(let i=0;i<n;i++){const a=i/n*TAU;pts.push([cx+Math.cos(a)*r,cy+Math.sin(a)*r*squash]);}
+  return pts;
+}
+
+/* ══════════ ink palette for washes & hair ══════════ */
+const WASH=["#E3BCA6","#D7C39C","#B6C2AE","#A9BCCB","#C7A88E","#D3AEA4","#C9B7C6","#BFC7A8"];
+const HAIRTONE=["#2A2118","#4B3320","#6E4A2A","#8A6437","#A98457","#5A5148"];
+
+/* ══════════ the face builder ══════════ */
+function buildFace(genome,inkSeed,opt){
+  opt=opt||{};
+  const R=mulberry((hash32(genome)^(inkSeed>>>0))>>>0);
+  const svg=document.createElementNS(NS,"svg");
+  svg.setAttribute("viewBox",VX+" "+VY+" "+VW+" "+VH);
+  svg.setAttribute("class","face-art");
+  svg.setAttribute("aria-hidden","true");
+  const breath=document.createElementNS(NS,"g");
+  breath.setAttribute("class","breather");
+  svg.appendChild(breath);
+
+  const strokes=[];
+  const pupils=[];
+  const eyes=[];
+  const wob=0.45+norm(genome,"wobble")*1.35;
+
+  let host=breath;
+  function el(tag,attrs,len,kind){
+    const e=document.createElementNS(NS,tag);
+    for(const k in attrs)e.setAttribute(k,attrs[k]);
+    host.appendChild(e);
+    strokes.push({e:e,len:len||10,kind:kind||"stroke"});
+    return e;
+  }
+  function line(pts,o){
+    o=o||{};
+    const passes=o.passes===undefined?2:o.passes;
+    const amp=(o.amp===undefined?0.9:o.amp)*wob;
+    for(let k=0;k<passes;k++){
+      const j=pts.map(p=>[p[0]+(R()*2-1)*amp,p[1]+(R()*2-1)*amp]);
+      const e=el("path",{
+        d:toPath(j,!!o.closed),fill:"none",stroke:o.color||"currentColor",
+        "stroke-width":f((o.w||2.1)*(k?0.78:1)),
+        "stroke-linecap":"round","stroke-linejoin":"round",
+        pathLength:"1",opacity:k?0.5:1,class:"stroke"
+      },plen(j,o.closed));
+      if(o.tag)e.setAttribute("data-part",o.tag);
+    }
+  }
+  function blob(pts,o){
+    o=o||{};
+    const amp=(o.amp===undefined?1.1:o.amp)*wob;
+    const j=pts.map(p=>[p[0]+(R()*2-1)*amp,p[1]+(R()*2-1)*amp]);
+    const col=o.color||"currentColor";
+    const e=el("path",{
+      d:toPath(j,true),
+      stroke:o.stroke||"none","stroke-width":o.w||0,
+      class:"fill"
+    },0,"fill");
+    e.style.fill=col;
+    e.style.setProperty("--o",o.opacity===undefined?1:o.opacity);
+    return e;
+  }
+
+  /* ---- head ---- */
+  const cx=100, cy=120;
+  const rx=40+norm(genome,"width")*19;
+  const ry=45+norm(genome,"height")*20;
+  const e0=0.82+norm(genome,"head")*0.5;
+  const jaw=norm(genome,"jaw")*0.26;
+  const ph1=R()*TAU, ph2=R()*TAU;
+  const m1=0.03+R()*0.045, m2=0.02+R()*0.035;
+  function headPt(a){
+    const ca=Math.cos(a), sa=Math.sin(a);
+    const mod=1+m1*Math.sin(a*2+ph1)+m2*Math.sin(a*3+ph2);
+    let x=cx+rx*Math.sign(ca)*Math.pow(Math.abs(ca),e0)*mod;
+    let y=cy+ry*Math.sign(sa)*Math.pow(Math.abs(sa),e0)*mod;
+    if(sa>0)x=cx+(x-cx)*(1-jaw*sa*sa);
+    return [x,y];
+  }
+  const NH=34, head=[];
+  for(let i=0;i<NH;i++)head.push(headPt(-Math.PI/2+i/NH*TAU));
+
+  /* ---- misregistered colour wash ---- */
+  if(norm(genome,"tint")>0.58){
+    const col=pick(genome,"hue",WASH);
+    const dx=(R()*2-1)*5, dy=(R()*2-1)*4.5;
+    const inner=head.filter((p,i)=>i%2===0).map(p=>[cx+(p[0]-cx)*0.93+dx,cy+(p[1]-cy)*0.93+dy]);
+    blob(inner,{color:col,opacity:"var(--tint-a)",amp:2.4});
+  }
+
+  /* ---- the head itself ---- */
+  line(head,{closed:true,w:2.2,amp:1.05});
+
+  /* ---- ears ---- */
+  const earStyle=gene(genome,"ear")%4;
+  if(earStyle>0){
+    const er=(earStyle===3?9:5.5)+R()*2;
+    const ey=cy+ry*0.02;
+    [-1,1].forEach(s=>{
+      const ex=cx+s*(rx*0.96);
+      line(arc(ex,ey,er,s>0?-1.5:1.5,s>0?1.5:4.64,7,1.15),{w:1.8,amp:0.7});
+    });
+  }
+
+  /* ---- hair / scalp ---- */
+  const hatStyle=gene(genome,"hat")%9;   // 0-4 = none (bald-ish common), 5..8 headwear
+  const hasHat=hatStyle>=5;
+  const hairStyle=gene(genome,"hairStyle")%8;
+  const mass=norm(genome,"hairMass");
+  const hairY=cy-ry*(0.38+mass*0.42);
+  const lineType=gene(genome,"hairLine")%4;
+  const dark=R()<0.62;
+  const hairCol=dark?"currentColor":pick(genome,"hue",HAIRTONE);
+
+  function scalp(edgeY,expand,shape){
+    // returns closed polygon of the cap above edgeY
+    const top=[];
+    for(let i=0;i<=26;i++){
+      const a=-Math.PI+ (i/26)*Math.PI;      // left → top → right
+      const p=headPt(a);
+      top.push([cx+(p[0]-cx)*expand, cy+(p[1]-cy)*expand]);
+    }
+    const kept=top.filter(p=>p[1]<=edgeY+1);
+    if(kept.length<3)return null;
+    const L=kept[0], Rr=kept[kept.length-1];
+    const bottom=[];
+    const steps=9;
+    for(let i=1;i<steps;i++){
+      const t=i/steps;
+      const x=Rr[0]+(L[0]-Rr[0])*t;
+      let y=edgeY;
+      if(shape===0)y=edgeY+Math.sin(t*Math.PI*2.4)*3.2;          // wavy
+      else if(shape===1)y=edgeY+Math.sin(t*Math.PI)*7;            // low fringe
+      else if(shape===2)y=edgeY+(Math.abs(t-0.5)<0.16?7:0)-2;     // widow's peak
+      else y=edgeY-Math.sin(t*Math.PI)*9;                          // receding
+      bottom.push([x,y]);
+    }
+    return kept.concat(bottom);
+  }
+
+  if(!(hairStyle===0&&!hasHat)){
+    const cap=scalp(hairY,1.02+R()*0.04,lineType);
+    if(cap){
+      if(hairStyle===1||hairStyle===2||hairStyle===6){
+        blob(cap,{color:hairCol,amp:1.6});
+        if(hairStyle===2){ // spikes
+          for(let i=2;i<cap.length-2;i+=2){
+            const p=cap[i]; if(p[1]>hairY-4)continue;
+            const dx=(p[0]-cx)/rx, dy=(p[1]-cy)/ry;
+            const L=6+R()*9;
+            line([[p[0],p[1]],[p[0]+dx*L+(R()*2-1)*2,p[1]+dy*L-2]],{w:1.5,passes:1,amp:0.6});
+          }
+        }
+      } else if(hairStyle===3){ // hatch
+        line(cap,{closed:true,w:1.5,amp:0.9});
+        for(let i=0;i<14;i++){
+          const t=i/13;
+          const x=cx-rx*0.95+t*rx*1.9;
+          const yTop=cy-ry*(1-Math.pow(Math.abs((x-cx)/rx),1.9))*0.99;
+          if(yTop>hairY)continue;
+          line([[x+4,yTop+1],[x-2,hairY-1]],{w:1.3,passes:1,amp:0.8});
+        }
+      } else if(hairStyle===4){ // curls
+        line(cap,{closed:true,w:1.4,amp:1.1});
+        for(let i=1;i<cap.length;i+=1){
+          const p=cap[i]; if(p[1]>hairY-3)continue;
+          if(R()<0.45)continue;
+          const r=2.6+R()*2.6;
+          line(arc(p[0],p[1],r,0,TAU*0.92,8),{w:1.4,passes:1,amp:0.5});
+        }
+      } else if(hairStyle===5){ // scribble
+        const x0=cx-rx*0.9,x1=cx+rx*0.9;
+        const zz=[];
+        for(let i=0;i<26;i++){
+          const t=i/25;
+          zz.push([x0+(x1-x0)*t,(i%2?hairY-2:cy-ry*0.98)+(R()*2-1)*4]);
+        }
+        line(zz,{w:1.5,passes:1,amp:1.4});
+        line(zz.map(p=>[p[0]+3,p[1]+3]),{w:1.3,passes:1,amp:1.6});
+      } else if(hairStyle===7){ // tufts
+        for(let i=0;i<3+((R()*4)|0);i++){
+          const a=-Math.PI*0.75+R()*Math.PI*0.5;
+          const p=headPt(a);
+          line([[p[0],p[1]],[p[0]+(R()*2-1)*8,p[1]-8-R()*10]],{w:1.6,passes:1,amp:0.8});
+        }
+      }
+    }
+  }
+
+  /* ---- headwear ---- */
+  if(hasHat){
+    const kind=hatStyle-5; // 0 beanie 1 headband 2 flat cap 3 ball cap
+    const bandY=cy-ry*(0.30+R()*0.22);
+    if(kind===0){
+      const cap=scalp(bandY,1.06,3);
+      if(cap){
+        blob(cap,{color:"currentColor",amp:1.3});
+        const bandTop=arc(cx,bandY,rx*1.04,Math.PI,TAU,10,0.35);
+        line(bandTop,{w:2.2,amp:0.8});
+        line(bandTop.map(p=>[p[0],p[1]+7]),{w:2.2,amp:0.8});
+        for(let i=1;i<10;i++){
+          const p=bandTop[i];
+          line([[p[0],p[1]],[p[0],p[1]+7]],{w:1.2,passes:1,amp:0.5});
+        }
+      }
+    } else if(kind===1){
+      const th=7+R()*6;
+      const band=arc(cx,bandY,rx*1.03,Math.PI*1.03,TAU*0.985,12,0.45);
+      const poly=band.concat(band.slice().reverse().map(p=>[p[0],p[1]+th]));
+      blob(poly,{color:"currentColor",amp:1});
+    } else if(kind===2){
+      const cap=scalp(bandY+2,1.05,2);
+      if(cap){
+        blob(cap,{color:"currentColor",amp:1.5});
+        const s=R()<0.5?-1:1;
+        const v=[[cx+s*rx*0.15,bandY+3],[cx+s*rx*0.98,bandY-1],[cx+s*rx*1.10,bandY+5],[cx+s*rx*0.2,bandY+8]];
+        blob(v,{color:"currentColor",amp:0.9});
+      }
+    } else {
+      const cap=scalp(bandY,1.04,3);
+      if(cap){
+        blob(cap,{color:"currentColor",amp:1.2});
+        const s=R()<0.5?-1:1;
+        const brim=arc(cx+s*rx*0.46,bandY+2,rx*0.62,s>0?-0.5:Math.PI+0.5,s>0?Math.PI*0.62:Math.PI*1.62,10,0.34);
+        line(brim,{w:2,amp:0.7});
+      }
+    }
+  }
+
+  /* ---- eyes ---- */
+  const eyeY=cy-ry*(0.02+norm(genome,"asym")*0.12);
+  const eDX=rx*(0.34+norm(genome,"eyeSpace")*0.22);
+  const eR=3.4+norm(genome,"eyeSize")*6.4;
+  const eStyle=gene(genome,"eyeStyle")%6;
+  const asym=(norm(genome,"asym")-0.5);
+
+  [-1,1].forEach((s,idx)=>{
+    const ex=cx+s*eDX+(R()*2-1)*1.6;
+    const ey=eyeY+(idx?asym*9:0)+(R()*2-1)*1.4;
+    const r=eR*(idx?1+asym*0.55:1);
+    const g=document.createElementNS(NS,"g");
+    g.setAttribute("class","eye");
+    host.appendChild(g);
+    const prev=host; host=g;
+
+    const openG=document.createElementNS(NS,"g");
+    openG.setAttribute("class","open");
+    const closedG=document.createElementNS(NS,"g");
+    closedG.setAttribute("class","closed");
+
+    host=openG;
+    let pupilR=Math.max(1.3,r*0.34), travel=Math.max(0.8,r*0.42);
+    if(eStyle===0){                       // solid dot
+      blob(ring(ex,ey,r*0.62,10),{color:"currentColor",amp:0.6});
+      pupilR=0; travel=0;
+    } else if(eStyle===4){                // squint line
+      line([[ex-r,ey],[ex+r*0.3,ey-1.5],[ex+r,ey+0.5]],{w:2,amp:0.7});
+      pupilR=r*0.22; travel=r*0.3;
+    } else {
+      const squash=eStyle===2?1:(eStyle===3?0.62:0.86);
+      const rim=ring(ex,ey,r,14,squash);
+      blob(rim,{color:"var(--paper)",amp:0.45,opacity:1});
+      line(rim,{closed:true,w:1.8,amp:0.6});
+      if(eStyle===5){ // heavy lid over the eye
+        line(arc(ex,ey,r*1.25,Math.PI*1.08,TAU*0.98,8,0.9),{w:1.6,passes:1,amp:0.6});
+      }
+      pupilR=Math.max(1.4,r*(eStyle===2?0.3:0.4));
+      travel=Math.max(0.9,(r-pupilR)*0.72);
+    }
+    if(pupilR>0){
+      const pg=document.createElementNS(NS,"g");
+      pg.setAttribute("class","pupil");
+      openG.appendChild(pg);
+      const savedHost=host; host=pg;
+      blob(ring(ex,ey,pupilR,9),{color:"currentColor",amp:0.35});
+      host=savedHost;
+      pupils.push({g:pg,ox:ex,oy:ey,travel:travel,cur:{x:0,y:0}});
+    }
+    host=closedG;
+    line([[ex-r,ey-1],[ex,ey+r*0.55],[ex+r,ey-1]],{w:1.9,passes:1,amp:0.5});
+    host=g;
+    g.appendChild(openG);g.appendChild(closedG);
+    eyes.push(g);
+    host=prev;
+
+    /* brow */
+    const bStyle=gene(genome,"brow")%5;
+    if(bStyle>0){
+      const by=ey-r-(3+R()*4);
+      const tiltB=(bStyle===2?1:bStyle===3?-1:0)*(2.5+R()*3);
+      const bw=r*(1+ (bStyle===4?0.9:0.4));
+      line([[ex-bw,by+tiltB],[ex,by-1],[ex+bw,by-tiltB]],{w:bStyle===4?2.8:1.8,passes:bStyle===4?2:1,amp:0.7});
+    }
+  });
+
+  /* ---- nose ---- */
+  const nStyle=gene(genome,"nose")%6;
+  const nLen=6+norm(genome,"noseSize")*16;
+  const nx=cx+(R()*2-1)*4;
+  const nyTop=eyeY+4;
+  if(nStyle===0)line([[nx+2,nyTop],[nx-1,nyTop+nLen],[nx+5,nyTop+nLen+1]],{w:1.9});
+  else if(nStyle===1)line([[nx,nyTop],[nx+1,nyTop+nLen]],{w:1.9});
+  else if(nStyle===2)line([[nx-4,nyTop+nLen],[nx+1,nyTop],[nx+5,nyTop+nLen],[nx-4,nyTop+nLen]],{w:1.7});
+  else if(nStyle===3)line(arc(nx,nyTop+nLen*0.7,nLen*0.42,-0.3,Math.PI+0.3,9),{w:1.8});
+  else if(nStyle===4){
+    line([[nx-2,nyTop],[nx-4,nyTop+nLen],[nx+4,nyTop+nLen*0.92]],{w:2});
+  } else {
+    line(ring(nx,nyTop+nLen*0.6,nLen*0.36,10,0.9),{w:1.7,closed:true});
+  }
+
+  /* ---- mouth ---- */
+  const mStyle=gene(genome,"mouth")%7;
+  const mw=rx*(0.20+norm(genome,"mouthW")*0.34);
+  const my=nyTop+nLen+8+R()*8;
+  const mx=cx+(R()*2-1)*5;
+  if(mStyle===0)line([[mx-mw,my],[mx,my+1.5],[mx+mw,my-1]],{w:2});
+  else if(mStyle===1)line(arc(mx,my-mw*0.45,mw,0.32,Math.PI-0.32,9,0.75),{w:2});
+  else if(mStyle===2)line(arc(mx,my+mw*0.5,mw,Math.PI+0.35,TAU-0.35,9,0.7),{w:2});
+  else if(mStyle===3){
+    blob(ring(mx,my,mw*0.56,12,1.2),{color:"currentColor",amp:0.7,opacity:0.9});
+  } else if(mStyle===4){
+    const w=[];for(let i=0;i<=8;i++){const t=i/8;w.push([mx-mw+2*mw*t,my+Math.sin(t*Math.PI*2.6)*2.6]);}
+    line(w,{w:1.8});
+  } else if(mStyle===5){
+    const sm=arc(mx,my-mw*0.4,mw,0.25,Math.PI-0.25,9,0.8);
+    line(sm,{w:2});
+    line([[sm[0][0],sm[0][1]],[sm[sm.length-1][0],sm[sm.length-1][1]]],{w:1.4,passes:1});
+  } else {
+    line([[mx-mw,my],[mx+mw,my+2]],{w:2});
+    line([[mx-mw*0.3,my-3],[mx-mw*0.3,my+3]],{w:1.2,passes:1});
+    line([[mx+mw*0.35,my-2.5],[mx+mw*0.35,my+3.5]],{w:1.2,passes:1});
+  }
+
+  /* ---- facial hair ---- */
+  const bStyleF=gene(genome,"beard")%9; // 0-4 none
+  if(bStyleF>=5){
+    const kind=bStyleF-5;
+    if(kind===0){ // moustache
+      const mwid=mw*1.15;
+      const m=[[mx-mwid,my-7],[mx-mwid*0.4,my-10],[mx,my-7.5],[mx+mwid*0.4,my-10],[mx+mwid,my-7]];
+      blob(m.concat([[mx+mwid*0.6,my-3],[mx,my-5],[mx-mwid*0.6,my-3]]),{color:hairCol,amp:1});
+    } else if(kind===1){ // goatee
+      const gy=my+9;
+      blob([[mx-8,gy],[mx,gy-3],[mx+8,gy],[mx+5,gy+14],[mx-5,gy+14]],{color:hairCol,amp:1.4});
+    } else if(kind===2){ // stubble
+      for(let i=0;i<44;i++){
+        const a=Math.PI*0.12+R()*Math.PI*0.76;
+        const rr=0.72+R()*0.24;
+        const p=headPt(a);
+        const x=cx+(p[0]-cx)*rr, y=cy+(p[1]-cy)*rr;
+        if(y<my-4)continue;
+        line([[x,y],[x+1.2,y+1.6]],{w:1.1,passes:1,amp:0.3});
+      }
+    } else if(kind===3){ // full beard
+      const low=[];
+      for(let i=0;i<=20;i++){
+        const a=Math.PI*0.02+(i/20)*Math.PI*0.96;
+        const p=headPt(a);
+        low.push([cx+(p[0]-cx)*1.03,cy+(p[1]-cy)*1.05]);
+      }
+      const topEdge=[];
+      for(let i=0;i<=8;i++){
+        const t=i/8;
+        topEdge.push([low[low.length-1][0]+(low[0][0]-low[low.length-1][0])*t, my-3+Math.sin(t*Math.PI*2)*3]);
+      }
+      blob(low.concat(topEdge),{color:hairCol,amp:1.8});
+    } else { // chin strap
+      const st=[];
+      for(let i=0;i<=16;i++){
+        const a=Math.PI*0.06+(i/16)*Math.PI*0.88;
+        const p=headPt(a);
+        st.push([cx+(p[0]-cx)*0.99,cy+(p[1]-cy)*1.0]);
+      }
+      line(st,{w:2.4,amp:1.2});
+    }
+  }
+
+  /* ---- glasses ---- */
+  const gStyle=gene(genome,"glass")%8; // 0-4 none
+  if(gStyle>=5){
+    const kind=gStyle-5;
+    const gr=eR*1.55+2;
+    if(kind===2){ // monocle
+      const s=R()<0.5?-1:1;
+      line(ring(cx+s*eDX,eyeY,gr,14),{closed:true,w:1.7});
+      line([[cx+s*eDX,eyeY+gr],[cx+s*eDX-4,eyeY+gr+16]],{w:1.2,passes:1});
+    } else {
+      [-1,1].forEach(s=>{
+        const gx=cx+s*eDX;
+        if(kind===0)line(ring(gx,eyeY,gr,14),{closed:true,w:1.7});
+        else{
+          const w=gr*1.05,h=gr*0.85;
+          line([[gx-w,eyeY-h],[gx+w,eyeY-h],[gx+w,eyeY+h],[gx-w,eyeY+h]],{closed:true,w:kind===1?2.8:1.8});
+        }
+        line([[gx+s*gr,eyeY-1],[cx+s*(rx*0.95),eyeY-3]],{w:1.3,passes:1});
+      });
+      line([[cx-eDX+gr,eyeY-1],[cx+eDX-gr,eyeY-1]],{w:1.3,passes:1});
+    }
+  }
+
+  /* ---- neck ---- */
+  if(R()<0.28){
+    const ny=cy+ry*0.93;
+    line([[cx-8,ny],[cx-9,ny+16]],{w:1.8,passes:1});
+    line([[cx+8,ny],[cx+9,ny+16]],{w:1.8,passes:1});
+    if(R()<0.5){
+      line([[cx-15,ny+14],[cx-4,ny+21],[cx,ny+16]],{w:1.6,passes:1});
+      line([[cx+15,ny+14],[cx+4,ny+21],[cx,ny+16]],{w:1.6,passes:1});
+    }
+  }
+
+  /* ---- tilt ---- */
+  const tilt=(norm(genome,"tilt")-0.5)*17;
+  breath.setAttribute("transform","rotate("+f(tilt)+" "+cx+" "+cy+")");
+
+  /* ---- animation timings ---- */
+  if(opt.animate===false){
+    svg.classList.add("still");
+  } else {
+    const base=opt.delay||0, step=opt.step===undefined?26:opt.step;
+    strokes.forEach((s,i)=>{
+      const del=base+i*step;
+      s.e.style.setProperty("--del",del+"ms");
+      if(s.kind==="stroke")s.e.style.setProperty("--dur",Math.min(520,Math.max(110,s.len*3.4))+"ms");
+    });
+  }
+  return {svg:svg,pupils:pupils,eyes:eyes,traits:{hairStyle:hairStyle,hatStyle:hatStyle,eStyle:eStyle,nStyle:nStyle,mStyle:mStyle,beard:bStyleF,glass:gStyle,tint:norm(genome,"tint")>0.58}};
+}
+
+/* ══════════ identities ══════════ */
+const FIRST=["Merrit","Bex","Otho","Wilna","Grant","Pim","Susa","Odd","Ferrel","Nance","Bramwell","Ilse","Toke","Marge","Halvard","Cressie","Dunstan","Yolanda","Ruck","Peppin","Signe","Cobb","Truda","Alby","Hesper","Norm","Vidal","Fenna","Gus","Lorril","Sten","Mabry","Ozias","Winifred","Corrin","Tam","Elspeth","Ruben","Nix","Della","Osgar","Prim","Hollis","Verity","Cass","Brod","Ninette","Wex"];
+const LAST=["Pallant","Oddsock","Crumb","Ferrier","Bellwether","Tuck","Halloway","Mudge","Sparrowhawk","Quill","Loam","Fennick","Wroth","Cabbage","Stitchley","Doggett","Pike","Ambler","Thrupp","Nettle","Salter","Grimble","Hoby","Vex","Ollandt","Prickett","Marrow","Doone","Sackett","Blunt","Farthing","Winch","Larkless","Tolt","Meech","Rowbotham","Skell","Undercliff"];
+const PLACE=["Grimsdyke","Vellum Bay","Cold Marsh","Upper Pens","Dunwick","Little Ottery","Nether Sump","Hatchend","Bruntwick","Saltmoor","Pargeter's Cross","Ink Hollow","Drybank","Whistle Fen","Mould End","Bight"];
+const JOB=["municipal knot inspector","night-bus philosopher","apprentice weathervane","keeper of the town's spare keys","chair tester","professional queue-holder","semi-retired ferryman","doorbell tuner","reluctant choirmaster","inventor of one useful thing","assistant to the town clock","fence surveyor","bread critic","harbour whistler","auxiliary lighthouse keeper","filer of small complaints","teacher of unpopular subjects","seller of maps to nowhere","undertaker's second cousin","pond warden","tester of unfamiliar mushrooms","curator of lost gloves","sailmaker without a sea","stamp moistener, retired","organiser of other people's drawers","recorder of unusual weather","understudy to the town crier","fixer of things not yet broken"];
+const DEED=["once argued with a bridge and lost","has never finished a cup of tea","claims to remember being born","holds the local record for standing still","is banned from two libraries and welcome in a third","talks to the sea when nobody is listening","owns eleven identical coats","has been on the same errand since March","refuses to acknowledge Thursdays","keeps a diary written entirely in weather","sleeps with the light on out of politeness","once received a letter meant for a lighthouse","can identify any dog by its walk","has strong feelings about doors","is saving up for something unspecified","counts the stairs every single time","was briefly famous for a reason nobody recalls","has misplaced the same hat four times"];
+const HABIT=["Answers questions that were not asked.","Nods first, listens later.","Laughs at the wrong moment, then explains why it was the right one.","Says goodbye three times before leaving.","Stands slightly too close, but kindly.","Whistles one note, endlessly.","Remembers your birthday but not your name.","Believes the ceiling is watching.","Apologises to furniture.","Keeps receipts for emotional reasons.","Waves at trains.","Has opinions about the moon."];
+const TRAIT_LINE={
+  beard:["The beard predates the job.","Grew the beard during a long winter and never revisited the decision.","Will not discuss the beard."],
+  tache:["The moustache has its own following at the market.","Waxes the moustache on important days.","The moustache is the only part of him that is punctual."],
+  stubble:["Shaves weekly, in theory.","The stubble is a scheduling problem, not a style."],
+  glass:["The spectacles are for distance, mostly from other people.","Has worn the same frames since a decade that no longer exists.","Cleans the glasses instead of answering."],
+  hat:["Never once seen without the hat, including indoors.","The hat is load-bearing.","Removes the hat only for weddings and thunderstorms."],
+  bald:["Insists the hair is merely resting.","Went bald early and considers it a head start."],
+  tint:["Comes out slightly pink in most weathers.","Photographs warmer than expected."]
+};
+function identityOf(genome,traits){
+  const R=mulberry(hash32("who:"+genome));
+  const p=a=>a[(R()*a.length)|0];
+  const first=p(FIRST), last=p(LAST);
+  const lines=[];
+  if(traits.beard===5)lines.push(p(TRAIT_LINE.tache));
+  else if(traits.beard===7)lines.push(p(TRAIT_LINE.stubble));
+  else if(traits.beard>5)lines.push(p(TRAIT_LINE.beard));
+  if(traits.glass>=5)lines.push(p(TRAIT_LINE.glass));
+  if(traits.hatStyle>=5)lines.push(p(TRAIT_LINE.hat));
+  if(traits.hairStyle===0&&traits.hatStyle<5)lines.push(p(TRAIT_LINE.bald));
+  if(traits.tint)lines.push(p(TRAIT_LINE.tint));
+  const extra=lines.length?p(lines):"";
+  return {
+    name:first+" "+last,
+    first:first,last:last,
+    job:p(JOB),
+    place:p(PLACE),
+    bio:"Of "+p(PLACE)+". "+first+" "+p(DEED)+". "+p(HABIT)+(extra?" "+extra:""),
+    num:"SC-"+String(hash32("n"+genome)%9000+1000)
+  };
+}
+const HAIRNAME=["bald as a bulb","a solid black cap","spikes, self-administered","hatched and scratchy","curls, uncontrolled","a scribble of hair","a fringe with intent","three brave tufts"];
+const HATNAME=["bare-headed","bare-headed","bare-headed","bare-headed","bare-headed","a pulled-down beanie","a headband, permanently","a flat cap at an angle","a cap with a stubborn brim"];
+const EYENAME=["two full-stops","open and blinking","wide, alarmingly","narrow ovals","a permanent squint","hooded and doubtful"];
+const NOSENAME=["a hook","one confident line","a triangle","a soft hook","a broken angle","a full round button"];
+const MOUTHNAME=["a flat line","a small smile","an unmistakable frown","an open O","a wavy indecision","a grin with a lid","a line with teeth"];
+const BEARDNAME=["clean-shaven","clean-shaven","clean-shaven","clean-shaven","clean-shaven","a moustache","a goatee","stubble","a full beard","a chin strap"];
+const GLASSNAME=["no glasses","no glasses","no glasses","no glasses","no glasses","round wire frames","heavy black frames","a monocle"];
+
+/* ══════════ state ══════════ */
+const wall=document.getElementById("wall");
+const drawer=document.getElementById("drawer");
+const dBody=document.getElementById("d-body");
+const dNum=document.getElementById("d-num");
+const tray=document.getElementById("tray");
+const toastEl=document.getElementById("toast");
+const seedInput=document.getElementById("seed");
+const popSelect=document.getElementById("pop");
+const countEl=document.getElementById("count");
+const bredEl=document.getElementById("bred");
+
+let people=[];       // {genome, ink, id, parents}
+let cells=[];        // {el, svg, pupils, eyes, rect, person}
+let selected=[];     // indices into people (by id)
+let bredCount=0;
+let openId=null;
+let paused=false;
+let drawerCell=null;
+let currentSeed="";
+
+function toast(msg){
+  toastEl.textContent=msg;
+  toastEl.classList.add("show");
+  clearTimeout(toast._t);
+  toast._t=setTimeout(()=>toastEl.classList.remove("show"),1500);
+}
+function randomSeedWord(){
+  const A=["INK","NIB","BLOT","QUILL","SMUDGE","GRAPH","PULP","BIRO","WAX","CHALK"];
+  return A[(Math.random()*A.length)|0]+"-"+String((Math.random()*9000+1000)|0);
+}
+
+/* ══════════ wall rendering ══════════ */
+let uid=1;
+function makePopulation(seed,n){
+  const R=mulberry(hash32(seed));
+  const arr=[];
+  for(let i=0;i<n;i++)arr.push({genome:randomGenome(R),ink:(R()*1e9)|0,id:uid++,parents:null});
+  return arr;
+}
+function columns(){
+  const w=wall.clientWidth-44;
+  return Math.max(1,Math.floor(w/120));
+}
+function renderWall(animate){
+  wall.innerHTML="";
+  cells=[];
+  const cols=columns();
+  people.forEach((p,i)=>{
+    const cell=document.createElement("button");
+    cell.className="cell";
+    cell.type="button";
+    const idn=identityOf(p.genome,{beard:0,glass:0,hatStyle:0,hairStyle:1,tint:false});
+    cell.setAttribute("aria-label","Open record for specimen "+idn.num);
+    const row=Math.floor(i/cols), col=i%cols;
+    const built=buildFace(p.genome,p.ink,{
+      animate:animate!==false,
+      delay:animate===false?0:(row+col)*55+Math.random()*60,
+      step:26
+    });
+    if(!paused){
+      built.svg.querySelector(".breather").style.setProperty("--bd",(3.6+Math.random()*3).toFixed(2)+"s");
+      built.svg.querySelector(".breather").style.setProperty("--bdl",(Math.random()*3).toFixed(2)+"s");
+    }
+    const tag=document.createElement("span");
+    tag.className="tag";
+    tag.textContent=identityOf(p.genome,built.traits).num;
+    cell.appendChild(built.svg);
+    cell.appendChild(tag);
+    if(p.fresh)cell.classList.add("fresh");
+    cell.addEventListener("click",()=>openRecord(p.id));
+    wall.appendChild(cell);
+    cells.push({el:cell,svg:built.svg,pupils:built.pupils,eyes:built.eyes,person:p,rect:null,glance:null,traits:built.traits});
+  });
+  countEl.textContent=people.length;
+  markSelection();
+  measureSoon();
+}
+let measureQueued=false;
+function measureSoon(){
+  if(measureQueued)return;
+  measureQueued=true;
+  requestAnimationFrame(()=>{
+    measureQueued=false;
+    cells.forEach(c=>{c.rect=c.svg.getBoundingClientRect();});
+  });
+}
+function measureMast(){
+  const h=document.querySelector(".masthead").getBoundingClientRect().height;
+  document.documentElement.style.setProperty("--mast",Math.round(h)+"px");
+}
+measureMast();
+window.addEventListener("resize",()=>{measureMast();measureSoon();});
+window.addEventListener("scroll",()=>{measureSoon();},{passive:true});
+
+/* ══════════ life: pupils, blinks, glances ══════════ */
+let ptr={x:innerWidth/2,y:innerHeight/2},ptrLive=false;
+addEventListener("pointermove",e=>{ptr.x=e.clientX;ptr.y=e.clientY;ptrLive=true;});
+addEventListener("pointerleave",()=>{ptrLive=false;});
+
+function updateFace(c){
+  if(!c||!c.rect)return;
+  if(c.rect.bottom<-80||c.rect.top>innerHeight+80)return;
+  for(let j=0;j<c.pupils.length;j++){
+    const p=c.pupils[j];
+    let tx=0,ty=0;
+    if(c.glance){
+      tx=c.glance.x*p.travel;ty=c.glance.y*p.travel;
+    } else if(ptrLive){
+      const sx=c.rect.left+((p.ox-VX)/VW)*c.rect.width;
+      const sy=c.rect.top+((p.oy-VY)/VH)*c.rect.height;
+      const dx=ptr.x-sx, dy=ptr.y-sy;
+      const d=Math.hypot(dx,dy)||1;
+      const k=Math.min(1,d/200);
+      tx=(dx/d)*p.travel*k; ty=(dy/d)*p.travel*k*0.75;
+    }
+    p.cur.x+=(tx-p.cur.x)*0.17;
+    p.cur.y+=(ty-p.cur.y)*0.17;
+    p.g.setAttribute("transform","translate("+f(p.cur.x)+","+f(p.cur.y)+")");
+  }
+}
+function lifeTick(){
+  if(!paused){
+    for(let i=0;i<cells.length;i++)updateFace(cells[i]);
+    if(drawerCell){
+      drawerCell.rect=drawerCell.svg.getBoundingClientRect();
+      updateFace(drawerCell);
+    }
+  }
+  requestAnimationFrame(lifeTick);
+}
+requestAnimationFrame(lifeTick);
+
+function maybeBlink(c){
+  if(!c)return;
+  if(Math.random()<0.045){
+    c.eyes.forEach(e=>e.classList.add("blink"));
+    setTimeout(()=>c.eyes.forEach(e=>e.classList.remove("blink")),110+Math.random()*90);
+  }
+}
+setInterval(()=>{
+  if(paused)return;
+  cells.forEach(maybeBlink);
+  maybeBlink(drawerCell);
+},260);
+
+setInterval(()=>{
+  if(paused||cells.length<2)return;
+  const c=cells[(Math.random()*cells.length)|0];
+  const a=Math.random()*TAU;
+  c.glance={x:Math.cos(a),y:Math.sin(a)*0.5};
+  setTimeout(()=>{c.glance=null;},900+Math.random()*900);
+},2600);
+
+/* ══════════ record drawer ══════════ */
+function personById(id){return people.find(p=>p.id===id);}
+function traitsFor(p){
+  const c=cells.find(c=>c.person.id===p.id);
+  if(c)return c.traits;
+  return buildFace(p.genome,p.ink,{animate:false}).traits;
+}
+function miniFace(p){
+  const b=buildFace(p.genome,p.ink,{animate:false});
+  b.svg.classList.add("still");
+  return b.svg;
+}
+function openRecord(id){
+  const p=personById(id);
+  if(!p)return;
+  openId=id;
+  const built=buildFace(p.genome,p.ink,{animate:true,delay:120,step:16});
+  const t=built.traits;
+  const who=identityOf(p.genome,t);
+  dNum.textContent=who.num;
+  dBody.innerHTML="";
+
+  const port=document.createElement("div");
+  port.className="portrait";
+  port.appendChild(built.svg);
+  dBody.appendChild(port);
+  drawerCell={svg:built.svg,pupils:built.pupils,eyes:built.eyes,rect:null,glance:null};
+
+  const h=document.createElement("h2");
+  h.className="spec-name";h.textContent=who.name;
+  const j=document.createElement("p");
+  j.className="spec-job";j.textContent=who.job;
+  const bio=document.createElement("p");
+  bio.className="spec-bio";bio.textContent=who.bio;
+  dBody.appendChild(h);dBody.appendChild(j);dBody.appendChild(bio);
+
+  if(p.parents){
+    const s=document.createElement("p");s.className="sect";s.textContent="Issue of";
+    const lin=document.createElement("div");lin.className="lineage";
+    p.parents.forEach((pp,k)=>{
+      if(k===1){const x=document.createElement("span");x.className="x-mark";x.textContent="×";lin.appendChild(x);}
+      const fig=document.createElement("figure");
+      fig.appendChild(miniFace(pp));
+      const cap=document.createElement("figcaption");
+      cap.textContent=identityOf(pp.genome,{beard:0,glass:0,hatStyle:0,hairStyle:1,tint:false}).name.split(" ")[0];
+      fig.appendChild(cap);
+      lin.appendChild(fig);
+    });
+    dBody.appendChild(s);dBody.appendChild(lin);
+  }
+
+  const s2=document.createElement("p");s2.className="sect";s2.textContent="Observed features";
+  const dl=document.createElement("dl");dl.className="traits";
+  const rows=[
+    ["Hair",HAIRNAME[t.hairStyle]],
+    ["Head",HATNAME[t.hatStyle]],
+    ["Eyes",EYENAME[t.eStyle]],
+    ["Nose",NOSENAME[t.nStyle]],
+    ["Mouth",MOUTHNAME[t.mStyle]],
+    ["Face",BEARDNAME[t.beard]],
+    ["Optics",GLASSNAME[t.glass]]
+  ];
+  rows.forEach(r=>{
+    const dt=document.createElement("dt");dt.textContent=r[0];
+    const dd=document.createElement("dd");dd.textContent=r[1];
+    dl.appendChild(dt);dl.appendChild(dd);
+  });
+  dBody.appendChild(s2);dBody.appendChild(dl);
+
+  const s3=document.createElement("p");s3.className="sect";s3.textContent="Genome";
+  const gbtn=document.createElement("button");
+  gbtn.className="genome";gbtn.type="button";gbtn.textContent=fmtGenome(p.genome);
+  gbtn.title="Copy genome";
+  gbtn.addEventListener("click",()=>{
+    const txt=p.genome;
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(()=>toast("Genome copied"),()=>toast("Copy blocked — select it by hand"));
+    } else toast("Copy blocked — select it by hand");
+  });
+  dBody.appendChild(s3);dBody.appendChild(gbtn);
+
+  const acts=document.createElement("div");
+  acts.className="drawer-actions";
+  const pickBtn=document.createElement("button");
+  pickBtn.className="btn";
+  const already=selected.indexOf(id)>=0;
+  pickBtn.textContent=already?"Remove from pairing":"Add to pairing";
+  pickBtn.addEventListener("click",()=>{togglePick(id);openRecord(id);});
+  const reink=document.createElement("button");
+  reink.className="btn";reink.textContent="Re-ink";
+  reink.title="Same person, drawn again by a shakier hand";
+  reink.addEventListener("click",()=>{
+    p.ink=(Math.random()*1e9)|0;
+    redrawCell(id);
+    openRecord(id);
+  });
+  acts.appendChild(pickBtn);acts.appendChild(reink);
+  dBody.appendChild(acts);
+
+  drawer.classList.add("open");
+  drawer.setAttribute("aria-hidden","false");
+  document.body.classList.add("record-open");
+  measureSoon();setTimeout(measureSoon,360);
+  dBody.scrollTop=0;
+}
+function closeRecord(){
+  drawer.classList.remove("open");
+  drawer.setAttribute("aria-hidden","true");
+  document.body.classList.remove("record-open");
+  measureSoon();setTimeout(measureSoon,360);
+  openId=null;
+  drawerCell=null;
+}
+document.getElementById("d-close").addEventListener("click",closeRecord);
+addEventListener("keydown",e=>{if(e.key==="Escape")closeRecord();});
+
+function redrawCell(id){
+  const idx=people.findIndex(p=>p.id===id);
+  const c=cells[idx];
+  if(!c)return;
+  const p=people[idx];
+  const built=buildFace(p.genome,p.ink,{animate:true,delay:0,step:20});
+  built.svg.querySelector(".breather").style.setProperty("--bd",(3.6+Math.random()*3).toFixed(2)+"s");
+  c.el.replaceChild(built.svg,c.svg);
+  c.svg=built.svg;c.pupils=built.pupils;c.eyes=built.eyes;c.traits=built.traits;
+  measureSoon();
+}
+
+/* ══════════ pairing & breeding ══════════ */
+function togglePick(id){
+  const i=selected.indexOf(id);
+  if(i>=0)selected.splice(i,1);
+  else{
+    if(selected.length>=2)selected.shift();
+    selected.push(id);
+  }
+  markSelection();
+}
+function markSelection(){
+  cells.forEach(c=>c.el.classList.toggle("picked",selected.indexOf(c.person.id)>=0));
+  const names=[];
+  [0,1].forEach(k=>{
+    const slot=document.getElementById("slot"+k);
+    slot.innerHTML="";
+    const id=selected[k];
+    if(id==null){
+      slot.classList.remove("full");
+      const s=document.createElement("span");s.className="empty";s.textContent=k?"B":"A";
+      slot.appendChild(s);
+    } else {
+      const p=personById(id);
+      slot.classList.add("full");
+      slot.appendChild(miniFace(p));
+      names.push(identityOf(p.genome,traitsFor(p)).name);
+    }
+  });
+  const tn=document.getElementById("tray-names");
+  tn.textContent=selected.length===0?"Pick two heads."
+    :selected.length===1?names[0]+" is waiting for someone."
+    :names[0]+" and "+names[1]+".";
+  document.getElementById("do-breed").disabled=selected.length<2;
+  tray.classList.toggle("up",selected.length>0);
+}
+function breed(){
+  if(selected.length<2)return;
+  const A=personById(selected[0]), B=personById(selected[1]);
+  const R=mulberry(hash32(A.genome+B.genome+Date.now()));
+  let g="";
+  for(let i=0;i<GENES.length;i++){
+    let c=(R()<0.5?A.genome[i]:B.genome[i]);
+    if(R()<0.07)c=ALPH[(R()*34)|0];      // mutation
+    g+=c;
+  }
+  people.forEach(p=>{p.fresh=false;});
+  const child={genome:g,ink:(R()*1e9)|0,id:uid++,parents:[A,B],fresh:true};
+  people.unshift(child);
+  bredCount++;bredEl.textContent=bredCount;
+  renderWall(false);
+  const cell=cells[0];
+  if(cell){
+    const built=buildFace(child.genome,child.ink,{animate:true,delay:0,step:34});
+    built.svg.querySelector(".breather").style.setProperty("--bd","4.4s");
+    cell.el.replaceChild(built.svg,cell.svg);
+    cell.svg=built.svg;cell.pupils=built.pupils;cell.eyes=built.eyes;cell.traits=built.traits;
+    cell.el.scrollIntoView({block:"nearest",behavior:"smooth"});
+  }
+  measureSoon();
+  const who=identityOf(child.genome,traitsFor(child));
+  toast("It's a "+who.first);
+  setTimeout(()=>openRecord(child.id),450);
+}
+document.getElementById("do-breed").addEventListener("click",breed);
+document.getElementById("clear-pair").addEventListener("click",()=>{selected=[];markSelection();});
+
+/* ══════════ controls ══════════ */
+function census(seed,n){
+  seed=(seed||randomSeedWord()).toUpperCase();
+  currentSeed=seed;
+  seedInput.value=seed;
+  people=makePopulation(seed,n||parseInt(popSelect.value,10));
+  selected=[];bredCount=0;bredEl.textContent=0;
+  closeRecord();
+  renderWall(true);
+  try{history.replaceState(null,"","#"+encodeURIComponent(seed));}catch(e){}
+}
+document.getElementById("redraw").addEventListener("click",()=>{
+  const typed=seedInput.value.trim().toUpperCase();
+  census(typed&&typed!==currentSeed?typed:randomSeedWord());
+});
+seedInput.addEventListener("keydown",e=>{if(e.key==="Enter")census(seedInput.value.trim());});
+popSelect.addEventListener("change",()=>census(seedInput.value.trim()));
+const lifeBtn=document.getElementById("life");
+lifeBtn.addEventListener("click",()=>{
+  paused=!paused;
+  document.body.classList.toggle("paused",paused);
+  lifeBtn.setAttribute("aria-pressed",String(paused));
+  lifeBtn.textContent=paused?"Wake them":"Hold still";
+});
+
+/* ══════════ paper / slate toggle ══════════ */
+const themeBtn=document.getElementById("theme");
+const MODES=["light","dark","auto"];
+const MODE_LABEL={auto:"Paper \u00b7 auto",light:"Paper \u00b7 day",dark:"Paper \u00b7 night"};
+let themeMode="light";
+function applyTheme(mode,remember){
+  themeMode=MODES.indexOf(mode)>=0?mode:"light";
+  if(themeMode==="auto")document.documentElement.removeAttribute("data-theme");
+  else document.documentElement.setAttribute("data-theme",themeMode);
+  themeBtn.textContent=MODE_LABEL[themeMode];
+  themeBtn.setAttribute("aria-label","Page theme: "+themeMode+". Click to change.");
+  if(remember){try{localStorage.setItem("sc-theme",themeMode);}catch(e){}}
+}
+themeBtn.addEventListener("click",()=>{
+  applyTheme(MODES[(MODES.indexOf(themeMode)+1)%MODES.length],true);
+});
+(function(){
+  let saved=null;
+  try{saved=localStorage.getItem("sc-theme");}catch(e){}
+  applyTheme(saved||"light",false);
+})();
+
+(function init(){
+  let fromHash="";
+  try{fromHash=decodeURIComponent((location.hash||"").replace(/^#/,"")).trim();}catch(e){}
+  census(fromHash||randomSeedWord());
+})();
+})();
+</script>
+
+</body>
+</html>
