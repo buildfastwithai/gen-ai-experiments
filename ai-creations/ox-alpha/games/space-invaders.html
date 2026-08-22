@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<!-- ==================================================================
+  NEON INVADERS — a Space-Invaders-style arcade game in ONE file.
+  Pure HTML + CSS + JS. Canvas rendering, zero deps/CDN.
+  Controls : A/D or Arrows move · Space fire · P pause · M mute · Enter start
+  Gameplay : 5x10 descending alien grid, enemy fire, 3 lives, scoring,
+             waves with rising speed/aggression, mystery UFO, win-wave and
+             game-over conditions.
+  Juice    : particles, starfield, screen shake, hit flashes, animated
+             menu + game over, Web Audio chiptune SFX, localStorage high
+             score, delta-time loop, responsive canvas.
+=================================================================== -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEON INVADERS</title>
+<style>
+  html, body {
+    margin: 0; padding: 0;
+    width: 100%; height: 100%;
+    background: #020208;
+    overflow: hidden;
+  }
+  #game {
+    position: fixed; inset: 0;
+    display: block;
+    background: #04040d;
+  }
+</style>
+</head>
+<body>
+<canvas id="game"></canvas>
+<script>
+(() => {
+'use strict';
+
+/* ====================================================================
+   SECTION 1 · CONFIGURATION & CONSTANTS
+==================================================================== */
+const VW = 960, VH = 720;          // virtual resolution (letterboxed)
+const CELL = 3;                    // pixel-art cell size for sprites
+
+const CFG = {
+  playerSpeed: 430,                // px/s
+  playerBulletSpeed: 640,
+  playerCooldown: 0.34,            // seconds between shots
+  playerSize: { w: 42, h: 24 },
+  gridCols: 10,
+  gridRows: 5,
+  gridSpacingX: 52,
+  gridSpacingY: 44,
+  gridTop: 118,
+  gridSideMargin: 46,              // wall padding that flips direction
+  descendStep: 26,                 // drop per edge-bounce
+  invadeY: VH - 96,                // aliens reaching this Y = game over
+  startingLives: 3,
+  maxParticles: 420
+};
+
+const STATE = { MENU: 0, PLAYING: 1, CLEAR: 2, PAUSED: 3, OVER: 4 };
+
+/* ====================================================================
+   SECTION 2 · SMALL UTILITIES
+==================================================================== */
+const TAU    = Math.PI * 2;
+const rand   = (a, b) => a + Math.random() * (b - a);
+const clamp  = (v, a, b) => v < a ? a : (v > b ? b : v);
+const overlap = (a, b) =>
+  a.x < b.x + b.w && a.x + a.w > b.x &&
+  a.y < b.y + b.h && a.y + a.h > b.y;
+const pick   = arr => arr[(Math.random() * arr.length) | 0];
+const pad    = (n, l) => String(n).padStart(l, '0');
+
+// localStorage can throw in some contexts — always guard it.
+const store = {
+  get(k) { try { return window.localStorage.getItem(k); } catch (e) { return null; } },
+  set(k, v) { try { window.localStorage.setItem(k, v); } catch (e) {} }
+};
+
+/* ====================================================================
+   SECTION 3 · CANVAS & RESPONSIVE SCALING
+   Fixed virtual resolution, uniformly scaled + centered (letterbox).
+==================================================================== */
+const cvs = document.getElementById('game');
+const ctx = cvs.getContext('2d');
+const view = { scale: 1, offX: 0, offY: 0 };
+
+function fitCanvas() {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  cvs.width  = Math.max(320, Math.floor(window.innerWidth  * dpr));
+  cvs.height = Math.max(240, Math.floor(window.innerHeight * dpr));
+  cvs.style.width  = window.innerWidth  + 'px';
+  cvs.style.height = window.innerHeight + 'px';
+  view.scale = Math.min(cvs.width / VW, cvs.height / VH);
+  view.offX  = (cvs.width  - VW * view.scale) / 2;
+  view.offY  = (cvs.height - VH * view.scale) / 2;
+}
+window.addEventListener('resize', fitCanvas);
+fitCanvas();
+
+/* ====================================================================
+   SECTION 4 · AUDIO ENGINE (Web Audio API, all sounds synthesised)
+==================================================================== */
+class Sfx {
+  constructor() {
+    this.ac = null; this.master = null;
+    this.muted = false; this._ufo = null;
+  }
+  // Lazily create/resume context — browsers require a user gesture.
+  ensure() {
+    if (!this.ac) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      this.ac = new AC();
+      this.master = this.ac.createGain();
+      this.master.gain.value = this.muted ? 0 : 0.32;
+      this.master.connect(this.ac.destination);
+    }
+    if (this.ac.state === 'suspended') this.ac.resume();
+  }
+  setMuted(m) {
+    this.muted = m;
+    if (this.master) this.master.gain.value = m ? 0 : 0.32;
+  }
+  // Generic swept oscillator blip.
+  tone(o) {
+    if (!this.ac) return;
+    const { type = 'square', f0 = 440, f1 = f0, dur = 0.12, vol = 0.3, delay = 0 } = o;
+    const t = this.ac.currentTime + delay;
+    const osc = this.ac.createOscillator(), g = this.ac.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(Math.max(1, f0), t);
+    osc.frequency.exponentialRampToValueAtTime(Math.max(1, f1), t + dur);
+    g.gain.setValueAtTime(vol, t);
+    g.gain.exponentialRampToValueAtTime(0.0008, t + dur);
+    osc.connect(g); g.connect(this.master);
+    osc.start(t); osc.stop(t + dur + 0.03);
+  }
+  // Filtered white-noise burst (explosions).
+  noise(dur = 0.25, vol = 0.35, from = 1600, to = 120) {
+    if (!this.ac) return;
+    const ac = this.ac, t = ac.currentTime;
+    const len = Math.max(1, (dur * ac.sampleRate) | 0);
+    const buf = ac.createBuffer(1, len, ac.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+    const src = ac.createBufferSource(); src.buffer = buf;
+    const flt = ac.createBiquadFilter(); flt.type = 'lowpass';
+    flt.frequency.setValueAtTime(from, t);
+    flt.frequency.exponentialRampToValueAtTime(Math.max(40, to), t + dur);
+    const g = ac.createGain();
+    g.gain.setValueAtTime(vol, t);
+    g.gain.exponentialRampToValueAtTime(0.0008, t + dur);
+    src.connect(flt); flt.connect(g); g.connect(this.master);
+    src.start(t);
+  }
+  shoot()     { this.tone({ type: 'square',   f0: 900, f1: 210, dur: 0.13, vol: 0.16 }); }
+  alienDie()  { this.noise(0.16, 0.30, 2200, 180);
+                this.tone({ type: 'sawtooth', f0: 320, f1: 52,  dur: 0.16, vol: 0.20 }); }
+  playerDie() { this.noise(0.65, 0.50, 1400, 60);
+                this.tone({ type: 'sawtooth', f0: 240, f1: 32,  dur: 0.70, vol: 0.30 }); }
+  ufoHit()    { [440, 660, 880].forEach((f, i) =>
+                this.tone({ type: 'square', f0: f, f1: f * 1.5, dur: 0.09, vol: 0.20, delay: i * 0.07 })); }
+  march(step) { const f = [112, 100, 89, 84][step & 3];
+                this.tone({ type: 'square', f0: f, f1: f, dur: 0.07, vol: 0.22 }); }
+  waveClear() { [330, 415, 494, 660].forEach((f, i) =>
+                this.tone({ type: 'triangle', f0: f, f1: f, dur: 0.16, vol: 0.25, delay: i * 0.11 })); }
+  gameOver()  { [392, 311, 233, 155].forEach((f, i) =>
+                this.tone({ type: 'sawtooth', f0: f, f1: f * 0.94, dur: 0.32, vol: 0.26, delay: i * 0.24 })); }
+  // Warbling UFO hum — started/stopped with the UFO's life.
+  ufoStart() {
+    if (!this.ac || this._ufo) return;
+    const ac = this.ac;
+    const osc = ac.createOscillator(), lfo = ac.createOscillator();
+    const lg = ac.createGain(), g = ac.createGain();
+    osc.type = 'sine';  osc.frequency.value = 520;
+    lfo.type = 'sine';  lfo.frequency.value = 9;
+    lg.gain.value = 90;
+    lfo.connect(lg); lg.connect(osc.frequency);
+    g.gain.value = 0.05;
+    osc.connect(g); g.connect(this.master);
+    osc.start(); lfo.start();
+    this._ufo = { osc, lfo, g };
+  }
+  ufoStop() {
+    if (!this._ufo) return;
+    const { osc, lfo, g } = this._ufo, t = this.ac.currentTime;
+    g.gain.setTargetAtTime(0, t, 0.05);
+    osc.stop(t + 0.3); lfo.stop(t + 0.3);
+    this._ufo = null;
+  }
+}
+const sfx = new Sfx();
+
+/* ====================================================================
+   SECTION 5 · PIXEL-ART SPRITES (string bitmaps, 2 frames each)
+==================================================================== */
+const SPRITE_DATA = {
+  A: {  // bottom rows — "crab"
+    points: 10,
+    frames: [
+      ["..X.....X..","...X...X...","..XXXXXXX..",".XX.XXX.XX.",
+       "XXXXXXXXXXX","X.XXXXXXX.X","X.X.....X.X","...XX.XX..."],
+      ["..X.....X..","X..X...X..X","X.XXXXXXX.X","XXX.XXX.XXX",
+       "XXXXXXXXXXX",".XXXXXXXXX.","..X.....X..",".X.......X."]
+    ]
+  },
+  B: {  // middle rows — "octopus"
+    points: 20,
+    frames: [
+      ["...XXXXX...","..XXXXXXX..",".XXXXXXXXX.","XXX.XXX.XXX",
+       "XXXXXXXXXXX","..XXXXXXX..",".X.XXXXX.X.","X.X.....X.X"],
+      ["...XXXXX...","..XXXXXXX..",".XXXXXXXXX.","XXX.XXX.XXX",
+       "XXXXXXXXXXX",".X.XXXXX.X.","X..X...X..X",".X.......X."]
+    ]
+  },
+  C: {  // top row — "squid" (most points)
+    points: 30,
+    frames: [
+      ["...XX...","..XXXX..",".XXXXXX.","XX.XX.XX",
+       "XXXXXXXX","..X..X..",".X.XX.X.","X.X..X.X"],
+      ["...XX...","..XXXX..",".XXXXXX.","XX.XX.XX",
+       "XXXXXXXX",".X.XX.X.","X......X",".X....X."]
+    ]
+  }
+};
+
+const TYPES = {};
+const ROW_TYPES = ['C', 'B', 'B', 'A', 'A'];       // sprite type per grid row, top → bottom
+
+(function buildTypes() {
+  const colors = { C: '#ff2df7', B: '#00f0ff', A: '#7dff00' };   // neon per type
+  for (const key in SPRITE_DATA) {
+    const sd = SPRITE_DATA[key];
+    TYPES[key] = {
+      frames: sd.frames,
+      points: sd.points,
+      color: colors[key],
+      w: sd.frames[0][0].length * CELL,
+      h: sd.frames[0].length * CELL
+    };
+  }
+})();
+
+// Draw a sprite by painting horizontal spans of 'X' cells (fast path).
+function drawSprite(type, frame, x, y) {
+  const t = TYPES[type], rows = t.frames[frame | 0];
+  ctx.fillStyle = t.color;
+  for (let r = 0; r < rows.length; r++) {
+    const line = rows[r];
+    let c = 0;
+    while (c < line.length) {
+      if (line[c] === 'X') {
+        const s = c;
+        while (c < line.length && line[c] === 'X') c++;
+        ctx.fillRect(x + s * CELL, y + r * CELL, (c - s) * CELL, CELL);
+      } else c++;
+    }
+  }
+}
+
+/* ====================================================================
+   SECTION 6 · BACKGROUND STARFIELD (3 parallax layers, twinkle)
+==================================================================== */
+class Starfield {
+  constructor() {
+    this.stars = []; this.t = 0;
+    const layers = [
+      { n: 70, sp: 12, sz: 1.2, a: 0.45 },
+      { n: 45, sp: 26, sz: 1.8, a: 0.65 },
+      { n: 22, sp: 48, sz: 2.4, a: 0.95 }
+    ];
+    for (const L of layers)
+      for (let i = 0; i < L.n; i++)
+        this.stars.push({
+          x: rand(0, VW), y: rand(0, VH),
+          sp: L.sp * rand(0.7, 1.3), sz: L.sz * rand(0.6, 1.2),
+          a: L.a, ph: rand(0, TAU)
+        });
+  }
+  update(dt) {
+    this.t += dt;
+    for (const s of this.stars) {
+      s.y += s.sp * dt;
+      if (s.y > VH + 2) { s.y = -2; s.x = rand(0, VW); }
+    }
+  }
+  draw() {
+    for (const s of this.stars) {
+      const tw = 0.65 + 0.35 * Math.sin(this.t * 2 + s.ph);
+      ctx.globalAlpha = s.a * tw;
+      ctx.fillStyle = '#cfe8ff';
+      ctx.fillRect(s.x, s.y, s.sz, s.sz);
+    }
+    ctx.globalAlpha = 1;
+  }
+}
+
+/* ====================================================================
+   SECTION 7 · PARTICLES & FLOATING SCORE POPUPS
+==================================================================== */
+class Particles {
+  constructor(max) { this.list = []; this.max = max; }
+  burst(x, y, color, n, power, size) {
+    for (let i = 0; i < n; i++) {
+      if (this.list.length >= this.max) this.list.shift();  // hard cap
+      const a = rand(0, TAU), sp = rand(power * 0.2, power);
+      this.list.push({
+        x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp,
+        age: 0, life: rand(0.3, 0.85), color, sz: rand(1.4, size)
+      });
+    }
+  }
+  spark(x, y, color, n) { this.burst(x, y, color, n || 6, 90, 2); }
+  update(dt) {
+    const L = this.list;
+    for (let i = L.length - 1; i >= 0; i--) {
+      const p = L[i];
+      p.age += dt;
+      if (p.age >= p.life) { L.splice(i, 1); continue; }
+      p.x += p.vx * dt; p.y += p.vy * dt;
+      const drag = Math.max(0, 1 - 2.6 * dt);
+      p.vx *= drag; p.vy *= drag;
+    }
+  }
+  draw() {
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';           // cheap additive glow
+    for (const p of this.list) {
+      ctx.globalAlpha = 1 - p.age / p.life;
+      ctx.fillStyle = p.color;
+      ctx.fillRect(p.x - p.sz / 2, p.y - p.sz / 2, p.sz, p.sz);
+    }
+    ctx.restore();
+  }
+}
+
+class Popups {
+  constructor() { this.list = []; }
+  add(x, y, text, color) { this.list.push({ x, y, text, color, age: 0, life: 0.9 }); }
+  update(dt) {
+    for (let i = this.list.length - 1; i >= 0; i--) {
+      const p = this.list[i];
+      p.age += dt; p.y -= 42 * dt;
+      if (p.age >= p.life) this.list.splice(i, 1);
+    }
+  }
+  draw() {
+    ctx.font = '700 16px "Courier New",monospace';
+    ctx.textAlign = 'center';
+    for (const p of this.list) {
+      ctx.globalAlpha = 1 - p.age / p.life;
+      ctx.fillStyle = p.color;
+      ctx.fillText(p.text, p.x, p.y);
+    }
+    ctx.globalAlpha = 1;
+  }
+}
+
+/* ====================================================================
+   SECTION 8 · PLAYER SHIP
+==================================================================== */
+class Player {
+  constructor() {
+    this.w = CFG.playerSize.w; this.h = CFG.playerSize.h;
+    this.reset();
+  }
+  reset() {
+    this.x = VW / 2 - this.w / 2;
+    this.y = VH - 64;
+    this.cd = 0; this.invuln = 0;
+  }
+  update(dt, keys) {
+    let dir = 0;
+    if (keys.has('ArrowLeft')  || keys.has('KeyA')) dir -= 1;
+    if (keys.has('ArrowRight') || keys.has('KeyD')) dir += 1;
+    this.x = clamp(this.x + dir * CFG.playerSpeed * dt, 16, VW - 16 - this.w);
+    this.cd = Math.max(0, this.cd - dt);
+    this.invuln = Math.max(0, this.invuln - dt);
+  }
+  tryShoot(bullets) {
+    if (this.cd > 0) return;
+    this.cd = CFG.playerCooldown;
+    bullets.push({ x: this.x + this.w / 2 - 2, y: this.y - 10, w: 4, h: 16, vy: -CFG.playerBulletSpeed });
+    sfx.shoot();
+  }
+  draw(t) {
+    if (this.invuln > 0 && ((t * 12) | 0) % 2 === 0) return;   // respawn blink
+    const cx = this.x + this.w / 2, top = this.y;
+    const glow = 0.75 + 0.25 * Math.sin(t * 6);
+    ctx.save();
+    ctx.shadowColor = '#00f0ff';
+    ctx.shadowBlur = 16 * glow;
+    // hull silhouette
+    ctx.fillStyle = '#e8fbff';
+    ctx.beginPath();
+    ctx.moveTo(cx, top);
+    ctx.lineTo(this.x + this.w, top + this.h);
+    ctx.lineTo(cx + 8, top + this.h - 6);
+    ctx.lineTo(cx + 8, top + this.h);
+    ctx.lineTo(cx - 8, top + this.h);
+    ctx.lineTo(cx - 8, top + this.h - 6);
+    ctx.lineTo(this.x, top + this.h);
+    ctx.closePath();
+    ctx.fill();
+    // cockpit stripe
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#00f0ff';
+    ctx.fillRect(cx - 2, top + 7, 4, 8);
+    // flickering engine flame
+    const fl = 6 + Math.sin(t * 42) * 3 + rand(0, 2);
+    ctx.fillStyle = '#ff9f1c';
+    ctx.beginPath();
+    ctx.moveTo(cx - 4, top + this.h);
+    ctx.lineTo(cx + 4, top + this.h);
+    ctx.lineTo(cx, top + this.h + fl);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+// Tiny ship glyph used for the lives counter in the HUD.
+function drawShipIcon(x, y, s) {
+  ctx.save();
+  ctx.translate(x, y); ctx.scale(s, s);
+  ctx.fillStyle = '#8ff6ff';
+  ctx.beginPath();
+  ctx.moveTo(0, -6); ctx.lineTo(6, 6); ctx.lineTo(0, 3); ctx.lineTo(-6, 6);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+/* ====================================================================
+   SECTION 9 · BONUS UFO (mystery ship)
+==================================================================== */
+class Ufo {
+  constructor(level) {
+    this.dir = Math.random() < 0.5 ? -1 : 1;
+    this.w = 54; this.h = 20;
+    this.x = this.dir > 0 ? -this.w - 10 : VW + 10;
+    this.y = 58;
+    this.speed = 115 + level * 9;
+    this.pts = pick([50, 100, 150, 300]);
+  }
+  update(dt) { this.x += this.dir * this.speed * dt; }
+  offscreen() { return this.dir > 0 ? this.x > VW + 20 : this.x < -this.w - 20; }
+  rect() { return { x: this.x, y: this.y, w: this.w, h: this.h }; }
+  draw(t) {
+    const cx = this.x + this.w / 2, cy = this.y + this.h / 2;
+    ctx.save();
+    ctx.shadowColor = '#ff3860'; ctx.shadowBlur = 18;
+    ctx.fillStyle = '#ff3860';
+    ctx.beginPath(); ctx.ellipse(cx, cy + 3, this.w / 2, 6, 0, 0, TAU); ctx.fill();
+    ctx.fillStyle = '#ffd1dc';
+    ctx.beginPath(); ctx.arc(cx, cy, 7, Math.PI, 0); ctx.fill();
+    ctx.shadowBlur = 0;
+    for (let i = 0; i < 4; i++) {                     // running lights
+      const on = ((t * 6 + i) | 0) % 2 === 0;
+      ctx.fillStyle = on ? '#ffffff' : '#7a1024';
+      ctx.fillRect(this.x + 8 + i * 11, cy + 2, 4, 3);
+    }
+    ctx.restore();
+  }
+}
+
+/* ====================================================================
+   SECTION 10 · ALIEN FORMATION GRID
+   Moves as one block, descends on wall contact, speeds up as it thins.
+==================================================================== */
+class Grid {
+  constructor(level) {
+    this.level = level;
+    this.dir = 1;
+    this.frame = 0; this.animT = 0; this.step = 0;
+    this.gx = (VW - ((CFG.gridCols - 1) * CFG.gridSpacingX + TYPES.A.w)) / 2;
+    this.gy = CFG.gridTop;
+    this.aliens = [];
+    for (let r = 0; r < CFG.gridRows; r++)
+      for (let c = 0; c < CFG.gridCols; c++)
+        this.aliens.push({ row: r, col: c, type: ROW_TYPES[r], alive: true, x: 0, y: 0 });
+    this.total = this.aliens.length;
+    this.count = this.total;
+    this.syncPositions();
+  }
+  syncPositions() {
+    for (const a of this.aliens) {
+      a.x = this.gx + a.col * CFG.gridSpacingX;
+      a.y = this.gy + a.row * CFG.gridSpacingY;
+    }
+  }
+  onKill() { this.count--; }
+  // Speed rises with level AND with the fraction of aliens destroyed.
+  speed() {
+    const ratio = this.count / this.total;
+    const base = 24 + Math.min(this.level, 12) * 6;
+    return Math.min(base * (1 + (1 - ratio) * 2.4), 300);
+  }
+  // Classic heartbeat: marches faster as the swarm thins.
+  marchInterval() {
+    const ratio = this.count / this.total;
+    return clamp(0.74 - (1 - ratio) * 0.6 - this.level * 0.018, 0.09, 0.74);
+  }
+  bounds() {
+    let mn = Infinity, mx = -Infinity, by = -Infinity;
+    for (const a of this.aliens) {
+      if (!a.alive) continue;
+      const t = TYPES[a.type];
+      if (a.x < mn) mn = a.x;
+      if (a.x + t.w > mx) mx = a.x + t.w;
+      if (a.y + t.h > by) by = a.y + t.h;
+    }
+    return { minX: mn, maxX: mx, bottomY: by };
+  }
+  update(dt, game) {
+    if (this.count === 0) return;
+    this.gx += this.dir * this.speed() * dt;
+    this.syncPositions();
+    // Wall contact → reverse + descend
+    const b = this.bounds(), m = CFG.gridSideMargin;
+    if (this.dir > 0 && b.maxX > VW - m) { this.dir = -1; this.gy += CFG.descendStep; this.syncPositions(); }
+    else if (this.dir < 0 && b.minX < m) { this.dir = 1;  this.gy += CFG.descendStep; this.syncPositions(); }
+    // March animation + bass note, tempo scales with aggression
+    this.animT += dt;
+    const iv = this.marchInterval();
+    while (this.animT >= iv) { this.animT -= iv; this.frame ^= 1; sfx.march(this.step++); }
+    // Random enemy fire, throttled per-level
+    game.enemyFireT -= dt;
+    if (game.enemyFireT <= 0 && game.bolts.length < Math.min(2 + this.level, 8)) {
+      this.fire(game);
+      const base = clamp(1.3 - this.level * 0.1, 0.45, 1.3);
+      game.enemyFireT = base * rand(0.5, 1.5);
+    }
+  }
+  // Pick the lowest living alien of a column; sometimes aims at the player.
+  fire(game) {
+    const shooters = {};
+    for (const a of this.aliens) {
+      if (!a.alive) continue;
+      const cur = shooters[a.col];
+      if (!cur || a.row > cur.row) shooters[a.col] = a;
+    }
+    const cands = Object.values(shooters);
+    if (!cands.length) return;
+    let shooter;
+    if (Math.random() < 0.35) {
+      const px = game.player.x + game.player.w / 2;
+      cands.sort((p, q) => Math.abs(p.x - px) - Math.abs(q.x - px));
+      shooter = cands[0];
+    } else shooter = pick(cands);
+    const t = TYPES[shooter.type];
+    const sp = Math.min(150 + this.level * 24, 470);
+    game.bolts.push({
+      x: shooter.x + t.w / 2 - 2, y: shooter.y + t.h,
+      w: 4, h: 14, vy: sp, zig: rand(0, 10)
+    });
+  }
+  draw() {
+    for (const a of this.aliens) if (a.alive) drawSprite(a.type, this.frame, a.x, a.y);
+  }
+}
+
+/* ====================================================================
+   SECTION 11 · GAME CONTROLLER (state machine + rules + rendering)
+==================================================================== */
+class Game {
+  constructor() {
+    this.state = STATE.MENU;
+    this.time = 0;
+    this.shake = { mag: 0, t: 0, dur: 1 };
+    this.flashW = 0;              // white hit flash
+    this.flashR = 0;              // red damage flash
+    this.score = 0;
+    this.lives = CFG.startingLives;
+    this.level = 1;
+    this.hi = parseInt(store.get('neon_invaders_high') || '0', 10) || 0;
+    this.newRecord = false;
+    this.overCause = '';
+    this.particles = new Particles(CFG.maxParticles);
+    this.popups = new Popups();
+    this.stars = new Starfield();
+    this.player = new Player();
+    this.grid = null;
+    this.bullets = []; this.bolts = [];
+    this.ufo = null; this.ufoT = rand(10, 18);
+    this.enemyFireT = 1.4;
+    this.clearT = 0;
+  }
+
+  /* ---------- flow ---------- */
+
+  start() {                                   // fresh run
+    this.score = 0; this.lives = CFG.startingLives; this.level = 1;
+    this.newRecord = false;
+    this.player.reset();
+    this.bullets = []; this.bolts = [];
+    this.ufo = null; sfx.ufoStop();
+    this.ufoT = rand(10, 18); this.enemyFireT = 1.4;
+    this.buildWave();
+    this.state = STATE.PLAYING;
+  }
+
+  buildWave() {                               // (re)build formation for level
+    this.grid = new Grid(this.level);
+    this.bolts = []; this.bullets = [];
+    this.player.invuln = 1.1;
+  }
+
+  waveCleared() {                             // all aliens destroyed → WIN banner
+    this.state = STATE.CLEAR;
+    this.clearT = 2.4;
+    this.bolts = [];
+    sfx.waveClear(); sfx.ufoStop();
+    this.ufo = null;
+  }
+
+  gameOver(cause) {
+    this.overCause = cause;
+    this.state = STATE.OVER;
+    sfx.ufoStop(); this.ufo = null;
+    sfx.gameOver();
+  }
+
+  handlePress(code) {
+    if (code === 'KeyM') { sfx.ensure(); sfx.setMuted(!sfx.muted); return; }
+    if (this.state === STATE.MENU) {
+      if (code === 'Enter' || code === 'Space') { sfx.ensure(); this.start(); }
+    } else if (this.state === STATE.OVER) {
+      if (code === 'Enter') { sfx.ensure(); this.start(); }
+    } else if (this.state === STATE.PAUSED) {
+      if (code === 'KeyP' || code === 'Escape') {
+        this.state = STATE.PLAYING;
+        if (this.ufo) sfx.ufoStart();
+      }
+    } else if (this.state === STATE.PLAYING) {
+      if (code === 'KeyP' || code === 'Escape') {
+        this.state = STATE.PAUSED;
+        sfx.ufoStop();
+      }
+    } else if (this.state === STATE.CLEAR) {
+      if (code === 'Enter' && this.clearT > 0.4) this.clearT = 0.4;  // skip ahead
+    }
+  }
+
+  /* ---------- helpers ---------- */
+
+  shakeIt(mag, dur) {
+    this.shake.mag = Math.max(this.shake.mag, mag);
+    this.shake.dur = dur; this.shake.t = dur;
+  }
+  addScore(n) {
+    this.score += n;
+    if (this.score > this.hi) {               // persist record the moment it breaks
+      this.hi = this.score; this.newRecord = true;
+      store.set('neon_invaders_high', String(this.hi));
+    }
+  }
+
+  hitPlayer() {
+    if (this.state !== STATE.PLAYING) return;
+    this.lives--;
+    this.particles.burst(this.player.x + this.player.w / 2, this.player.y + this.player.h / 2, '#00f0ff', 34, 260, 4);
+    this.flashR = 1; this.flashW = 0.25;
+    this.shakeIt(12, 0.5);
+    sfx.playerDie();
+    if (this.lives <= 0) this.gameOver('YOUR SHIP WAS DESTROYED');
+    else this.player.invuln = 2.4;            // mercy invulnerability
+  }
+
+  /* ---------- simulation ---------- */
+
+  update(dt) {
+    // Ambient layer runs in every unpaused state (menu, banners, game over)
+    this.time += dt;
+    this.stars.update(dt);
+    this.particles.update(dt);
+    this.popups.update(dt);
+    if (this.shake.t > 0) this.shake.t = Math.max(0, this.shake.t - dt);
+    this.flashW = Math.max(0, this.flashW - dt * 2.4);
+    this.flashR = Math.max(0, this.flashR - dt * 1.6);
+
+    if (this.state === STATE.CLEAR) {
+      this.clearT -= dt;
+      if (this.clearT <= 0) {                 // next wave: harder, faster
+        this.level++;
+        this.buildWave();
+        this.state = STATE.PLAYING;
+      }
+      return;
+    }
+    if (this.state !== STATE.PLAYING) return;
+
+    // --- player ---
+    this.player.update(dt, Input.keys);
+    if (Input.keys.has('Space')) this.player.tryShoot(this.bullets);
+
+    // --- formation ---
+    this.grid.update(dt, this);
+    const b = this.grid.bounds();
+    if (b.bottomY >= CFG.invadeY) {           // invaders landed → instant loss
+      this.gameOver('THE INVADERS REACHED EARTH');
+      return;
+    }
+
+    // --- bonus UFO ---
+    if (this.ufo) {
+      this.ufo.update(dt);
+      if (this.ufo.offscreen()) {
+        this.ufo = null; sfx.ufoStop();
+        this.ufoT = rand(12, 22);
+      }
+    } else {
+      this.ufoT -= dt;
+      if (this.ufoT <= 0 && this.grid.count > 4) {
+        this.ufo = new Ufo(this.level);
+        sfx.ufoStart();
+      }
+    }
+
+    // --- player bullets (move, collide with UFO & aliens) ---
+    for (let i = this.bullets.length - 1; i >= 0; i--) {
+      const bl = this.bullets[i];
+      bl.y += bl.vy * dt;
+      if (bl.y + bl.h < 0) { this.bullets.splice(i, 1); continue; }
+
+      if (this.ufo && overlap(bl, this.ufo.rect())) {
+        this.addScore(this.ufo.pts);
+        this.popups.add(this.ufo.x + this.ufo.w / 2, this.ufo.y, '+' + this.ufo.pts, '#ffd1dc');
+        this.particles.burst(this.ufo.x + this.ufo.w / 2, this.ufo.y + this.ufo.h / 2, '#ff3860', 26, 230, 3.5);
+        this.flashW = Math.max(this.flashW, 0.18);
+        this.shakeIt(6, 0.3);
+        sfx.ufoHit(); sfx.ufoStop();
+        this.ufo = null; this.ufoT = rand(14, 24);
+        this.bullets.splice(i, 1);
+        continue;
+      }
+      let hit = false;
+      for (const a of this.grid.aliens) {
+        if (!a.alive) continue;
+        const t = TYPES[a.type];
+        if (bl.x < a.x + t.w && bl.x + bl.w > a.x &&
+            bl.y < a.y + t.h && bl.y + bl.h > a.y) {
+          a.alive = false;
+          this.grid.onKill();
+          this.addScore(t.points);
+          this.popups.add(a.x + t.w / 2, a.y, '+' + t.points, t.color);
+          this.particles.burst(a.x + t.w / 2, a.y + t.h / 2, t.color, 16, 190, 3);
+          this.flashW = Math.max(this.flashW, 0.07);
+          this.shakeIt(3, 0.15);
+          sfx.alienDie();
+          hit = true;
+          break;
+        }
+      }
+      if (hit) {
+        this.bullets.splice(i, 1);
+        if (this.grid.count === 0) { this.waveCleared(); break; }
+      }
+    }
+    if (this.state !== STATE.PLAYING) return;  // wave just ended
+
+    // --- enemy bolts (move, cancelled by bullets, hurt player) ---
+    for (let i = this.bolts.length - 1; i >= 0; i--) {
+      const bo = this.bolts[i];
+      bo.y += bo.vy * dt;
+      bo.zig += dt * 14;
+      if (bo.y > VH) { this.bolts.splice(i, 1); continue; }
+
+      let cancelled = false;
+      for (let j = this.bullets.length - 1; j >= 0; j--) {
+        if (overlap(bo, this.bullets[j])) {
+          this.particles.spark(bo.x + 2, bo.y, '#ffffff', 8);
+          this.bullets.splice(j, 1);
+          cancelled = true;
+          break;
+        }
+      }
+      if (cancelled) { this.bolts.splice(i, 1); continue; }
+
+      if (this.player.invuln <= 0) {
+        const pr = { x: this.player.x + 4, y: this.player.y, w: this.player.w - 8, h: this.player.h };
+        if (overlap(bo, pr)) {
+          this.bolts.splice(i, 1);
+          this.hitPlayer();
+          if (this.state !== STATE.PLAYING) break;   // game just ended
+        }
+      }
+    }
+  }
+
+  /* ---------- rendering ---------- */
+
+  neonText(text, x, y, size, color, blur, align) {
+    ctx.save();
+    ctx.font = '700 ' + size + 'px "Courier New",monospace';
+    ctx.textAlign = align || 'center';
+    ctx.shadowColor = color; ctx.shadowBlur = blur;
+    ctx.fillStyle = color;
+    ctx.fillText(text, x, y);
+    ctx.shadowBlur = blur / 2;
+    ctx.globalAlpha = 0.85;                     // hot white core
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(text, x, y);
+    ctx.restore();
+  }
+
+  drawBackground(t) {
+    const g = ctx.createLinearGradient(0, 0, 0, VH);
+    g.addColorStop(0, '#050512');
+    g.addColorStop(0.55, '#08081c');
+    g.addColorStop(1, '#0d0620');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, VW, VH);
+    // horizon glow
+    const rg = ctx.createRadialGradient(VW / 2, VH + 180, 60, VW / 2, VH + 180, 520);
+    rg.addColorStop(0, 'rgba(0,240,255,0.10)');
+    rg.addColorStop(1, 'rgba(0,240,255,0)');
+    ctx.fillStyle = rg;
+    ctx.fillRect(0, 0, VW, VH);
+    this.stars.draw();
+  }
+
+  drawWorld(t) {
+    if (this.ufo) this.ufo.draw(t);
+    if (this.grid) this.grid.draw();
+    // enemy bolts — zigzag lightning style
+    for (const bo of this.bolts) {
+      ctx.fillStyle = '#ff4d6d';
+      const z = (Math.floor(bo.zig) % 2 === 0) ? 2 : -2;
+      ctx.fillRect(bo.x + z, bo.y, 4, 7);
+      ctx.fillRect(bo.x - z, bo.y + 7, 4, 7);
+    }
+    // player bullets — glowing slugs
+    ctx.save();
+    ctx.shadowColor = '#aefcff'; ctx.shadowBlur = 8;
+    ctx.fillStyle = '#eaffff';
+    for (const bl of this.bullets) ctx.fillRect(bl.x, bl.y, bl.w, bl.h);
+    ctx.restore();
+    this.player.draw(t);
+    this.particles.draw();
+    this.popups.draw();
+  }
+
+  drawHUD() {
+    ctx.save();
+    ctx.font = '700 20px "Courier New",monospace';
+    ctx.shadowColor = 'rgba(0,240,255,0.8)'; ctx.shadowBlur = 8;
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#bffcff';
+    ctx.fillText('SCORE ' + pad(this.score, 6), 24, 38);
+    ctx.fillStyle = this.newRecord ? '#ffe066' : '#7fdfff';
+    ctx.fillText('HI    ' + pad(this.hi, 6), 24, 64);
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#ff2df7';
+    ctx.shadowColor = 'rgba(255,45,247,0.8)';
+    ctx.fillText('WAVE ' + pad(this.level, 2), VW / 2, 38);
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#bffcff';
+    ctx.shadowColor = 'rgba(0,240,255,0.8)';
+    ctx.fillText('LIVES', VW - 118, 38);
+    for (let i = 0; i < this.lives; i++) drawShipIcon(VW - 92 + i * 30, 31, 1.4);
+    ctx.restore();
+  }
+
+  drawMenu(t) {
+    // pulsing hue-cycling title
+    const hue = (t * 40) % 360;
+    ctx.save();
+    const pulse = 1 + 0.03 * Math.sin(t * 3);
+    ctx.translate(VW / 2, 190);
+    ctx.scale(pulse, pulse);
+    ctx.font = '700 76px "Courier New",monospace';
+    ctx.textAlign = 'center';
+    ctx.shadowColor = 'hsl(' + hue + ',100%,60%)';
+    ctx.shadowBlur = 28;
+    ctx.fillStyle = 'hsl(' + hue + ',100%,70%)';
+    ctx.fillText('NEON INVADERS', 0, 0);
+    ctx.restore();
+    this.neonText('A  S P A C E  I N V A D E R S  T R I B U T E', VW / 2, 228, 17, '#7fdfff', 10);
+
+    // classic score table with live-animated sprites
+    const rows = [['C', '30 PTS'], ['B', '20 PTS'], ['A', '10 PTS']];
+    let sy = 306;
+    const fr = ((t * 2) | 0) % 2;
+    for (const entry of rows) {
+      const tp = entry[0];
+      drawSprite(tp, fr, VW / 2 - 96 - TYPES[tp].w / 2, sy - TYPES[tp].h / 2);
+      ctx.font = '700 18px "Courier New",monospace';
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#9fe8ff';
+      ctx.fillText('= ' + entry[1], VW / 2 - 40, sy + 6);
+      sy += 56;
+    }
+    // mystery UFO row
+    ctx.save();
+    ctx.shadowColor = '#ff3860'; ctx.shadowBlur = 14;
+    ctx.fillStyle = '#ff3860';
+    ctx.beginPath(); ctx.ellipse(VW / 2 - 96, sy - 2, 27, 6, 0, 0, TAU); ctx.fill();
+    ctx.fillStyle = '#ffd1dc';
+    ctx.beginPath(); ctx.arc(VW / 2 - 96, sy - 6, 7, Math.PI, 0); ctx.fill();
+    ctx.restore();
+    ctx.font = '700 18px "Courier New",monospace';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#9fe8ff';
+    ctx.fillText('= ??? MYSTERY', VW / 2 - 40, sy + 6);
+
+    if ((t % 1.1) < 0.72) this.neonText('PRESS ENTER TO PLAY', VW / 2, VH - 168, 30, '#ffe066', 16);
+    this.neonText('MOVE  A/D OR ARROWS      FIRE  SPACE      PAUSE  P      MUTE  M', VW / 2, VH - 112, 15, '#7f9fc0', 6);
+    this.neonText('HIGH SCORE  ' + pad(this.hi, 6), VW / 2, VH - 72, 17, '#ff2df7', 10);
+  }
+
+  drawClearBanner(t) {
+    ctx.fillStyle = 'rgba(3,6,18,0.55)';
+    ctx.fillRect(0, 0, VW, VH);
+    this.neonText('WAVE ' + pad(this.level, 2) + ' CLEARED', VW / 2, VH / 2 - 16, 44, '#7dff00', 22);
+    if ((t % 0.9) < 0.6) this.neonText('NEXT WAVE INCOMING...', VW / 2, VH / 2 + 34, 20, '#bffcff', 10);
+  }
+
+  drawPaused() {
+    ctx.fillStyle = 'rgba(3,6,18,0.6)';
+    ctx.fillRect(0, 0, VW, VH);
+    this.neonText('PAUSED', VW / 2, VH / 2 - 10, 52, '#00f0ff', 24);
+    this.neonText('PRESS P TO RESUME', VW / 2, VH / 2 + 40, 18, '#7fdfff', 8);
+  }
+
+  drawGameOver(t) {
+    ctx.fillStyle = 'rgba(6,2,10,0.66)';
+    ctx.fillRect(0, 0, VW, VH);
+    // glitch-jittering red title
+    ctx.save();
+    ctx.font = '700 72px "Courier New",monospace';
+    ctx.textAlign = 'center';
+    ctx.shadowColor = '#ff2040'; ctx.shadowBlur = 26;
+    ctx.fillStyle = '#ff3860';
+    ctx.globalAlpha = 0.82 + Math.random() * 0.18;
+    ctx.fillText('GAME OVER', VW / 2 + rand(-2, 2), VH / 2 - 120 + rand(-1.5, 1.5));
+    ctx.restore();
+    this.neonText(this.overCause, VW / 2, VH / 2 - 68, 20, '#ff9fb0', 10);
+    this.neonText('FINAL SCORE  ' + pad(this.score, 6), VW / 2, VH / 2 - 10, 30, '#bffcff', 14);
+    if (this.newRecord && (t % 0.8) < 0.55)
+      this.neonText('* NEW HIGH SCORE *', VW / 2, VH / 2 + 36, 22, '#ffe066', 14);
+    else
+      this.neonText('HIGH SCORE   ' + pad(this.hi, 6), VW / 2, VH / 2 + 36, 20, '#7fdfff', 8);
+    if ((t % 1.1) < 0.7) this.neonText('PRESS ENTER TO RESTART', VW / 2, VH / 2 + 112, 26, '#ffe066', 14);
+  }
+
+  render() {
+    const t = this.time;
+    // clear physical canvas (letterbox bars)
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = '#020208';
+    ctx.fillRect(0, 0, cvs.width, cvs.height);
+    // camera shake offsets
+    let sx = 0, sy = 0;
+    if (this.shake.t > 0) {
+      const k = this.shake.t / this.shake.dur;
+      sx = (Math.random() * 2 - 1) * this.shake.mag * k;
+      sy = (Math.random() * 2 - 1) * this.shake.mag * k;
+    }
+    ctx.setTransform(view.scale, 0, 0, view.scale,
+                     view.offX + sx * view.scale, view.offY + sy * view.scale);
+    ctx.save();
+    ctx.beginPath(); ctx.rect(0, 0, VW, VH); ctx.clip();
+
+    this.drawBackground(t);
+    if (this.state === STATE.MENU) {
+      this.drawMenu(t);
+    } else {
+      this.drawWorld(t);
+      this.drawHUD();
+      if (this.state === STATE.CLEAR)      this.drawClearBanner(t);
+      else if (this.state === STATE.PAUSED) this.drawPaused();
+      else if (this.state === STATE.OVER)   this.drawGameOver(t);
+    }
+    // full-screen flashes (hits / damage)
+    if (this.flashW > 0) { ctx.fillStyle = 'rgba(255,255,255,' + (this.flashW * 0.35) + ')'; ctx.fillRect(0, 0, VW, VH); }
+    if (this.flashR > 0) { ctx.fillStyle = 'rgba(255,30,80,'  + (this.flashR * 0.30) + ')'; ctx.fillRect(0, 0, VW, VH); }
+    drawVignetteAndScanlines();
+    ctx.restore();
+  }
+}
+
+/* ====================================================================
+   SECTION 12 · SCREEN OVERLAYS (cached vignette + CRT scanline pattern)
+==================================================================== */
+let vignette = null, scanPat = null;
+(function buildOverlays() {
+  vignette = ctx.createRadialGradient(VW / 2, VH / 2, VH * 0.36, VW / 2, VH / 2, VH * 0.78);
+  vignette.addColorStop(0, 'rgba(0,0,0,0)');
+  vignette.addColorStop(1, 'rgba(0,0,10,0.5)');
+  const oc = document.createElement('canvas');
+  oc.width = 1; oc.height = 3;
+  const octx = oc.getContext('2d');
+  octx.fillStyle = 'rgba(0,0,0,0.16)';
+  octx.fillRect(0, 2, 1, 1);
+  scanPat = ctx.createPattern(oc, 'repeat');
+})();
+function drawVignetteAndScanlines() {
+  ctx.fillStyle = vignette; ctx.fillRect(0, 0, VW, VH);
+  ctx.fillStyle = scanPat;  ctx.fillRect(0, 0, VW, VH);
+}
+
+/* ====================================================================
+   SECTION 13 · INPUT, BOOTSTRAP & MAIN DELTA-TIME LOOP
+==================================================================== */
+const Input = { keys: new Set() };
+const PREVENT = new Set(['Space', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown']);
+
+const game = new Game();
+
+window.addEventListener('keydown', e => {
+  if (PREVENT.has(e.code)) e.preventDefault();   // stop page scrolling
+  if (!e.repeat) {
+    Input.keys.add(e.code);
+    game.handlePress(e.code);
+  }
+});
+window.addEventListener('keyup', e => Input.keys.delete(e.code));
+
+// Auto-pause + release keys when the tab/app loses focus.
+window.addEventListener('blur', () => {
+  Input.keys.clear();
+  if (game.state === STATE.PLAYING) { game.state = STATE.PAUSED; sfx.ufoStop(); }
+});
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && game.state === STATE.PLAYING) { game.state = STATE.PAUSED; sfx.ufoStop(); }
+});
+
+// Click also starts / unlocks audio (autoplay policies require a gesture).
+cvs.addEventListener('pointerdown', () => {
+  sfx.ensure();
+  if (game.state === STATE.MENU || game.state === STATE.OVER) game.start();
+});
+
+let last = performance.now();
+function frame(now) {
+  requestAnimationFrame(frame);
+  let dt = (now - last) / 1000;
+  last = now;
+  if (dt > 0.05) dt = 0.05;                      // clamp after tab switches
+  game.update(dt);
+  game.render();
+}
+requestAnimationFrame(frame);
+
+})();
+</script>
+</body>
+</html>
