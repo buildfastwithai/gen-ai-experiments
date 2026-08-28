@@ -426,3 +426,11 @@ Show your support by starring this repository!
   <p>Made with ❤️ by <a href="https://buildfastwithai.com">BuildFastWithAI</a></p>
   <p>⭐ Star this repo if you find it helpful!</p>
 </div>
+
+#### AI Agent Marketplace Index And Router | [API Doc](https://www.deepnlp.org/doc/ai_agent_marketplace)
+[![AI Agent Marketplace and Router Badge](https://www.deepnlp.org/api/ai_agent_marketplace/svg?name=buildfastwithai/gen-ai-experiments&badge_type=review)](https://www.deepnlp.org/store/ai-agent/ai-agent/pub-buildfastwithai/gen-ai-experiments)
+
+```
+curl 'https://www.deepnlp.org/api/ai_agent_marketplace/v2?id=buildfastwithai/gen-ai-experiments'
+```
+    
