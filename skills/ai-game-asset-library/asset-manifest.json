@@ -1,17 +1,17 @@
 {
   "name": "ForgeKit AI Game Asset Library",
-  "version": "2.0.0",
+  "version": "2.2.0",
   "license": "MIT",
   "mcp": {
     "server": "forgekit-game-assets",
-    "version": "2.1.0",
+    "version": "2.2.0",
     "transports": ["stdio", "streamable-http"],
     "toolsLocal": 8,
     "toolsRemote": 7,
-    "resources": 18,
+    "resources": 20,
     "prompts": 2
   },
-  "totals": { "spriteAtlases": 6, "spriteFrames": 144, "modules": 10, "exports": 116 },
+  "totals": { "spriteAtlases": 8, "spriteFrames": 192, "modules": 10, "exports": 116 },
   "atlasFormat": { "columns": 6, "rows": 4, "width": 1536, "height": 1024, "frameWidth": 256, "frameHeight": 256, "alpha": true },
   "spriteAtlases": [
     {
@@ -61,6 +61,31 @@
       "games": ["horror", "dungeon", "survival"],
       "src": "/assets/gothic-horror-atlas.png",
       "frames": ["survivor-idle", "survivor-run", "survivor-back", "survivor-attack", "decayed-zombie", "armored-skeleton", "pale-ghost", "cave-spider", "old-shotgun", "woodcutter-axe", "oil-lantern", "medical-satchel", "iron-key", "cursed-skull", "broken-crate", "gothic-chest", "dungeon-floor", "dungeon-wall", "murky-swamp", "molten-lava", "dead-tree", "tombstone", "wall-torch", "ritual-portal"]
+    },
+    {
+      "id": "riftfall-battle-royale",
+      "name": "Riftfall Battle Royale",
+      "style": "hand-painted isometric fantasy-tech",
+      "games": ["battle-royale", "rpg", "isometric", "arena"],
+      "src": "/assets/riftfall-battle-royale-atlas.png",
+      "frames": ["vanguard-idle", "ranger-idle", "arcanist-idle", "shadow-idle", "warden-idle", "artificer-idle", "vanguard-cleave", "ranger-fire", "arcanist-cast", "shadow-dash", "warden-heal", "artificer-turret", "health-tonic", "shield-elixir", "upgrade-shard", "legendary-supply-cache", "recall-beacon", "rift-drop-pod", "shatter-pine", "moss-boulder", "rune-pillar", "field-loot-chest", "storm-obelisk", "squad-campfire"]
+    },
+    {
+      "id": "riftfall-character-animations",
+      "name": "Riftfall Character Animations",
+      "style": "hand-painted isometric fantasy-tech animation",
+      "games": ["battle-royale", "rpg", "isometric", "action", "animation"],
+      "src": "/assets/riftfall-character-animation-atlas.png",
+      "frames": ["vanguard-idle-animated", "ranger-idle-animated", "arcanist-idle-animated", "shadow-idle-animated", "warden-idle-animated", "artificer-idle-animated", "vanguard-walk-contact", "ranger-walk-contact", "arcanist-walk-contact", "shadow-walk-contact", "warden-walk-contact", "artificer-walk-contact", "vanguard-walk-passing", "ranger-walk-passing", "arcanist-walk-passing", "shadow-walk-passing", "warden-walk-passing", "artificer-walk-passing", "vanguard-basic-attack", "ranger-basic-attack", "arcanist-basic-attack", "shadow-basic-attack", "warden-basic-attack", "artificer-basic-attack"],
+      "animationLayout": {
+        "characterByColumn": ["vanguard", "ranger", "arcanist", "shadow", "warden", "artificer"],
+        "stateByRow": ["idle", "walk-contact", "walk-passing", "basic-attack"],
+        "clips": {
+          "idle": { "rows": [0], "fps": 1, "loop": true },
+          "walk": { "rows": [1, 2], "fps": 8, "loop": true },
+          "attack": { "rows": [3], "fps": 10, "loop": false }
+        }
+      }
     }
   ],
   "modules": [

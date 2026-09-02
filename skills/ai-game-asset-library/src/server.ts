@@ -97,7 +97,7 @@ export function createForgeKitServer(options: ForgeKitServerOptions = {}): McpSe
     "list_asset_packs",
     {
       title: "List ForgeKit asset packs",
-      description: "List the six visual worlds, their game genres, styles, atlas URLs, and optionally all frame IDs. Use this before choosing a game's art direction.",
+      description: "List every ForgeKit visual world, its game genres, style, atlas URL, and optionally all frame IDs. Use this before choosing a game's art direction.",
       inputSchema: z.object({
         gameType: z.string().trim().optional().describe("Optional genre such as rpg, racing, horror, farming, tactics, or arcade."),
         includeFrames: z.boolean().default(false).describe("Include every sprite frame ID in each matching pack."),
@@ -126,7 +126,7 @@ export function createForgeKitServer(options: ForgeKitServerOptions = {}): McpSe
     "search_assets",
     {
       title: "Search ForgeKit sprites",
-      description: "Search all 144 sprites by name, category, pack, style, or target game genre. Returns exact frame numbers and crop coordinates for reliable Canvas or Three.js use.",
+      description: `Search all ${manifest.totals.spriteFrames} sprites by name, category, pack, style, or target game genre. Returns exact frame numbers and crop coordinates for reliable Canvas or Three.js use.`,
       inputSchema: z.object({
         query: z.string().trim().default("").describe("What to find, for example hero, enemy, portal, vehicle, farm, or dungeon tile."),
         packId: z.string().trim().optional().describe("Restrict results to one pack ID."),

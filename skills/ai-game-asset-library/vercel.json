@@ -3,7 +3,7 @@
   "buildCommand": "npm run check:vercel",
   "functions": {
     "server.ts": {
-      "includeFiles": "{assets/**,lib/**,asset-manifest.json,FORGEKIT-README.md,README.md,LICENSE.txt}",
+      "includeFiles": "{assets/**,lib/**,asset-manifest.json,server.json,mcp-config.json,FORGEKIT-README.md,README.md,LICENSE.txt}",
       "maxDuration": 60
     }
   }

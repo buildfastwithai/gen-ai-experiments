@@ -1,0 +1,920 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Phosphor Siege</title>
+<style>
+  /* ============================================================
+     PHOSPHOR SIEGE — a single-file arcade shooter.
+     Committed single-theme design: a CRT cabinet in a dark room.
+     ============================================================ */
+  :root{
+    --void:#04060e;
+    --deep:#0a1030;
+    --cyan:#35f0ff;
+    --magenta:#ff2e88;
+    --amber:#ffcc44;
+    --pale:#dff3ff;
+    --dim:#6b7ea8;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    min-height:100vh;
+    padding:14px;
+    background:radial-gradient(125% 95% at 50% -10%, #101a44 0%, #060a1c 55%, #02030a 100%);
+    color:var(--pale);
+    font-family:var(--mono);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+    overflow:hidden;
+  }
+  /* The cabinet bezel: a thin metal edge with phosphor bleed around the tube. */
+  .stage{
+    position:relative;
+    aspect-ratio:4 / 3;
+    width:min(96vw, calc((100vh - 92px) * 4 / 3));
+    border:1px solid #22305c;
+    border-radius:10px;
+    background:var(--void);
+    box-shadow:
+      0 0 0 6px #070b18,
+      0 0 0 7px #1a2650,
+      0 0 60px rgba(53,240,255,.14),
+      0 24px 70px rgba(0,0,0,.75),
+      inset 0 0 90px rgba(10,16,48,.9);
+    overflow:hidden;
+  }
+  canvas{display:block;width:100%;height:100%;}
+  /* Scanlines + tube glare sit above the canvas and never take pointer events. */
+  .scan,.glare{position:absolute;inset:0;pointer-events:none;}
+  .scan{
+    background:repeating-linear-gradient(
+      to bottom,
+      rgba(0,0,0,0) 0px, rgba(0,0,0,0) 2px,
+      rgba(0,0,0,.28) 2px, rgba(0,0,0,.28) 4px);
+    opacity:.55;
+  }
+  .glare{
+    background:
+      radial-gradient(70% 45% at 22% 8%, rgba(190,225,255,.09), rgba(0,0,0,0) 60%),
+      radial-gradient(130% 110% at 50% 50%, rgba(0,0,0,0) 52%, rgba(0,0,0,.55) 100%);
+  }
+  .legend{
+    margin:0;
+    font-size:12px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--dim);
+    text-align:center;
+  }
+  .legend b{color:var(--cyan);font-weight:500;}
+  @media (max-width:640px){ .legend{font-size:10px;letter-spacing:.1em;} }
+</style>
+</head>
+<body>
+<div class="stage">
+  <canvas id="game" width="960" height="720" aria-label="Phosphor Siege arcade game"></canvas>
+  <div class="scan"></div>
+  <div class="glare"></div>
+</div>
+<p class="legend"><b>&larr; &rarr;</b> / <b>A D</b> move &nbsp;·&nbsp; <b>Space</b> fire &nbsp;·&nbsp; <b>P</b> pause &nbsp;·&nbsp; <b>M</b> mute &nbsp;·&nbsp; <b>R</b> restart</p>
+
+<script>
+(() => {
+  'use strict';
+
+  /* ==========================================================
+     1. CONSTANTS & SMALL HELPERS
+     ========================================================== */
+  const W = 960, H = 720;                 // logical resolution; the canvas scales to fit
+  const MAX_LEVEL = 8;                    // clearing this wave wins the run
+  const MONO = 'ui-monospace, Menlo, Consolas, monospace';
+  const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const rand  = (a, b) => a + Math.random() * (b - a);
+  const randi = (a, b) => Math.floor(rand(a, b + 1));
+  const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+  const hit   = (a, b) => a.x < b.x + b.w && a.x + a.w > b.x &&
+                          a.y < b.y + b.h && a.y + a.h > b.y;
+
+  /* ==========================================================
+     2. AUDIO — every sound is synthesised, nothing is loaded
+     ========================================================== */
+  const Sfx = (() => {
+    let ac = null, bus = null, muted = false;
+
+    function init() {                       // must be created from a user gesture
+      if (ac) return;
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      ac = new AC();
+      bus = ac.createGain();
+      bus.gain.value = 0.22;
+      bus.connect(ac.destination);
+    }
+    function ready() {
+      if (!ac || muted) return false;
+      if (ac.state === 'suspended') ac.resume();
+      return true;
+    }
+    /* A pitch-swept oscillator: the backbone of every retro blip. */
+    function tone(type, f0, f1, dur, vol) {
+      if (!ready()) return;
+      const t = ac.currentTime, o = ac.createOscillator(), g = ac.createGain();
+      o.type = type;
+      o.frequency.setValueAtTime(f0, t);
+      o.frequency.exponentialRampToValueAtTime(Math.max(f1, 1), t + dur);
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.linearRampToValueAtTime(vol, t + 0.008);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g); g.connect(bus);
+      o.start(t); o.stop(t + dur + 0.03);
+    }
+    /* Filtered white noise: explosions and impacts. */
+    function noise(dur, vol, cutoff) {
+      if (!ready()) return;
+      const t = ac.currentTime, n = Math.floor(ac.sampleRate * dur);
+      const buf = ac.createBuffer(1, n, ac.sampleRate);
+      const d = buf.getChannelData(0);
+      for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n);
+      const src = ac.createBufferSource(); src.buffer = buf;
+      const f = ac.createBiquadFilter(); f.type = 'lowpass';
+      f.frequency.setValueAtTime(cutoff, t);
+      f.frequency.exponentialRampToValueAtTime(180, t + dur);
+      const g = ac.createGain();
+      g.gain.setValueAtTime(vol, t);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      src.connect(f); f.connect(g); g.connect(bus);
+      src.start(t); src.stop(t + dur);
+    }
+    return {
+      init,
+      shoot:   () => tone('square', 780, 240, 0.12, 0.30),
+      kill:    () => { noise(0.26, 0.45, 2200); tone('triangle', 320, 90, 0.20, 0.20); },
+      step:    () => tone('sine', 130, 96, 0.09, 0.22),
+      hurt:    () => { noise(0.55, 0.6, 900); tone('sawtooth', 220, 40, 0.5, 0.28); },
+      ufo:     () => tone('sawtooth', 640, 900, 0.35, 0.16),
+      bonus:   () => { tone('square', 660, 1320, 0.16, 0.26); },
+      wave:    () => { tone('square', 440, 660, 0.14, 0.24); setTimeout(() => tone('square', 660, 990, 0.22, 0.24), 130); },
+      over:    () => { tone('sawtooth', 300, 60, 1.1, 0.30); noise(0.9, 0.35, 700); },
+      toggle:  () => (muted = !muted),
+      isMuted: () => muted
+    };
+  })();
+
+  /* ==========================================================
+     3. SPRITES — pixel bitmaps pre-rendered once with their glow
+     ========================================================== */
+  const ART = {
+    ship: [
+      '......XX......',
+      '.....XXXX.....',
+      '.....XXXX.....',
+      '..XXXXXXXXXX..',
+      '.XXXXXXXXXXXX.',
+      'XXXXXXXXXXXXXX',
+      'XXXXXXXXXXXXXX',
+      'XX.XXXXXXXX.XX'
+    ],
+    squidA: [
+      '...XX...',
+      '..XXXX..',
+      '.XXXXXX.',
+      'XX.XX.XX',
+      'XXXXXXXX',
+      '..X..X..',
+      '.X.XX.X.',
+      'X.X..X.X'
+    ],
+    squidB: [
+      '...XX...',
+      '..XXXX..',
+      '.XXXXXX.',
+      'XX.XX.XX',
+      'XXXXXXXX',
+      '.X.XX.X.',
+      'X......X',
+      '.X....X.'
+    ],
+    crabA: [
+      '..X.....X..',
+      '...X...X...',
+      '..XXXXXXX..',
+      '.XX.XXX.XX.',
+      'XXXXXXXXXXX',
+      'X.XXXXXXX.X',
+      'X.X.....X.X',
+      '...XX.XX...'
+    ],
+    crabB: [
+      '..X.....X..',
+      'X..X...X..X',
+      'X.XXXXXXX.X',
+      'XXX.XXX.XXX',
+      'XXXXXXXXXXX',
+      '.XXXXXXXXX.',
+      '..X.....X..',
+      '.X.......X.'
+    ],
+    octA: [
+      '....XXXX....',
+      '.XXXXXXXXXX.',
+      'XXXXXXXXXXXX',
+      'XXX..XX..XXX',
+      'XXXXXXXXXXXX',
+      '...XX..XX...',
+      '..XX.XX.XX..',
+      'XX........XX'
+    ],
+    octB: [
+      '....XXXX....',
+      '.XXXXXXXXXX.',
+      'XXXXXXXXXXXX',
+      'XXX..XX..XXX',
+      'XXXXXXXXXXXX',
+      '..XXX..XXX..',
+      '.XX..XX..XX.',
+      '..XX....XX..'
+    ],
+    ufo: [
+      '.....XXXXXX.....',
+      '..XXXXXXXXXXXX..',
+      '.XXXXXXXXXXXXXX.',
+      'XX.XX.XX.XX.XXXX',
+      'XXXXXXXXXXXXXXXX',
+      '..XXX......XXX..',
+      '...X........X...'
+    ]
+  };
+
+  const PAD = 5; // room around each bitmap so the glow is not clipped
+
+  /* Bake a bitmap into an offscreen canvas: drawn once, blitted forever. */
+  function bake(rows, color, px) {
+    const w = Math.max(...rows.map(r => r.length)), h = rows.length;
+    const c = document.createElement('canvas');
+    c.width = w * px + PAD * 2;
+    c.height = h * px + PAD * 2;
+    const g = c.getContext('2d');
+    g.translate(PAD, PAD);
+    g.fillStyle = color;
+    g.shadowColor = color;
+    g.shadowBlur = 7;
+    for (let y = 0; y < h; y++)
+      for (let x = 0; x < rows[y].length; x++)
+        if (rows[y][x] !== '.') g.fillRect(x * px, y * px, px, px);
+    c.pw = w * px; c.ph = h * px;   // the true (unpadded) pixel size
+    return c;
+  }
+
+  /* Five enemy ranks, top to bottom: rarest and highest scoring on top. */
+  const RANKS = [
+    { art: ['squidA', 'squidB'], color: '#ff7ad9', px: 3, points: 40 },
+    { art: ['crabA',  'crabB' ], color: '#a97bff', px: 3, points: 30 },
+    { art: ['crabA',  'crabB' ], color: '#5fb8ff', px: 3, points: 20 },
+    { art: ['octA',   'octB'  ], color: '#35f0ff', px: 3, points: 15 },
+    { art: ['octA',   'octB'  ], color: '#4dffc3', px: 3, points: 10 }
+  ];
+  RANKS.forEach(r => { r.frames = r.art.map(k => bake(ART[k], r.color, r.px)); });
+  const SHIP_SPR = bake(ART.ship, '#35f0ff', 3);
+  const UFO_SPR  = bake(ART.ufo,  '#ffcc44', 3);
+
+  /* ==========================================================
+     4. INPUT
+     ========================================================== */
+  const keys = new Set();
+  const pressed = new Set();               // edge-triggered: consumed once per press
+  const WATCHED = ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space'];
+
+  addEventListener('keydown', e => {
+    if (WATCHED.includes(e.code)) e.preventDefault();
+    if (!e.repeat) pressed.add(e.code);
+    keys.add(e.code);
+    Sfx.init();                            // first key doubles as the audio unlock
+  });
+  addEventListener('keyup', e => keys.delete(e.code));
+  addEventListener('blur', () => keys.clear());
+
+  const held = (...codes) => codes.some(c => keys.has(c));
+  const tapped = code => { if (!pressed.has(code)) return false; pressed.delete(code); return true; };
+
+  /* ==========================================================
+     5. ENTITIES
+     ========================================================== */
+  class Bullet {
+    constructor(x, y, vy, color, w = 3, h = 14) {
+      Object.assign(this, { x: x - w / 2, y, w, h, vy, color, dead: false });
+    }
+    update(dt) {
+      this.y += this.vy * dt;
+      if (this.y < 78 || this.y > H + 20) this.dead = true;
+    }
+    draw(c) {
+      c.save();
+      c.fillStyle = this.color;
+      c.shadowColor = this.color;
+      c.shadowBlur = 12;
+      c.fillRect(this.x, this.y, this.w, this.h);
+      c.restore();
+    }
+  }
+
+  class Alien {
+    constructor(x, y, rank, col) {
+      this.rank = rank;
+      this.col = col;
+      const s = RANKS[rank].frames[0];
+      Object.assign(this, { x, y, w: s.pw, h: s.ph, dead: false });
+    }
+    draw(c, frame) {
+      const s = RANKS[this.rank].frames[frame];
+      c.drawImage(s, this.x - PAD, this.y - PAD);
+    }
+  }
+
+  class Ufo {
+    constructor(dir) {
+      this.w = UFO_SPR.pw; this.h = UFO_SPR.ph;
+      this.dir = dir;
+      this.x = dir > 0 ? -this.w - 10 : W + 10;
+      this.y = 84;
+      this.speed = 150;
+      this.points = [100, 150, 200, 300][randi(0, 3)];
+      this.dead = false;
+      this.blip = 0;
+    }
+    update(dt) {
+      this.x += this.dir * this.speed * dt;
+      this.blip -= dt;
+      if (this.blip <= 0) { Sfx.ufo(); this.blip = 0.34; }
+      if (this.x > W + 20 || this.x < -this.w - 20) this.dead = true;
+    }
+    draw(c) { c.drawImage(UFO_SPR, this.x - PAD, this.y - PAD); }
+  }
+
+  class Particle {
+    constructor(x, y, color) {
+      const a = rand(0, Math.PI * 2), s = rand(40, 320);
+      Object.assign(this, {
+        x, y, color,
+        vx: Math.cos(a) * s, vy: Math.sin(a) * s,
+        life: rand(0.3, 0.8), max: 0, size: rand(1.5, 3.6), dead: false
+      });
+      this.max = this.life;
+    }
+    update(dt) {
+      this.life -= dt;
+      if (this.life <= 0) { this.dead = true; return; }
+      this.x += this.vx * dt;
+      this.y += this.vy * dt;
+      this.vy += 220 * dt;                 // a little gravity so debris arcs
+      this.vx *= 1 - 1.4 * dt;
+    }
+    draw(c) {
+      const t = this.life / this.max;
+      c.globalAlpha = t;
+      c.fillStyle = this.color;
+      c.fillRect(this.x, this.y, this.size, this.size);
+      c.globalAlpha = 1;
+    }
+  }
+
+  /* Floating score popups — small, but they make a kill feel paid for. */
+  class Popup {
+    constructor(x, y, text, color) {
+      Object.assign(this, { x, y, text, color, life: 0.9, dead: false });
+    }
+    update(dt) { this.y -= 34 * dt; this.life -= dt; if (this.life <= 0) this.dead = true; }
+    draw(c) {
+      c.save();
+      c.globalAlpha = clamp(this.life / 0.9, 0, 1);
+      c.font = '700 16px ' + MONO;
+      c.textAlign = 'center';
+      c.fillStyle = this.color;
+      c.shadowColor = this.color; c.shadowBlur = 10;
+      c.fillText(this.text, this.x, this.y);
+      c.restore();
+    }
+  }
+
+  /* Three parallax layers of drifting stars. */
+  class Starfield {
+    constructor() {
+      this.stars = [];
+      for (let i = 0; i < 150; i++) {
+        const depth = Math.random();
+        this.stars.push({
+          x: Math.random() * W,
+          y: Math.random() * H,
+          z: depth,
+          s: depth < 0.4 ? 1 : depth < 0.8 ? 1.5 : 2.2,
+          v: 6 + depth * 26,
+          tw: Math.random() * Math.PI * 2
+        });
+      }
+    }
+    update(dt) {
+      for (const s of this.stars) {
+        s.y += s.v * dt * (REDUCED ? 0.3 : 1);
+        s.tw += dt * 2;
+        if (s.y > H) { s.y = -2; s.x = Math.random() * W; }
+      }
+    }
+    draw(c) {
+      for (const s of this.stars) {
+        c.globalAlpha = 0.25 + 0.45 * s.z + Math.sin(s.tw) * 0.15;
+        c.fillStyle = s.z > 0.8 ? '#bfe6ff' : '#7f9fd6';
+        c.fillRect(s.x, s.y, s.s, s.s);
+      }
+      c.globalAlpha = 1;
+    }
+  }
+
+  /* ==========================================================
+     6. GAME — one object owns all mutable state
+     ========================================================== */
+  const STATE = { MENU: 'menu', PLAY: 'play', PAUSE: 'pause', WAVE: 'wave', OVER: 'over', WIN: 'win' };
+
+  class Game {
+    constructor(canvas) {
+      this.canvas = canvas;
+      this.ctx = canvas.getContext('2d');
+      this.scale = 1;
+      this.stars = new Starfield();
+      this.high = this.loadHigh();
+      this.t = 0;
+      this.state = STATE.MENU;
+      this.reset();
+      this.resize();
+      new ResizeObserver(() => this.resize()).observe(canvas.parentElement);
+    }
+
+    /* ---- persistence ---- */
+    loadHigh() { try { return parseInt(localStorage.getItem('phosphor.high') || '0', 10) || 0; } catch { return 0; } }
+    saveHigh() { try { localStorage.setItem('phosphor.high', String(this.high)); } catch { /* private mode */ } }
+
+    /* ---- backing store follows the CSS size so the tube stays crisp ---- */
+    resize() {
+      const r = this.canvas.getBoundingClientRect();
+      if (!r.width) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      this.canvas.width  = Math.round(r.width * dpr);
+      this.canvas.height = Math.round(r.height * dpr);
+      this.scale = this.canvas.width / W;
+    }
+
+    /* ---- a fresh run ---- */
+    reset() {
+      this.score = 0;
+      this.lives = 3;
+      this.level = 1;
+      this.bullets = [];
+      this.enemyShots = [];
+      this.particles = [];
+      this.popups = [];
+      this.ufo = null;
+      this.shake = 0;
+      this.flash = 0;
+      this.banner = '';
+      this.player = { x: W / 2 - SHIP_SPR.pw / 2, y: H - 78, w: SHIP_SPR.pw, h: SHIP_SPR.ph, cool: 0, invuln: 0 };
+      this.spawnWave();
+    }
+
+    /* ---- build the formation for the current level ---- */
+    spawnWave() {
+      const cols = 9, cellW = 62, cellH = 50;
+      const left = (W - cols * cellW) / 2;
+      const top = 132 + Math.min(this.level - 1, 4) * 14;   // each level starts lower
+      this.aliens = [];
+      for (let r = 0; r < RANKS.length; r++) {
+        for (let c = 0; c < cols; c++) {
+          const spr = RANKS[r].frames[0];
+          const x = left + c * cellW + (cellW - spr.pw) / 2;
+          this.aliens.push(new Alien(x, top + r * cellH, r, c));
+        }
+      }
+      this.total = this.aliens.length;
+      this.dir = 1;
+      this.baseSpeed = 26 * (1 + (this.level - 1) * 0.24);   // faster every round
+      this.frame = 0;
+      this.frameTimer = 0;
+      this.fireTimer = rand(0.6, 1.4);
+      this.ufoTimer = rand(12, 20);
+      this.enemyShots.length = 0;
+      this.bullets.length = 0;
+    }
+
+    /* ---- effects ---- */
+    boom(x, y, color, count = 16) {
+      for (let i = 0; i < count; i++) this.particles.push(new Particle(x, y, color));
+      if (!REDUCED) this.shake = Math.min(this.shake + 6, 18);
+      this.flash = Math.min(this.flash + 0.18, 0.5);
+    }
+
+    addScore(n, x, y, color) {
+      this.score += n;
+      this.popups.push(new Popup(x, y, '+' + n, color));
+      if (this.score > this.high) { this.high = this.score; this.saveHigh(); }
+    }
+
+    /* ======================================================
+       UPDATE
+       ====================================================== */
+    update(dt) {
+      this.t += dt;
+      this.stars.update(dt);
+      this.shake *= Math.pow(0.02, dt);          // frame-rate independent decay
+      this.flash = Math.max(0, this.flash - dt * 1.6);
+
+      // --- global keys ---
+      if (tapped('KeyM')) Sfx.toggle();
+      if (this.state === STATE.MENU && (tapped('Enter') || tapped('Space'))) {
+        this.reset(); this.state = STATE.PLAY; Sfx.wave();
+      }
+      if ((this.state === STATE.OVER || this.state === STATE.WIN) &&
+          (tapped('KeyR') || tapped('Enter') || tapped('Space'))) {
+        this.reset(); this.state = STATE.PLAY; Sfx.wave();
+      }
+      if ((this.state === STATE.PLAY || this.state === STATE.PAUSE) && tapped('KeyP')) {
+        this.state = this.state === STATE.PLAY ? STATE.PAUSE : STATE.PLAY;
+      }
+      if (this.state === STATE.PLAY && tapped('KeyR')) { this.reset(); }
+
+      // Debris keeps living on the end screens; the simulation does not.
+      this.particles.forEach(p => p.update(dt));
+      this.popups.forEach(p => p.update(dt));
+      this.particles = this.particles.filter(p => !p.dead);
+      this.popups = this.popups.filter(p => !p.dead);
+
+      if (this.state !== STATE.PLAY && this.state !== STATE.WAVE) return;
+
+      // Between-wave pause: let the debris settle, then deal the next hand.
+      if (this.state === STATE.WAVE) {
+        this.waveTimer -= dt;
+        if (this.waveTimer <= 0) {
+          this.level++;
+          if (this.level > MAX_LEVEL) { this.state = STATE.WIN; Sfx.bonus(); }
+          else { this.spawnWave(); this.state = STATE.PLAY; }
+        }
+        return;
+      }
+
+      this.updatePlayer(dt);
+      this.updateAliens(dt);
+      this.updateUfo(dt);
+      this.updateShots(dt);
+
+      if (this.aliens.length === 0) {
+        this.state = STATE.WAVE;
+        this.waveTimer = 1.7;
+        this.banner = this.level >= MAX_LEVEL ? 'FINAL WAVE CLEARED' : 'WAVE ' + this.level + ' CLEARED';
+        Sfx.wave();
+      }
+    }
+
+    updatePlayer(dt) {
+      const p = this.player;
+      p.cool = Math.max(0, p.cool - dt);
+      p.invuln = Math.max(0, p.invuln - dt);
+
+      const dirX = (held('ArrowRight', 'KeyD') ? 1 : 0) - (held('ArrowLeft', 'KeyA') ? 1 : 0);
+      p.x = clamp(p.x + dirX * 430 * dt, 22, W - 22 - p.w);
+
+      if (held('Space') && p.cool === 0) {
+        this.bullets.push(new Bullet(p.x + p.w / 2, p.y - 12, -640, '#dff3ff'));
+        p.cool = 0.26;
+        Sfx.shoot();
+      }
+    }
+
+    updateAliens(dt) {
+      const alive = this.aliens.length;
+      if (!alive) return;
+
+      // The fewer left, the faster they come — the original's rising panic.
+      const pressure = 1 + (1 - alive / this.total) * 2.6;
+      const speed = this.baseSpeed * pressure;
+
+      let minX = Infinity, maxX = -Infinity;
+      for (const a of this.aliens) {
+        a.x += this.dir * speed * dt;
+        if (a.x < minX) minX = a.x;
+        if (a.x + a.w > maxX) maxX = a.x + a.w;
+      }
+      // Bounce off the walls and drop one step.
+      if (maxX > W - 24 || minX < 24) {
+        const push = maxX > W - 24 ? (W - 24) - maxX : 24 - minX;
+        for (const a of this.aliens) { a.x += push; a.y += 22; }
+        this.dir *= -1;
+        Sfx.step();
+      }
+
+      // Two-frame march animation, quicker as the ranks thin out.
+      this.frameTimer += dt * pressure;
+      if (this.frameTimer > 0.45) { this.frameTimer = 0; this.frame ^= 1; }
+
+      // Return fire from the front rank of a random column.
+      this.fireTimer -= dt;
+      if (this.fireTimer <= 0) {
+        const line = this.frontLine();
+        const shooter = line.length ? line[randi(0, line.length - 1)] : null;
+        if (shooter) {
+          this.enemyShots.push(new Bullet(shooter.x + shooter.w / 2, shooter.y + shooter.h,
+                                          230 + this.level * 18, '#ff2e88', 3, 12));
+        }
+        this.fireTimer = Math.max(0.32, rand(1.5, 2.4) - this.level * 0.12);
+      }
+
+      // Reaching the player's line ends the run outright.
+      for (const a of this.aliens) {
+        if (a.y + a.h >= this.player.y - 4) { this.gameOver(); return; }
+      }
+    }
+
+    /* The lowest alien in each column — only they can shoot. */
+    frontLine() {
+      const byCol = new Map();
+      for (const a of this.aliens) {
+        const k = a.col;
+        const cur = byCol.get(k);
+        if (!cur || a.y > cur.y) byCol.set(k, a);
+      }
+      return [...byCol.values()];
+    }
+
+    updateUfo(dt) {
+      this.ufoTimer -= dt;
+      if (!this.ufo && this.ufoTimer <= 0 && this.aliens.length > 2) {
+        this.ufo = new Ufo(Math.random() < 0.5 ? 1 : -1);
+        this.ufoTimer = rand(16, 26);
+      }
+      if (this.ufo) {
+        this.ufo.update(dt);
+        if (this.ufo.dead) this.ufo = null;
+      }
+    }
+
+    updateShots(dt) {
+      const p = this.player;
+
+      // --- player bullets ---
+      for (const b of this.bullets) {
+        b.update(dt);
+        if (b.dead) continue;
+        for (const a of this.aliens) {
+          if (!a.dead && hit(b, a)) {
+            a.dead = true; b.dead = true;
+            const col = RANKS[a.rank].color;
+            this.boom(a.x + a.w / 2, a.y + a.h / 2, col);
+            this.addScore(RANKS[a.rank].points, a.x + a.w / 2, a.y, col);
+            Sfx.kill();
+            break;
+          }
+        }
+        if (!b.dead && this.ufo && hit(b, this.ufo)) {
+          b.dead = true;
+          this.boom(this.ufo.x + this.ufo.w / 2, this.ufo.y + this.ufo.h / 2, '#ffcc44', 26);
+          this.addScore(this.ufo.points, this.ufo.x + this.ufo.w / 2, this.ufo.y, '#ffcc44');
+          Sfx.bonus();
+          this.ufo = null;
+        }
+      }
+      this.aliens = this.aliens.filter(a => !a.dead);
+      this.bullets = this.bullets.filter(b => !b.dead);
+
+      // --- enemy bullets ---
+      for (const b of this.enemyShots) {
+        b.update(dt);
+        if (!b.dead && p.invuln === 0 && hit(b, p)) {
+          b.dead = true;
+          this.lives--;
+          this.boom(p.x + p.w / 2, p.y + p.h / 2, '#ff2e88', 30);
+          this.shake = 22;
+          this.flash = 0.7;
+          Sfx.hurt();
+          if (this.lives <= 0) this.gameOver();
+          else { p.invuln = 2; p.x = W / 2 - p.w / 2; }
+        }
+      }
+      this.enemyShots = this.enemyShots.filter(b => !b.dead);
+    }
+
+    gameOver() {
+      this.state = STATE.OVER;
+      this.shake = 26;
+      this.flash = 0.8;
+      Sfx.over();
+      if (this.score > this.high) { this.high = this.score; this.saveHigh(); }
+    }
+
+    /* ======================================================
+       DRAW
+       ====================================================== */
+    text(str, x, y, size, color, align = 'center', weight = 700, spacing = '0px') {
+      const c = this.ctx;
+      c.save();
+      c.font = weight + ' ' + size + 'px ' + MONO;
+      c.letterSpacing = spacing;
+      c.textAlign = align;
+      c.textBaseline = 'middle';
+      c.fillStyle = color;
+      c.shadowColor = color;
+      c.shadowBlur = size * 0.55;
+      c.fillText(str, x, y);
+      c.restore();
+    }
+
+    /* Title lettering with a split-channel CRT misregistration. */
+    title(str, x, y, size) {
+      const off = 3 + Math.sin(this.t * 2.4) * 1.6;
+      this.text(str, x - off, y, size, '#ff2e88', 'center', 800, '10px');
+      this.text(str, x + off, y, size, '#35f0ff', 'center', 800, '10px');
+      this.text(str, x, y, size, '#f2fbff', 'center', 800, '10px');
+    }
+
+    draw() {
+      const c = this.ctx;
+      c.setTransform(this.scale, 0, 0, this.scale, 0, 0);
+
+      // Ground: never transparent, so the page reads the same on any host.
+      c.fillStyle = '#04060e';
+      c.fillRect(0, 0, W, H);
+      const bg = c.createRadialGradient(W / 2, H * 0.1, 40, W / 2, H * 0.5, H);
+      bg.addColorStop(0, 'rgba(24,38,96,.55)');
+      bg.addColorStop(1, 'rgba(4,6,14,0)');
+      c.fillStyle = bg;
+      c.fillRect(0, 0, W, H);
+
+      this.stars.draw(c);
+
+      // Screen shake wraps only the playfield.
+      const sx = this.shake ? rand(-this.shake, this.shake) : 0;
+      const sy = this.shake ? rand(-this.shake, this.shake) : 0;
+      c.save();
+      c.translate(sx, sy);
+
+      if (this.state !== STATE.MENU) {
+        for (const a of this.aliens) a.draw(c, this.frame);
+        if (this.ufo) this.ufo.draw(c);
+        for (const b of this.bullets) b.draw(c);
+        for (const b of this.enemyShots) b.draw(c);
+        this.drawPlayer(c);
+      }
+      for (const p of this.particles) p.draw(c);
+      for (const p of this.popups) p.draw(c);
+      c.restore();
+
+      // The deck line the aliens must not cross.
+      if (this.state !== STATE.MENU) {
+      c.save();
+      c.strokeStyle = 'rgba(53,240,255,.28)';
+      c.lineWidth = 1;
+      c.setLineDash([6, 10]);
+      c.beginPath();
+      c.moveTo(24, this.player.y - 4);
+      c.lineTo(W - 24, this.player.y - 4);
+      c.stroke();
+      c.restore();
+      }
+
+      if (this.state !== STATE.MENU) this.drawHud(c);
+      this.drawOverlay(c);
+
+      // Hit flash, over everything.
+      if (this.flash > 0) {
+        c.fillStyle = 'rgba(223,243,255,' + (this.flash * 0.5).toFixed(3) + ')';
+        c.fillRect(0, 0, W, H);
+      }
+    }
+
+    drawPlayer(c) {
+      const p = this.player;
+      // Blink while the respawn shield is up.
+      if (p.invuln > 0 && Math.floor(p.invuln * 12) % 2 === 0) return;
+      c.drawImage(SHIP_SPR, p.x - PAD, p.y - PAD);
+      // Thruster bloom
+      c.save();
+      c.globalAlpha = 0.5 + Math.sin(this.t * 22) * 0.2;
+      c.fillStyle = '#ff2e88';
+      c.shadowColor = '#ff2e88';
+      c.shadowBlur = 14;
+      c.fillRect(p.x + p.w / 2 - 4, p.y + p.h, 8, 5);
+      c.restore();
+    }
+
+    drawHud(c) {
+      const pad = 26;
+      this.text('SCORE', pad, 30, 12, '#6b7ea8', 'left', 500, '3px');
+      this.text(String(this.score).padStart(6, '0'), pad, 54, 26, '#dff3ff', 'left', 700, '2px');
+
+      this.text('WAVE', W / 2, 30, 12, '#6b7ea8', 'center', 500, '3px');
+      this.text(String(this.level).padStart(2, '0') + ' / ' + MAX_LEVEL, W / 2, 54, 26, '#ffcc44', 'center', 700, '2px');
+
+      this.text('HIGH', W - pad, 30, 12, '#6b7ea8', 'right', 500, '3px');
+      this.text(String(this.high).padStart(6, '0'), W - pad, 54, 26, '#a97bff', 'right', 700, '2px');
+
+      // Lives as little ships, drawn from the same sprite as the player.
+      this.text('LIVES', pad, H - 34, 12, '#6b7ea8', 'left', 500, '3px');
+      for (let i = 0; i < this.lives; i++) {
+        c.save();
+        c.globalAlpha = 0.9;
+        c.translate(pad + 62 + i * 34, H - 46);
+        c.scale(0.62, 0.62);
+        c.drawImage(SHIP_SPR, 0, 0);
+        c.restore();
+      }
+      if (Sfx.isMuted()) this.text('MUTED', W - pad, H - 34, 12, '#ff2e88', 'right', 700, '3px');
+    }
+
+    drawOverlay(c) {
+      const dim = a => { c.fillStyle = 'rgba(4,6,14,' + a + ')'; c.fillRect(0, 0, W, H); };
+      const pulse = 0.55 + Math.sin(this.t * 3.4) * 0.45;
+
+      if (this.state === STATE.MENU) {
+        dim(0.45);
+        this.title('PHOSPHOR', W / 2, H / 2 - 132, 76);
+        this.title('SIEGE', W / 2, H / 2 - 52, 76);
+        this.text('SECTOR DEFENCE · 8 WAVES · 3 HULLS', W / 2, H / 2 + 10, 15, '#6b7ea8', 'center', 500, '5px');
+
+        const rows = [
+          ['MOVE',    'A  D   /   ←  →'],
+          ['FIRE',    'SPACE'],
+          ['PAUSE',   'P'],
+          ['MUTE',    'M'],
+          ['RESTART', 'R']
+        ];
+        rows.forEach(([k, v], i) => {
+          const y = H / 2 + 66 + i * 30;
+          this.text(k, W / 2 - 24, y, 15, '#6b7ea8', 'right', 500, '3px');
+          this.text(v, W / 2 + 24, y, 15, '#35f0ff', 'left', 700, '2px');
+        });
+
+        c.globalAlpha = pulse;
+        this.text('PRESS ENTER TO LAUNCH', W / 2, H - 96, 22, '#ffcc44', 'center', 700, '6px');
+        c.globalAlpha = 1;
+        this.text('HIGH SCORE  ' + String(this.high).padStart(6, '0'), W / 2, H - 52, 14, '#a97bff', 'center', 500, '3px');
+      }
+
+      if (this.state === STATE.PAUSE) {
+        dim(0.6);
+        this.title('PAUSED', W / 2, H / 2 - 10, 58);
+        this.text('PRESS P TO RESUME', W / 2, H / 2 + 56, 16, '#6b7ea8', 'center', 500, '5px');
+      }
+
+      if (this.state === STATE.WAVE) {
+        this.text(this.banner, W / 2, H / 2 - 20, 40, '#35f0ff', 'center', 800, '8px');
+        if (this.level < MAX_LEVEL) {
+          this.text('WAVE ' + (this.level + 1) + ' INBOUND', W / 2, H / 2 + 34, 16, '#6b7ea8', 'center', 500, '5px');
+        }
+      }
+
+      if (this.state === STATE.OVER) {
+        dim(0.62);
+        this.title('GAME OVER', W / 2, H / 2 - 74, 62);
+        this.text('FINAL SCORE', W / 2, H / 2 + 6, 14, '#6b7ea8', 'center', 500, '4px');
+        this.text(String(this.score).padStart(6, '0'), W / 2, H / 2 + 46, 44, '#dff3ff', 'center', 800, '4px');
+        this.text(this.score >= this.high ? 'NEW HIGH SCORE' : 'HIGH  ' + String(this.high).padStart(6, '0'),
+                  W / 2, H / 2 + 96, 15, '#a97bff', 'center', 700, '3px');
+        c.globalAlpha = pulse;
+        this.text('PRESS R TO REDEPLOY', W / 2, H - 96, 20, '#ffcc44', 'center', 700, '6px');
+        c.globalAlpha = 1;
+      }
+
+      if (this.state === STATE.WIN) {
+        dim(0.62);
+        this.title('SECTOR CLEAR', W / 2, H / 2 - 74, 58);
+        this.text('ALL EIGHT WAVES DESTROYED', W / 2, H / 2 + 6, 14, '#6b7ea8', 'center', 500, '4px');
+        this.text(String(this.score).padStart(6, '0'), W / 2, H / 2 + 46, 44, '#4dffc3', 'center', 800, '4px');
+        c.globalAlpha = pulse;
+        this.text('PRESS R TO FLY AGAIN', W / 2, H - 96, 20, '#ffcc44', 'center', 700, '6px');
+        c.globalAlpha = 1;
+      }
+    }
+  }
+
+  /* ==========================================================
+     7. LOOP — delta-timed, clamped so a background tab cannot
+     teleport the formation into the player on return.
+     ========================================================== */
+  const game = new Game(document.getElementById('game'));
+  let last = performance.now();
+
+  function frame(now) {
+    const dt = Math.min((now - last) / 1000, 1 / 30);
+    last = now;
+    game.update(dt);
+    game.draw();
+    pressed.clear();                        // edge keys live exactly one frame
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

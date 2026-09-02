@@ -37,6 +37,7 @@
 [data-model="deepseek-v4"]  {--m1:#3d8bff;--m2:#22d3ee}
 [data-model="glm-5.3"]      {--m1:#c6f24a;--m2:#63c40a}
 [data-model="ox-alpha"]     {--m1:#ff4d5e;--m2:#a3123f}
+[data-model="fable-5.1"]    {--m1:#ffc14d;--m2:#e07b00}
 
 html{scroll-behavior:smooth}
 body{
@@ -603,6 +604,38 @@ body.filtering #hero,body.filtering #featuredSec{display:none}
     </g>
   </symbol>
 
+  <symbol id="art-phosphor" viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice">
+    <rect width="200" height="150" fill="#030a06"/>
+    <ellipse cx="100" cy="75" rx="120" ry="86" fill="var(--m1)" opacity=".10"/>
+    <g fill="var(--m1)">
+      <path d="M30 34h5v-4h9v4h5v5h4v6h-5v-4h-4v4h-9v-4h-4v4h-5v-6h5z"/>
+      <path d="M78 34h5v-4h9v4h5v5h4v6h-5v-4h-4v4h-9v-4h-4v4h-5v-6h5z"/>
+      <path d="M126 34h5v-4h9v4h5v5h4v6h-5v-4h-4v4h-9v-4h-4v4h-5v-6h5z"/>
+      <path d="M170 34h5v-4h9v4h5v5h4v6h-5v-4h-4v4h-9v-4h-4v4h-5v-6h5z"/>
+    </g>
+    <g fill="var(--m2)">
+      <path d="M54 58h5v-4h9v4h5v5h4v6h-5v-4h-4v4h-9v-4h-4v4h-5v-6h5z"/>
+      <path d="M102 58h5v-4h9v4h5v5h4v6h-5v-4h-4v4h-9v-4h-4v4h-5v-6h5z"/>
+      <path d="M148 58h5v-4h9v4h5v5h4v6h-5v-4h-4v4h-9v-4h-4v4h-5v-6h5z"/>
+    </g>
+    <g fill="var(--m1)" opacity=".55">
+      <path d="M34 92h30v14h-8v-6h-14v6h-8zM86 92h30v14h-8v-6H94v6h-8zM138 92h30v14h-8v-6h-14v6h-8z"/>
+    </g>
+    <rect x="98" y="72" width="4" height="16" fill="var(--m1)"/>
+    <path d="M78 128h44l9 11H69z" fill="var(--m1)"/>
+    <rect x="93" y="118" width="14" height="10" rx="2" fill="var(--m1)"/>
+    <rect x="98" y="112" width="4" height="8" fill="var(--m1)"/>
+    <g opacity=".55">
+      <rect width="200" height="150" fill="none"/>
+      <path d="M0 0h200v150H0z" fill="url(#ph-lines)"/>
+    </g>
+    <defs>
+      <pattern id="ph-lines" width="4" height="4" patternUnits="userSpaceOnUse">
+        <rect width="4" height="1.6" fill="#000" opacity=".55"/>
+      </pattern>
+    </defs>
+  </symbol>
+
   <symbol id="art-shooter" viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice">
     <rect width="200" height="150" fill="#050914"/>
     <path d="M0 118h200v32H0z" fill="var(--m2)" opacity=".3"/>
@@ -641,7 +674,7 @@ body.filtering #hero,body.filtering #featuredSec{display:none}
   <div class="badges">
     <span class="badge88">NO DOWNLOADS<br>REQUIRED!</span>
     <span class="badge88 b2">100% FREE<br>FOREVER</span>
-    <span class="badge88 b3">9 AI MODELS<br>1 ARCADE</span>
+    <span class="badge88 b3">10 AI MODELS<br>1 ARCADE</span>
     <span class="badge88 b4">WORKS IN<br>YOUR BROWSER</span>
   </div>
 </header>
@@ -674,6 +707,7 @@ body.filtering #hero,body.filtering #featuredSec{display:none}
         <ul class="menu" id="modelMenu">
           <li><button type="button" data-model-filter="opus-5" data-model="opus-5"><span class="sw"></span>Claude Opus 5<span class="ct"></span></button></li>
           <li><button type="button" data-model-filter="fable-5" data-model="fable-5"><span class="sw"></span>Claude Fable 5<span class="ct"></span></button></li>
+          <li><button type="button" data-model-filter="fable-5.1" data-model="fable-5.1"><span class="sw"></span>Claude Fable 5.1<span class="ct"></span></button></li>
           <li><button type="button" data-model-filter="gpt-5.6" data-model="gpt-5.6"><span class="sw"></span>GPT-5.6<span class="ct"></span></button></li>
           <li><button type="button" data-model-filter="grok-4.6" data-model="grok-4.6"><span class="sw"></span>Grok 4.6<span class="ct"></span></button></li>
           <li><button type="button" data-model-filter="kimi-k3" data-model="kimi-k3"><span class="sw"></span>Kimi K3<span class="ct"></span></button></li>
@@ -692,7 +726,7 @@ body.filtering #hero,body.filtering #featuredSec{display:none}
         <div class="statline">Creations <b id="sTotal">0</b></div>
         <div class="statline">Games <b id="sGames">0</b></div>
         <div class="statline">Web toys <b id="sPages">0</b></div>
-        <div class="statline">AI models <b>9</b></div>
+        <div class="statline">AI models <b>10</b></div>
         <div class="statline">Human code <b>0</b></div>
         <div class="counter" id="counter"></div>
         <div class="counter-cap">LINES OF AI CODE</div>
@@ -745,61 +779,65 @@ body.filtering #hero,body.filtering #featuredSec{display:none}
 <script>
 const MODELS = {
   'opus-5':'Claude Opus 5','fable-5':'Claude Fable 5','gpt-5.6':'GPT-5.6','grok-4.6':'Grok 4.6',
-  'kimi-k3':'Kimi K3','qwen-3.8-max':'Qwen 3.8 Max','deepseek-v4':'DeepSeek V4 Flash','glm-5.3':'GLM 5.3','ox-alpha':'OX Alpha'
+  'kimi-k3':'Kimi K3','qwen-3.8-max':'Qwen 3.8 Max','deepseek-v4':'DeepSeek V4 Flash','glm-5.3':'GLM 5.3','ox-alpha':'OX Alpha','fable-5.1':'Claude Fable 5.1'
 };
 const SHORT = {
   'opus-5':'OPUS 5','fable-5':'FABLE 5','gpt-5.6':'GPT-5.6','grok-4.6':'GROK 4.6',
-  'kimi-k3':'KIMI K3','qwen-3.8-max':'QWEN 3.8','deepseek-v4':'DEEPSEEK V4','glm-5.3':'GLM 5.3','ox-alpha':'OX ALPHA'
+  'kimi-k3':'KIMI K3','qwen-3.8-max':'QWEN 3.8','deepseek-v4':'DEEPSEEK V4','glm-5.3':'GLM 5.3','ox-alpha':'OX ALPHA','fable-5.1':'FABLE 5.1'
 };
 
 const GAMES = [
+  { id:'phosphor-siege', title:'Phosphor Siege', model:'fable-5.1', type:'game', art:'phosphor', tech:'Canvas', kb:30, loc:921,
+    href:'fable%205.1/space-invaders.html', tags:['arcade'], featured:1,
+    desc:'Fable 5.1 rebuilds the invader standoff as a green-phosphor CRT: ranks stepping down toward you, crumbling shields, and nowhere left to hide by the late waves.',
+    kw:'phosphor siege space invaders arcade retro classic crt green monochrome aliens shields bunkers waves cannon fable 5.1' },
   { id:'ox-invaders', title:'Neon Invaders', model:'ox-alpha', type:'game', art:'neon', tech:'Canvas', kb:36, loc:1051,
-    href:'ox-alpha/games/space-invaders.html', tags:['arcade'], featured:1,
+    href:'ox-alpha/games/space-invaders.html', tags:['arcade'], featured:2,
     desc:'OX Alpha takes on the arcade original: glowing alien ranks that press down a row at a time, a single cannon, and waves that stop forgiving you early.',
     kw:'neon invaders space invaders arcade retro classic aliens laser cannon waves shooter ox alpha canvas' },
   { id:'scribble-census', title:'Scribble Census', model:'opus-5', type:'page', art:'scribble', tech:'SVG / JS', kb:52, loc:1335,
-    href:'opus-5/games/scribble-census.html', tags:[], featured:2,
+    href:'opus-5/games/scribble-census.html', tags:[], featured:3,
     desc:'A procedurally drawn register of hand-inked faces. They blink, they follow your cursor, and any two of them can be bred together to produce a new one.',
     kw:'scribble census procedural generative faces portraits hand drawn ink svg blink breeding genetics toy generator opus' },
   { id:'slime-siege', title:'Slime Siege', model:'qwen-3.8-max', credit:'Qwen 3.8 27B', creditShort:'QWEN 3.8 27B',
     type:'game', art:'slime', tech:'Canvas', kb:643, loc:1659,
-    href:'qwen-3.8-max/games/slime-siege.html', tags:['arcade'], featured:3,
+    href:'qwen-3.8-max/games/slime-siege.html', tags:['arcade'], featured:4,
     desc:'A ForgeKit arena survivor — hold the keep as waves of slimes pour in, and stack upgrades between rounds to stay alive one wave longer.',
     kw:'slime siege forgekit arena survivor waves horde defence upgrades roguelite canvas qwen 27b' },
   { id:'arachnid', title:'ARACHNID: Vertical City', model:'grok-4.6', type:'game', art:'spider', tech:'Three.js', kb:488, loc:10210,
-    href:'grok%204.6/games/spider-city/index.html', tags:['3d','sandbox'], featured:4,
+    href:'grok%204.6/games/spider-city/index.html', tags:['3d','sandbox'], featured:5,
     desc:'An open-world traversal prototype: ~1,300 procedural buildings across eight districts, a physics-driven web-swing, wall running, melee combos, traffic, crowds and dynamic weather. Every texture, mesh and sound is generated in code at boot.',
     kw:'arachnid vertical city spider web swing open world superhero traversal three js 3d procedural city skyscrapers parkour wall run combat missions grok' },
   { id:'neon-invaders', title:'Neon Invaders', model:'grok-4.6', type:'game', art:'space', tech:'Canvas', kb:28, loc:970,
-    href:'grok%204.6/games/space-invaders.html', tags:['arcade'], featured:5,
+    href:'grok%204.6/games/space-invaders.html', tags:['arcade'], featured:6,
     desc:'Grok\'s neon-drenched take on the arcade original — glowing alien ranks, tight laser fire and a difficulty curve that keeps climbing.',
     kw:'neon space invaders arcade retro classic aliens laser shooting shooter grok xai glow' },
   { id:'signal47', title:'Signal 47', model:'opus-5', type:'game', art:'doll', tech:'Three.js', kb:105, loc:2567,
-    href:'opus-5/games/rl-gl.html', tags:['3d','arcade'], featured:6,
+    href:'opus-5/games/rl-gl.html', tags:['3d','arcade'], featured:7,
     desc:'Red light, green light. A giant robotic doll turns its head — and its optics read movement, not intent. Momentum will get you shot.',
     kw:'red light green light doll sentinel squid survival stop freeze running elimination three js 3d race finish line' },
   { id:'hex-opus', title:'Hex-A-Gone', model:'opus-5', type:'game', art:'hex', tech:'Three.js', kb:1341, loc:56679,
-    href:'opus-5/games/hex-a-gone.html', tags:['hex','3d'], featured:7,
+    href:'opus-5/games/hex-a-gone.html', tags:['hex','3d'], featured:8,
     desc:'Hexagon tiles vanish the second you touch them. Outlast the collapsing floor and be the last one standing.',
     kw:'hexagon fall guys tiles survival battle royale platform 3d' },
   { id:'yaadon', title:'Yaadon Ki Cassette', model:'opus-5', type:'page', art:'cassette', tech:'Video / JS', kb:55, loc:1903,
-    href:'opus-5/landing-pages/yaadon-ki-cassette/index.html', tags:[], featured:8,
+    href:'opus-5/landing-pages/yaadon-ki-cassette/index.html', tags:[], featured:9,
     desc:'A cinematic 90s Bollywood cassette player — spinning deck, song requests and a full retro playlist.',
     kw:'yaadon ki cassette bollywood 90s hindi radio music player retro nostalgia tape deck' },
   { id:'pulse', title:'Pulse Drift', model:'opus-5', type:'game', art:'pulse', tech:'Canvas', kb:65, loc:1934,
-    href:'opus-5/games/pulse-drift.html', tags:['arcade'], featured:9,
+    href:'opus-5/games/pulse-drift.html', tags:['arcade'], featured:10,
     desc:'A synthwave rhythm racer about sharp turns, clean drifts and perfectly timed boosts.',
     kw:'rhythm racer synthwave neon driving music drift boost' },
   { id:'summit', title:'Summit Runner', model:'opus-5', type:'game', art:'summit', tech:'Canvas', kb:100, loc:2060,
-    href:'opus-5/games/SummitRunner.html', tags:['arcade'], featured:10,
+    href:'opus-5/games/SummitRunner.html', tags:['arcade'], featured:11,
     desc:'Climb procedural peaks, ration your stamina and push through shifting weather.',
     kw:'mountain climbing platformer stamina weather procedural runner' },
   { id:'lumi', title:'LUMI: Spirit of the Aurora', model:'fable-5', type:'game', art:'runner', tech:'Canvas', kb:39, loc:852,
-    href:'fable-5/games/lumi_aurora_runner.html', tags:['arcade'], featured:11,
+    href:'fable-5/games/lumi_aurora_runner.html', tags:['arcade'], featured:12,
     desc:'Run through a glowing aurora landscape, gather energy and dodge drifting void crystals.',
     kw:'endless runner aurora spirit lights collect energy crystals atmospheric' },
   { id:'hexdrop', title:'Hex Drop Arena', model:'gpt-5.6', type:'game', art:'hex', tech:'Three.js', kb:738, loc:4706,
-    href:'gpt%205.6/games/Hex-Drop-Arena.html', tags:['hex','3d'], featured:12,
+    href:'gpt%205.6/games/Hex-Drop-Arena.html', tags:['hex','3d'], featured:13,
     desc:'A frantic drop-tile arena — keep moving as the hexagon floor falls away beneath you.',
     kw:'hexagon drop tiles arena battle royale fall openai 3d' },
   { id:'voxel-opus', title:'Voxel World', model:'opus-5', type:'game', art:'voxel', tech:'Three.js', kb:23, loc:669,

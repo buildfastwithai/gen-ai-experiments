@@ -35,6 +35,11 @@ export interface AssetPack {
   src: string;
   source?: string;
   frames: string[];
+  animationLayout?: {
+    characterByColumn: string[];
+    stateByRow: string[];
+    clips: Record<string, { rows: number[]; fps: number; loop: boolean }>;
+  };
 }
 
 export interface CodeModule {
@@ -82,14 +87,14 @@ const manifestPath = path.join(LIBRARY_ROOT, "asset-manifest.json");
 export const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as AssetManifest;
 
 const categoryRules: Array<[string, RegExp]> = [
-  ["character", /(hero|astronaut|farmer|survivor)/],
+  ["character", /(hero|astronaut|farmer|survivor|vanguard|ranger|arcanist|shadow|warden|artificer)/],
   ["enemy", /(slime|alien|drone|enemy|boss|zombie|skeleton|ghost|spider)/],
   ["vehicle", /(fighter|interceptor|bomber|scout|car|motorbike|truck|police|taxi|rover)/],
   ["weapon", /(sword|bow|rifle|pistol|laser|missile|shotgun|axe)/],
   ["tile", /(tile|floor|wall|road|track|grass|water|soil|path|swamp|lava|verge)/],
-  ["structure", /(chest|crate|terminal|reactor|antenna|turret|airlock|station|satellite|barn|fence|windmill|market|garage|grandstand|barrier|arch|tombstone)/],
+  ["structure", /(chest|crate|terminal|reactor|antenna|turret|airlock|station|satellite|barn|fence|windmill|market|garage|grandstand|barrier|arch|tombstone|beacon|pillar|obelisk|drop-pod|campfire)/],
   ["effect", /(portal|warp|explosion|black-hole|fire|torch|teleport|checkpoint|ramp)/],
-  ["pickup", /(potion|coin|crystal|battery|medkit|chip|power-up|pickup|repair|token|key|satchel)/],
+  ["pickup", /(potion|tonic|elixir|shard|cache|coin|crystal|battery|medkit|chip|power-up|pickup|repair|token|key|satchel)/],
   ["prop", /.*/],
 ];
 
@@ -242,6 +247,8 @@ const packKeywords: Record<string, string[]> = {
   "cozy-farm": ["cozy", "farm", "farming", "life sim", "village", "garden", "animal", "tycoon"],
   "arcade-racing": ["race", "racing", "car", "vehicle", "chase", "drift", "stunt", "driving"],
   "gothic-horror": ["horror", "gothic", "zombie", "ghost", "dark", "survival", "grave", "haunted"],
+  "riftfall-battle-royale": ["battle royale", "rpg", "isometric", "squad", "storm", "zone", "arena", "fantasy"],
+  "riftfall-character-animations": ["animation", "animated", "walk", "attack", "combat", "battle royale", "rpg", "isometric"],
 };
 
 const paletteByPack: Record<string, string[]> = {
@@ -251,6 +258,8 @@ const paletteByPack: Record<string, string[]> = {
   "cozy-farm": ["candy", "forest", "sunset"],
   "arcade-racing": ["arcade", "sunset", "frost"],
   "gothic-horror": ["noir", "ember", "toxic"],
+  "riftfall-battle-royale": ["forest", "arcade", "ember"],
+  "riftfall-character-animations": ["forest", "arcade", "ember"],
 };
 
 export function recommendKit(description: string, engine: "canvas" | "three", maxPacks: number, baseUrl?: string) {

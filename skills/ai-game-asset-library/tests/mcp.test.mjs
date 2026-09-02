@@ -32,11 +32,17 @@ test("STDIO exposes complete ForgeKit discovery, image, prompt, resource, and ex
     assert.ok(tools.some(({ name }) => name === "export_game_kit"));
 
     const packs = await client.callTool({ name: "list_asset_packs", arguments: { includeFrames: false } });
-    assert.equal(packs.structuredContent.total, 6);
+    assert.equal(packs.structuredContent.total, 8);
 
     const search = await client.callTool({ name: "search_assets", arguments: { query: "racing vehicle", limit: 10 } });
     assert.ok(search.structuredContent.total > 0);
     assert.ok(search.structuredContent.results.some((sprite) => sprite.packId === "arcade-racing"));
+
+    const battleRoyale = await client.callTool({ name: "search_assets", arguments: { query: "isometric battle royale class", limit: 10 } });
+    assert.ok(battleRoyale.structuredContent.results.some((sprite) => sprite.packId === "riftfall-battle-royale"));
+
+    const animation = await client.callTool({ name: "search_assets", arguments: { query: "ranger walk attack animation", limit: 10 } });
+    assert.ok(animation.structuredContent.results.some((sprite) => sprite.packId === "riftfall-character-animations"));
 
     const sprite = await client.callTool({ name: "get_sprite", arguments: { packId: "fantasy-adventure", spriteId: "hero-idle", includeImage: true } });
     const image = sprite.content.find((block) => block.type === "image");
@@ -66,9 +72,10 @@ test("STDIO exposes complete ForgeKit discovery, image, prompt, resource, and ex
     assert.match(await readFile(path.join(outputRoot, "test-game", "game.js"), "utf8"), /SpriteSheet/);
 
     const { resources } = await client.listResources();
-    assert.equal(resources.length, 18);
+    assert.equal(resources.length, 20);
     const manifest = await client.readResource({ uri: "forgekit://catalog/manifest" });
-    assert.match(manifest.contents[0].text, /"spriteFrames": 144/);
+    assert.match(manifest.contents[0].text, /"spriteFrames": 192/);
+    assert.match(manifest.contents[0].text, /"animationLayout"/);
 
     const { prompts } = await client.listPrompts();
     assert.equal(prompts.length, 2);
@@ -106,7 +113,33 @@ test("Streamable HTTP exposes the read-only MCP and static asset endpoints", { t
   try {
     const base = endpoint.replace(/\/mcp$/, "");
     const health = await fetch(`${base}/health`).then((response) => response.json());
-    assert.deepEqual({ ok: health.ok, packs: health.packs, sprites: health.sprites }, { ok: true, packs: 6, sprites: 144 });
+    assert.deepEqual({ ok: health.ok, packs: health.packs, sprites: health.sprites }, { ok: true, packs: 8, sprites: 192 });
+
+    const service = await fetch(base).then((response) => response.json());
+    assert.equal(service.transport.type, "streamable-http");
+    assert.equal(service.transport.url, `${base}/mcp`);
+    assert.match(service.connect.codex, /codex mcp add forgekit --url/);
+
+    const serverManifest = await fetch(`${base}/server.json`).then((response) => response.json());
+    assert.equal(serverManifest.name, "io.github.buildfastwithai/forgekit-game-assets");
+    assert.equal(serverManifest.remotes[0].type, "streamable-http");
+    assert.equal(serverManifest.remotes[0].url, "https://ai-game-asset-library.vercel.app/mcp");
+
+    const genericConfig = await fetch(`${base}/mcp-config.json`).then((response) => response.json());
+    assert.equal(genericConfig.mcpServers.forgekit.type, "streamable-http");
+    assert.equal(genericConfig.mcpServers.forgekit.url, "https://ai-game-asset-library.vercel.app/mcp");
+
+    const preflight = await fetch(endpoint, {
+      method: "OPTIONS",
+      headers: {
+        Origin: "https://example-harness.test",
+        "Access-Control-Request-Method": "POST",
+        "Access-Control-Request-Headers": "Content-Type,MCP-Protocol-Version",
+      },
+    });
+    assert.equal(preflight.status, 204);
+    assert.equal(preflight.headers.get("access-control-allow-origin"), "*");
+    assert.match(preflight.headers.get("access-control-allow-headers") || "", /MCP-Protocol-Version/);
 
     await client.connect(new StreamableHTTPClientTransport(new URL(endpoint)));
     const { tools } = await client.listTools();
@@ -119,6 +152,14 @@ test("Streamable HTTP exposes the read-only MCP and static asset endpoints", { t
     const atlasHead = await fetch(`${base}/assets/cozy-farm-atlas.png`, { method: "HEAD" });
     assert.equal(atlasHead.status, 200);
     assert.equal(atlasHead.headers.get("content-type"), "image/png");
+
+    const riftfallHead = await fetch(`${base}/assets/riftfall-battle-royale-atlas.png`, { method: "HEAD" });
+    assert.equal(riftfallHead.status, 200);
+    assert.equal(riftfallHead.headers.get("content-type"), "image/png");
+
+    const animationHead = await fetch(`${base}/assets/riftfall-character-animation-atlas.png`, { method: "HEAD" });
+    assert.equal(animationHead.status, 200);
+    assert.equal(animationHead.headers.get("content-type"), "image/png");
   } finally {
     await client.close().catch(() => undefined);
     child.kill("SIGTERM");

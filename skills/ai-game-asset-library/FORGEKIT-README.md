@@ -1,6 +1,6 @@
 # ForgeKit AI Game Asset Library v2
 
-ForgeKit is a dependency-free starter library for AI-generated HTML Canvas and Three.js games. Version 2 expands the vault to six visually distinct worlds, 144 original transparent sprite frames and ten reusable game-code modules.
+ForgeKit is a dependency-free starter library for AI-generated HTML Canvas and Three.js games. Version 2.2 expands the vault to eight visually distinct worlds, 192 original transparent sprite frames and ten reusable game-code modules.
 
 ## MCP access for AI game builders
 
@@ -18,8 +18,12 @@ Every atlas is a transparent 1536 × 1024 PNG arranged as 6 columns × 4 rows. E
 | Cozy Farm | Hand-painted storybook | Farming, life sim, tycoon | `assets/cozy-farm-atlas.png` |
 | Arcade Racing | Glossy top-down game art | Racing, chase, stunt games | `assets/arcade-racing-atlas.png` |
 | Gothic Horror | Detailed gothic pixel art | Horror, dungeon, survival | `assets/gothic-horror-atlas.png` |
+| Riftfall Battle Royale | Hand-painted isometric fantasy-tech | Battle royale, RPG, arena combat | `assets/riftfall-battle-royale-atlas.png` |
+| Riftfall Character Animations | Hand-painted isometric fantasy-tech animation | Animated RPG and battle royale characters | `assets/riftfall-character-animation-atlas.png` |
 
 Use `asset-manifest.json` for the exact frame order and machine-readable metadata.
+
+The Riftfall animation atlas uses one class per column and one action state per row. Rows are idle, walk-contact, walk-passing, and basic-attack. Alternate rows 1 and 2 at 8 FPS for walking, and use row 3 as the non-looping attack pose. The `animationLayout` entry in `asset-manifest.json` exposes these clips to AI agents and game code.
 
 ## Code modules
 

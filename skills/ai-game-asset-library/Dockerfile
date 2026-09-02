@@ -16,6 +16,6 @@ RUN npm ci --omit=dev
 COPY --from=build /app/dist ./dist
 COPY assets ./assets
 COPY lib ./lib
-COPY asset-manifest.json FORGEKIT-README.md README.md LICENSE.txt ./
+COPY asset-manifest.json server.json mcp-config.json FORGEKIT-README.md README.md LICENSE.txt ./
 EXPOSE 3333
 CMD ["node", "dist/http.js"]

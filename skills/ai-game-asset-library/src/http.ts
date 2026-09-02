@@ -42,6 +42,8 @@ const publicFiles = new Map<string, { file: string; type: string }>();
 for (const pack of manifest.spriteAtlases) publicFiles.set(pack.src, { file: localLibraryPath(pack.src), type: "image/png" });
 for (const module of manifest.modules) publicFiles.set(module.src, { file: localLibraryPath(module.src), type: "text/javascript; charset=utf-8" });
 publicFiles.set("/asset-manifest.json", { file: path.join(LIBRARY_ROOT, "asset-manifest.json"), type: "application/json; charset=utf-8" });
+publicFiles.set("/server.json", { file: path.join(LIBRARY_ROOT, "server.json"), type: "application/json; charset=utf-8" });
+publicFiles.set("/mcp-config.json", { file: path.join(LIBRARY_ROOT, "mcp-config.json"), type: "application/json; charset=utf-8" });
 publicFiles.set("/FORGEKIT-README.md", { file: path.join(LIBRARY_ROOT, "FORGEKIT-README.md"), type: "text/markdown; charset=utf-8" });
 publicFiles.set("/README.md", { file: path.join(LIBRARY_ROOT, "README.md"), type: "text/markdown; charset=utf-8" });
 publicFiles.set("/LICENSE.txt", { file: path.join(LIBRARY_ROOT, "LICENSE.txt"), type: "text/plain; charset=utf-8" });
@@ -54,6 +56,16 @@ function json(res: ServerResponse, statusCode: number, value: unknown): void {
     "access-control-allow-origin": "*",
   });
   res.end(body);
+}
+
+function setMcpCorsHeaders(res: ServerResponse): void {
+  res.setHeader("access-control-allow-origin", "*");
+  res.setHeader("access-control-allow-methods", "GET, POST, DELETE, OPTIONS");
+  res.setHeader(
+    "access-control-allow-headers",
+    "Accept, Authorization, Content-Type, Last-Event-ID, MCP-Protocol-Version, MCP-Session-Id",
+  );
+  res.setHeader("access-control-expose-headers", "MCP-Session-Id");
 }
 
 async function serveFile(req: IncomingMessage, res: ServerResponse, entry: { file: string; type: string }): Promise<void> {
@@ -76,6 +88,12 @@ const httpServer = createServer(async (req, res) => {
     const url = new URL(req.url || "/", `http://${req.headers.host || "localhost"}`);
 
     if (url.pathname === "/mcp") {
+      setMcpCorsHeaders(res);
+      if (req.method === "OPTIONS") {
+        res.writeHead(204);
+        res.end();
+        return;
+      }
       // Host/origin allowlists protect local network servers from DNS rebinding.
       // Vercel already terminates public traffic and can serve custom domains, so
       // applying the localhost allowlist there would reject every remote client.
@@ -90,13 +108,28 @@ const httpServer = createServer(async (req, res) => {
     }
 
     if (url.pathname === "/") {
+      const baseUrl = (publicBaseUrl || url.origin).replace(/\/$/, "");
+      const mcpUrl = `${baseUrl}/mcp`;
       json(res, 200, {
         name: SERVER_NAME,
+        title: "ForgeKit Game Assets",
         version: SERVER_VERSION,
         description: "ForgeKit game assets and browser-game utilities over MCP",
-        mcpEndpoint: "/mcp",
-        health: "/health",
-        manifest: "/asset-manifest.json",
+        authentication: "none",
+        transport: { type: "streamable-http", url: mcpUrl },
+        endpoints: {
+          mcp: mcpUrl,
+          health: `${baseUrl}/health`,
+          assetManifest: `${baseUrl}/asset-manifest.json`,
+          serverManifest: `${baseUrl}/server.json`,
+          genericConfig: `${baseUrl}/mcp-config.json`,
+          documentation: `${baseUrl}/README.md`,
+        },
+        connect: {
+          codex: `codex mcp add forgekit --url ${mcpUrl}`,
+          claudeCode: `claude mcp add --transport http --scope user forgekit ${mcpUrl}`,
+          generic: { mcpServers: { forgekit: { type: "streamable-http", url: mcpUrl } } },
+        },
         ...catalogStats(),
       });
       return;

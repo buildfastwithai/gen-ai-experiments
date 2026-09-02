@@ -2,7 +2,7 @@
 
 ForgeKit is a Model Context Protocol server for building visually distinct HTML Canvas and Three.js games with AI agents. It gives Codex, Claude Code, Claude Desktop, and other MCP clients structured access to:
 
-- 144 transparent sprites across six original visual worlds
+- 192 transparent sprites across eight original visual worlds
 - Ten dependency-free browser-game modules with 116 exports
 - Exact atlas frame numbers and crop coordinates
 - Individual 256 × 256 sprite extraction as MCP image content
@@ -13,12 +13,78 @@ ForgeKit is a Model Context Protocol server for building visually distinct HTML 
 
 The art and code remain MIT licensed. The MCP server does not require an API key.
 
-## Requirements
+## Zero-install quick start
+
+Use this canonical Streamable HTTP endpoint in any MCP client:
+
+```text
+https://ai-game-asset-library.vercel.app/mcp
+```
+
+The hosted server is public, read-only, and requires no clone, npm install, local runtime, or API key.
+
+### Codex
+
+Add it from the CLI:
+
+```bash
+codex mcp add forgekit --url https://ai-game-asset-library.vercel.app/mcp
+```
+
+Or add this to `~/.codex/config.toml` (or a trusted project's `.codex/config.toml`):
+
+```toml
+[mcp_servers.forgekit]
+url = "https://ai-game-asset-library.vercel.app/mcp"
+startup_timeout_sec = 20
+tool_timeout_sec = 60
+```
+
+In the ChatGPT desktop app or Codex IDE extension, select **MCP servers → Add server → Streamable HTTP** and paste the same URL. Restart the client, then use `/mcp` to verify it.
+
+### Claude Code
+
+```bash
+claude mcp add --transport http --scope user forgekit https://ai-game-asset-library.vercel.app/mcp
+claude mcp get forgekit
+```
+
+For a project-scoped `.mcp.json`, copy `examples/claude-remote.mcp.json` or use:
+
+```json
+{
+  "mcpServers": {
+    "forgekit": {
+      "type": "http",
+      "url": "https://ai-game-asset-library.vercel.app/mcp"
+    }
+  }
+}
+```
+
+### Any MCP harness
+
+Choose the **Streamable HTTP** transport and use the canonical URL. For clients that accept the common `mcpServers` JSON shape, copy `mcp-config.json`:
+
+```json
+{
+  "mcpServers": {
+    "forgekit": {
+      "type": "streamable-http",
+      "url": "https://ai-game-asset-library.vercel.app/mcp"
+    }
+  }
+}
+```
+
+Machine-readable discovery metadata is available in `server.json`, using the official MCP Registry schema.
+
+## Requirements for local or self-hosted use
 
 - Node.js 22.13 or newer
 - npm 10 or newer
 
-## Install from this repository
+## Optional local installation
 
 ```bash
 git clone https://github.com/buildfastwithai/gen-ai-experiments.git
@@ -71,7 +137,7 @@ Verify with:
 claude mcp list
 ```
 
-A shareable Claude Code project configuration is available at `examples/claude.mcp.json`. Replace its environment-variable placeholder or set `FORGEKIT_MCP_ROOT` before using it as `.mcp.json`.
+Remote and local Claude Code project configurations are available at `examples/claude-remote.mcp.json` and `examples/claude.mcp.json`. The local file requires `FORGEKIT_MCP_ROOT`.
 
 ## Claude Desktop JSON
 
@@ -94,27 +160,19 @@ Add the server to the `mcpServers` object in Claude Desktop's configuration, usi
 
 Restart Claude Desktop after saving the configuration.
 
-## Connect to the public MCP server
+## Public endpoints
 
 The production deployment is public and does not require an API key:
 
 - MCP: `https://ai-game-asset-library.vercel.app/mcp`
 - Health: `https://ai-game-asset-library.vercel.app/health`
 - Manifest: `https://ai-game-asset-library.vercel.app/asset-manifest.json`
+- MCP Registry manifest: `https://ai-game-asset-library.vercel.app/server.json`
+- Generic client config: `https://ai-game-asset-library.vercel.app/mcp-config.json`
 - Assets: `https://ai-game-asset-library.vercel.app/assets/<atlas-name>.png`
 - Modules: `https://ai-game-asset-library.vercel.app/lib/<module-name>.js`
 
-Connect Codex:
-
-```bash
-codex mcp add forgekit --url https://ai-game-asset-library.vercel.app/mcp
-```
-
-Connect Claude Code:
-
-```bash
-claude mcp add --transport http --scope user forgekit https://ai-game-asset-library.vercel.app/mcp
-```
+The service root returns copy-paste connection commands and links to the generic configuration and MCP Registry manifest.
 
 ## Run a self-hosted Streamable HTTP server
 
@@ -184,11 +242,11 @@ For a public domain, set `FORGEKIT_ALLOWED_HOSTS` and `FORGEKIT_PUBLIC_BASE_URL`
 
 ## Resources and prompts
 
-The server advertises 18 resources:
+The server advertises 20 resources:
 
 - `forgekit://catalog/manifest`
 - `forgekit://docs/guide`
-- Six `forgekit://atlas/<pack-id>` PNG resources
+- Eight `forgekit://atlas/<pack-id>` PNG resources
 - Ten `forgekit://module/<module-id>` JavaScript resources
 
 It also supplies two reusable prompts:

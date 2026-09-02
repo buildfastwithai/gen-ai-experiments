@@ -1,9 +1,23 @@
 {
   "name": "forgekit-game-assets-mcp",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "MCP server that gives Codex, Claude, and other agents access to ForgeKit game sprites and browser-game utilities.",
   "type": "module",
   "license": "MIT",
+  "homepage": "https://ai-game-asset-library.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/buildfastwithai/gen-ai-experiments.git",
+    "directory": "skills/ai-game-asset-library"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "game-assets",
+    "html-games",
+    "three.js",
+    "canvas"
+  ],
   "engines": {
     "node": ">=22.13.0"
   },
@@ -16,6 +30,9 @@
     "assets",
     "lib",
     "asset-manifest.json",
+    "server.json",
+    "mcp-config.json",
+    "examples",
     "FORGEKIT-README.md",
     "README.md",
     "LICENSE.txt"

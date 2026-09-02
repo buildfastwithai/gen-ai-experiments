@@ -1,0 +1,5 @@
+[mcp_servers.forgekit]
+url = "https://ai-game-asset-library.vercel.app/mcp"
+startup_timeout_sec = 20
+tool_timeout_sec = 60
+default_tools_approval_mode = "auto"

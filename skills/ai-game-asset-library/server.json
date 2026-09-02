@@ -1,0 +1,20 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.buildfastwithai/forgekit-game-assets",
+  "title": "ForgeKit Game Assets",
+  "description": "Game sprites, code modules, and starters for AI-generated Canvas and Three.js games.",
+  "version": "2.2.0",
+  "websiteUrl": "https://ai-game-asset-library.vercel.app",
+  "repository": {
+    "url": "https://github.com/buildfastwithai/gen-ai-experiments",
+    "source": "github",
+    "id": "811759488",
+    "subfolder": "skills/ai-game-asset-library"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://ai-game-asset-library.vercel.app/mcp"
+    }
+  ]
+}

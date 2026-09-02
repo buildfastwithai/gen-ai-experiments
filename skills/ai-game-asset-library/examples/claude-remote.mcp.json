@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "forgekit": {
+      "type": "http",
+      "url": "https://ai-game-asset-library.vercel.app/mcp"
+    }
+  }
+}
