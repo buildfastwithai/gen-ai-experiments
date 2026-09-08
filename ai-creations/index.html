@@ -38,6 +38,7 @@
 [data-model="glm-5.3"]      {--m1:#c6f24a;--m2:#63c40a}
 [data-model="ox-alpha"]     {--m1:#ff4d5e;--m2:#a3123f}
 [data-model="fable-5.1"]    {--m1:#ffc14d;--m2:#e07b00}
+[data-model="gpt-6-astra"]  {--m1:#ff5a8f;--m2:#7c4dff}
 
 html{scroll-behavior:smooth}
 body{
@@ -709,6 +710,7 @@ body.filtering #hero,body.filtering #featuredSec{display:none}
           <li><button type="button" data-model-filter="fable-5" data-model="fable-5"><span class="sw"></span>Claude Fable 5<span class="ct"></span></button></li>
           <li><button type="button" data-model-filter="fable-5.1" data-model="fable-5.1"><span class="sw"></span>Claude Fable 5.1<span class="ct"></span></button></li>
           <li><button type="button" data-model-filter="gpt-5.6" data-model="gpt-5.6"><span class="sw"></span>GPT-5.6<span class="ct"></span></button></li>
+          <li><button type="button" data-model-filter="gpt-6-astra" data-model="gpt-6-astra"><span class="sw"></span>GPT-6 Astra<span class="ct"></span></button></li>
           <li><button type="button" data-model-filter="grok-4.6" data-model="grok-4.6"><span class="sw"></span>Grok 4.6<span class="ct"></span></button></li>
           <li><button type="button" data-model-filter="kimi-k3" data-model="kimi-k3"><span class="sw"></span>Kimi K3<span class="ct"></span></button></li>
           <li><button type="button" data-model-filter="qwen-3.8-max" data-model="qwen-3.8-max"><span class="sw"></span>Qwen 3.8 Max<span class="ct"></span></button></li>
@@ -726,7 +728,7 @@ body.filtering #hero,body.filtering #featuredSec{display:none}
         <div class="statline">Creations <b id="sTotal">0</b></div>
         <div class="statline">Games <b id="sGames">0</b></div>
         <div class="statline">Web toys <b id="sPages">0</b></div>
-        <div class="statline">AI models <b>10</b></div>
+        <div class="statline">AI models <b>11</b></div>
         <div class="statline">Human code <b>0</b></div>
         <div class="counter" id="counter"></div>
         <div class="counter-cap">LINES OF AI CODE</div>
@@ -779,16 +781,20 @@ body.filtering #hero,body.filtering #featuredSec{display:none}
 <script>
 const MODELS = {
   'opus-5':'Claude Opus 5','fable-5':'Claude Fable 5','gpt-5.6':'GPT-5.6','grok-4.6':'Grok 4.6',
-  'kimi-k3':'Kimi K3','qwen-3.8-max':'Qwen 3.8 Max','deepseek-v4':'DeepSeek V4 Flash','glm-5.3':'GLM 5.3','ox-alpha':'OX Alpha','fable-5.1':'Claude Fable 5.1'
+  'kimi-k3':'Kimi K3','qwen-3.8-max':'Qwen 3.8 Max','deepseek-v4':'DeepSeek V4 Flash','glm-5.3':'GLM 5.3','ox-alpha':'OX Alpha','fable-5.1':'Claude Fable 5.1','gpt-6-astra':'GPT-6 Astra'
 };
 const SHORT = {
   'opus-5':'OPUS 5','fable-5':'FABLE 5','gpt-5.6':'GPT-5.6','grok-4.6':'GROK 4.6',
-  'kimi-k3':'KIMI K3','qwen-3.8-max':'QWEN 3.8','deepseek-v4':'DEEPSEEK V4','glm-5.3':'GLM 5.3','ox-alpha':'OX ALPHA','fable-5.1':'FABLE 5.1'
+  'kimi-k3':'KIMI K3','qwen-3.8-max':'QWEN 3.8','deepseek-v4':'DEEPSEEK V4','glm-5.3':'GLM 5.3','ox-alpha':'OX ALPHA','fable-5.1':'FABLE 5.1','gpt-6-astra':'GPT-6 ASTRA'
 };
 
 const GAMES = [
+  { id:'bengaluru-after-rain', title:'Bengaluru — After the Rain', model:'gpt-6-astra', type:'game', art:'harbor', tech:'Three.js', kb:2206, loc:530,
+    href:'gpt%206%20astra/bangalore.html', tags:['3d','sandbox'], featured:1,
+    desc:'A rain-soaked Bengaluru street from an iPhone point of view — walk a reflective, open-world scene with real-time weather and a fully procedural Three.js city.',
+    kw:'bengaluru bangalore after rain gta open world iphone pov three js 3d city street weather reflections india gpt 6 astra' },
   { id:'phosphor-siege', title:'Phosphor Siege', model:'fable-5.1', type:'game', art:'phosphor', tech:'Canvas', kb:30, loc:921,
-    href:'fable%205.1/space-invaders.html', tags:['arcade'], featured:1,
+    href:'fable%205.1/space-invaders.html', tags:['arcade'], featured:14,
     desc:'Fable 5.1 rebuilds the invader standoff as a green-phosphor CRT: ranks stepping down toward you, crumbling shields, and nowhere left to hide by the late waves.',
     kw:'phosphor siege space invaders arcade retro classic crt green monochrome aliens shields bunkers waves cannon fable 5.1' },
   { id:'ox-invaders', title:'Neon Invaders', model:'ox-alpha', type:'game', art:'neon', tech:'Canvas', kb:36, loc:1051,
