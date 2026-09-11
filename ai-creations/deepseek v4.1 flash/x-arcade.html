@@ -1,0 +1,1482 @@
+<!doctype html>
+<html lang="en" data-theme="arcade">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="dark" />
+<title>X ARCADE — Insert Coin to Post</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#05060a;
+    --panel:#0b0e17;
+    --panel-2:#101528;
+    --line:#1d2440;
+    --line-hot:#2b3766;
+    --cyan:#35f2ff;
+    --magenta:#ff3df0;
+    --amber:#ffc94d;
+    --green:#39ff88;
+    --red:#ff4d6d;
+    --text:#d3e7ff;
+    --dim:#6b7ba3;
+    --font-pixel:"Press Start 2P", monospace;
+    --font-term:"VT323", "Courier New", monospace;
+    --z-fx:60;
+    --z-modal:80;
+    --z-boot:90;
+    --z-hud:40;
+    --z-marquee:40;
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  html{background:var(--bg)}
+  body{
+    font-family:var(--font-term);
+    font-size:19px;line-height:1.4;color:var(--text);
+    background:
+      radial-gradient(circle at 50% -10%, #0d1230 0%, transparent 55%),
+      radial-gradient(circle at 50% 120%, #140a26 0%, transparent 55%),
+      var(--bg);
+    -webkit-font-smoothing:none;
+    text-rendering:geometricPrecision;
+    padding:52px 0 62px;
+    overflow-x:hidden;
+  }
+  a{color:inherit;text-decoration:none}
+  button{font-family:inherit;color:inherit;background:none;border:0;cursor:pointer}
+  input,textarea{font-family:var(--font-term)}
+  ::selection{background:var(--magenta);color:#05060a}
+
+  /* ---------- CRT FX ---------- */
+  .crt-fx{position:fixed;inset:0;z-index:var(--z-fx);pointer-events:none}
+  .crt-fx::before{
+    content:"";position:absolute;inset:0;
+    background:repeating-linear-gradient(to bottom,
+      rgba(0,0,0,0) 0px, rgba(0,0,0,0) 2px,
+      rgba(0,0,0,.32) 3px, rgba(0,0,0,.32) 4px);
+    mix-blend-mode:multiply;opacity:.75;
+  }
+  .crt-fx::after{
+    content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(120% 100% at 50% 50%, transparent 55%, rgba(0,0,0,.72) 100%),
+      linear-gradient(90deg, rgba(255,0,80,.045), transparent 12%, transparent 88%, rgba(0,200,255,.05));
+    animation:flicker 5.5s infinite steps(60);
+  }
+  @keyframes flicker{0%,96%,100%{opacity:1}97%{opacity:.86}98%{opacity:.97}99%{opacity:.9}}
+  .crt-fx .glowbar{
+    position:absolute;left:0;right:0;height:20vh;
+    background:linear-gradient(to bottom, transparent, rgba(120,200,255,.05), transparent);
+    animation:sweep 9s linear infinite;
+  }
+  @keyframes sweep{from{top:-20vh}to{top:110vh}}
+  body.no-crt .crt-fx{display:none}
+  body.no-anim .crt-fx::after,body.no-anim .crt-fx .glowbar,body.no-anim .ticker-track,
+  body.no-anim .boot .press,body.no-anim .boot .slot,body.no-anim .blink::after{animation:none!important}
+
+  /* ---------- MARQUEE HEADER ---------- */
+  .marquee{
+    position:fixed;top:0;left:0;right:0;height:52px;z-index:var(--z-marquee);
+    display:flex;align-items:center;gap:14px;padding:0 14px;
+    background:linear-gradient(180deg,#0d1226,#070a14);
+    border-bottom:3px solid var(--line-hot);
+    box-shadow:0 0 0 3px #000, 0 6px 0 rgba(0,0,0,.6), 0 0 26px rgba(53,242,255,.18);
+  }
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--font-pixel);font-size:12px;letter-spacing:1px;color:var(--cyan);text-shadow:0 0 10px rgba(53,242,255,.7);white-space:nowrap}
+  .brand .xmark{width:28px;height:28px;flex:0 0 auto;display:grid;place-items:center;border:2px solid var(--cyan);color:var(--cyan);font-family:var(--font-pixel);font-size:12px;box-shadow:0 0 12px rgba(53,242,255,.45), inset 0 0 8px rgba(53,242,255,.25)}
+  .brand small{color:var(--amber);font-size:10px;text-shadow:0 0 8px rgba(255,201,77,.6)}
+  .ticker{flex:1 1 auto;overflow:hidden;border:2px solid var(--line);background:#04060d;height:30px;display:flex;align-items:center;position:relative}
+  .ticker-track{display:inline-flex;white-space:nowrap;font-family:var(--font-pixel);font-size:10px;color:var(--green);text-shadow:0 0 8px rgba(57,255,136,.6);animation:scroll 28s linear infinite;padding-left:100%}
+  @keyframes scroll{to{transform:translateX(-100%)}}
+  .ticker-track span{padding:0 22px}
+  .hi{font-family:var(--font-pixel);font-size:10px;color:var(--amber);text-shadow:0 0 8px rgba(255,201,77,.7);white-space:nowrap}
+  .hi b{color:var(--magenta);text-shadow:0 0 8px rgba(255,61,240,.7)}
+
+  /* ---------- APP GRID ---------- */
+  .app{
+    width:min(1340px,100%);margin:0 auto;
+    display:grid;grid-template-columns:275px minmax(0,620px) 350px;justify-content:center;
+    border-left:2px solid var(--line);border-right:2px solid var(--line);
+    background:linear-gradient(180deg, rgba(10,13,24,.6), rgba(5,6,10,.2));
+  }
+  .app.rail-off{grid-template-columns:275px minmax(0,1fr)}
+  .app.rail-off .side-right{display:none}
+  .app.rail-off .center-col{border-right:0}
+  .col{border-right:2px dashed var(--line);min-width:0}
+  .col:last-child{border-right:0}
+  .view{display:none}
+  .view.on{display:block}
+
+  /* ---------- LEFT NAV ---------- */
+  .side-left{padding:14px 12px;position:sticky;top:52px;align-self:start;height:calc(100vh - 116px);overflow:auto}
+  .side-left::-webkit-scrollbar{width:8px}
+  .side-left::-webkit-scrollbar-thumb{background:var(--line-hot)}
+  .navitem{display:flex;align-items:center;gap:14px;padding:9px 12px;margin:2px 0;font-family:var(--font-pixel);font-size:10px;letter-spacing:.5px;color:var(--dim);border:2px solid transparent;transition:color .12s,background .12s,transform .06s}
+  .navitem svg{width:22px;height:22px;flex:0 0 auto;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter}
+  .navitem .num{font-family:var(--font-term);font-size:16px;color:var(--line-hot);margin-left:auto}
+  .navitem:hover{color:var(--cyan);background:rgba(53,242,255,.06);border-color:var(--line);text-shadow:0 0 8px rgba(53,242,255,.5)}
+  .navitem.active{color:var(--cyan);background:rgba(53,242,255,.08);border-color:var(--cyan);box-shadow:inset 0 0 14px rgba(53,242,255,.15);text-shadow:0 0 10px rgba(53,242,255,.7)}
+  .navitem:active{transform:translateY(1px)}
+  .brand-top{display:flex;align-items:center;justify-content:space-between;padding:6px 8px 16px}
+  .brand-top .logo{font-family:var(--font-pixel);font-size:22px;color:var(--cyan);text-shadow:0 0 12px rgba(53,242,255,.8);transform:skewX(-8deg)}
+  .brand-top .ver{font-family:var(--font-term);font-size:15px;color:var(--dim)}
+  .postbtn{width:100%;margin-top:16px;padding:15px 10px;font-family:var(--font-pixel);font-size:11px;letter-spacing:1px;color:#05060a;background:var(--cyan);border:2px solid #05060a;box-shadow:0 0 0 2px var(--cyan),0 0 18px rgba(53,242,255,.5),inset 0 -4px 0 rgba(0,0,0,.25);text-shadow:0 1px 0 rgba(255,255,255,.5);transition:transform .06s,box-shadow .12s}
+  .postbtn:hover{background:#7ff7ff}
+  .postbtn:active{transform:translateY(2px)}
+  .player1{display:flex;align-items:center;gap:12px;margin-top:20px;padding:10px;border:2px solid var(--line);background:#04060d}
+  .player1 .who{font-family:var(--font-pixel);font-size:9px;line-height:1.9;color:var(--text)}
+  .player1 .who span{display:block;color:var(--dim);font-family:var(--font-term);font-size:16px}
+  .lives{display:flex;gap:3px;margin-left:auto}
+  .life{width:9px;height:9px;background:var(--red);box-shadow:0 0 7px rgba(255,77,109,.8)}
+
+  /* ---------- STICKY HEADS / TABS ---------- */
+  .feed-head{position:sticky;top:52px;z-index:20;display:flex;align-items:center;gap:2px;padding:0 6px;background:linear-gradient(180deg,#0b0e17 70%, rgba(11,14,23,0));border-bottom:2px solid var(--line);backdrop-filter:blur(2px)}
+  .tab{padding:15px 10px 12px;font-family:var(--font-pixel);font-size:9px;letter-spacing:.5px;color:var(--dim);border-bottom:3px solid transparent;white-space:nowrap;transition:color .12s,border-color .12s;cursor:pointer}
+  .tab:hover{color:var(--text);background:rgba(53,242,255,.05)}
+  .tab.on{color:var(--cyan);border-bottom-color:var(--cyan);text-shadow:0 0 9px rgba(53,242,255,.7)}
+  .feed-head .plus{margin-left:auto;color:var(--cyan);font-family:var(--font-pixel);font-size:14px;padding:8px 12px;border:2px solid var(--line)}
+  .vh-title{font-family:var(--font-pixel);font-size:20px;color:var(--text);padding:14px 16px 10px;text-shadow:0 0 12px rgba(53,242,255,.3)}
+  .vh-title small{display:block;margin-top:8px;font-family:var(--font-term);font-size:16px;color:var(--dim);text-shadow:none}
+
+  /* ---------- AVATARS ---------- */
+  .avatar{width:46px;height:46px;flex:0 0 auto;border:2px solid var(--line-hot);image-rendering:pixelated;background:#04060d;background-size:cover}
+  .avatar.sm{width:34px;height:34px}
+  .avatar.lg{width:96px;height:96px;border-width:3px}
+
+  /* ---------- COMPOSE ---------- */
+  .compose{display:flex;gap:12px;padding:16px 14px;border-bottom:2px solid var(--line)}
+  .compose .field{flex:1}
+  .compose .field .ph{font-size:24px;color:var(--dim);padding:8px 0 26px;cursor:text}
+  .compose .field .ph.blink::after{content:"\2588";color:var(--cyan);animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+  .tools{display:flex;align-items:center;gap:16px;color:var(--cyan);font-family:var(--font-pixel);font-size:10px}
+  .tool{display:flex;align-items:center;gap:6px;opacity:.85;transition:opacity .12s,transform .06s}
+  .tool:hover{opacity:1;text-shadow:0 0 8px rgba(53,242,255,.7)}
+  .tool:active{transform:translateY(1px)}
+  .tool svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:square}
+  .compose .field .row2{display:flex;align-items:center;gap:14px}
+  .compose .field .row2 .postbtn{width:auto;margin:0 0 0 auto;padding:12px 22px;font-size:10px}
+
+  /* ---------- POST ---------- */
+  .post{display:flex;gap:12px;padding:14px;border-bottom:2px solid var(--line);transition:background .12s}
+  .post:hover{background:rgba(53,242,255,.035)}
+  .post .body{flex:1;min-width:0}
+  .pmeta{display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-size:17px}
+  .pmeta .name{font-family:var(--font-pixel);font-size:10px;color:var(--text)}
+  .pmeta .verif{color:var(--cyan);font-family:var(--font-pixel);font-size:9px;border:1px solid var(--cyan);width:14px;height:14px;display:grid;place-items:center;text-shadow:0 0 6px rgba(53,242,255,.7)}
+  .pmeta .h{color:var(--dim);font-size:16px}
+  .pmeta .badge{margin-left:auto;font-family:var(--font-pixel);font-size:8px;color:var(--amber);border:1px solid var(--amber);padding:3px 5px;text-shadow:0 0 6px rgba(255,201,77,.6)}
+  .ptext{font-size:20px;color:var(--text);margin:3px 0 0;max-width:60ch}
+  .ptext .mention{color:var(--cyan);text-shadow:0 0 7px rgba(53,242,255,.5)}
+  .ptext .link{color:var(--amber);text-shadow:0 0 7px rgba(255,201,77,.5)}
+
+  .screen{position:relative;margin-top:12px;aspect-ratio:16/9;border:2px solid var(--line-hot);background:#020409;overflow:hidden;box-shadow:inset 0 0 40px rgba(0,80,160,.25), 0 0 20px rgba(53,242,255,.08)}
+  .screen canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .screen .title{position:absolute;inset:0;display:grid;place-content:center;gap:10px;text-align:center;font-family:var(--font-pixel);color:var(--text);pointer-events:none;text-shadow:0 0 14px rgba(53,242,255,.8),0 0 3px #000}
+  .screen .title .lines{font-size:10px;color:var(--dim);letter-spacing:4px}
+  .screen .title .big{font-size:clamp(12px,2.4vw,20px);letter-spacing:2px}
+  .screen .time{position:absolute;left:10px;bottom:10px;font-family:var(--font-pixel);font-size:9px;color:var(--amber);background:rgba(5,6,10,.8);border:1px solid var(--amber);padding:5px 7px}
+  .screen .coin{position:absolute;right:10px;top:10px;font-family:var(--font-pixel);font-size:8px;color:var(--green);background:rgba(5,6,10,.8);border:1px solid var(--green);padding:5px 7px}
+
+  .acts{display:flex;align-items:center;gap:8px;margin-top:12px;color:var(--dim)}
+  .act{display:flex;align-items:center;gap:7px;font-family:var(--font-term);font-size:16px;padding:4px 8px;border:2px solid transparent;transition:color .12s,border-color .12s,transform .06s}
+  .act svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:square}
+  .act:hover{color:var(--cyan);border-color:var(--line);text-shadow:0 0 7px rgba(53,242,255,.5)}
+  .act:active{transform:translateY(1px)}
+  .act.liked{color:var(--red)!important;text-shadow:0 0 8px rgba(255,77,109,.6)}
+  .act.liked svg{fill:var(--red)}
+  .act.rt{color:var(--green)!important;text-shadow:0 0 8px rgba(57,255,136,.6)}
+  .act.on{color:var(--cyan)!important;text-shadow:0 0 8px rgba(53,242,255,.6)}
+  .act.spacer{margin-left:auto}
+
+  /* ---------- RIGHT RAIL ---------- */
+  .side-right{padding:12px;display:flex;flex-direction:column;gap:14px}
+  .searchbox{display:flex;align-items:center;gap:10px;border:2px solid var(--line-hot);background:#04060d;padding:12px}
+  .searchbox svg{width:18px;height:18px;stroke:var(--cyan);fill:none;stroke-width:2}
+  .searchbox input{flex:1;background:none;border:0;outline:none;color:var(--text);font-size:19px}
+  .searchbox input::placeholder{color:var(--dim)}
+  .card{border:2px solid var(--line);background:linear-gradient(180deg,#0c1020,#080b15)}
+  .card .card-h{display:flex;align-items:center;justify-content:space-between;padding:12px 12px 8px;font-family:var(--font-pixel);font-size:12px;color:var(--text)}
+  .card .card-h .x{color:var(--dim);font-size:14px;cursor:pointer}
+  .card .card-b{padding:6px 12px 14px}
+  .promo{border-color:var(--magenta);box-shadow:0 0 22px rgba(255,61,240,.14), inset 0 0 26px rgba(255,61,240,.06)}
+  .promo .card-h{color:var(--magenta);text-shadow:0 0 10px rgba(255,61,240,.6)}
+  .promo p{margin:4px 0 14px;font-size:19px;color:var(--text)}
+  .btn-coin{display:inline-block;padding:11px 16px;font-family:var(--font-pixel);font-size:10px;letter-spacing:1px;color:#05060a;background:var(--magenta);border:2px solid #05060a;box-shadow:0 0 0 2px var(--magenta),0 0 18px rgba(255,61,240,.45),inset 0 -4px 0 rgba(0,0,0,.25);transition:transform .06s}
+  .btn-coin:hover{background:#ff85f5}
+  .btn-coin:active{transform:translateY(2px)}
+  .btn-coin.cyan{background:var(--cyan);box-shadow:0 0 0 2px var(--cyan),0 0 18px rgba(53,242,255,.45),inset 0 -4px 0 rgba(0,0,0,.25)}
+  .btn-coin.cyan:hover{background:#7ff7ff}
+  .news{padding:12px 0;border-bottom:2px dashed var(--line)}
+  .news:last-child{border-bottom:0}
+  .news .tag{font-family:var(--font-pixel);font-size:8px;color:var(--dim)}
+  .news .hl{font-family:var(--font-pixel);font-size:10px;line-height:1.8;color:var(--text);margin-top:6px}
+  .news .meta{display:flex;align-items:center;gap:7px;margin-top:8px;font-size:15px;color:var(--dim)}
+  .news .meta .avatars{display:flex}
+  .news .meta .avatars .avatar{width:20px;height:20px;border-width:1px;margin-right:-6px}
+  .trend{padding:10px 0;border-bottom:2px dashed var(--line);display:block}
+  .trend:last-child{border-bottom:0}
+  .trend .top{display:flex;align-items:flex-start;gap:8px}
+  .trend .cat{font-size:15px;color:var(--dim)}
+  .trend .topic{font-family:var(--font-pixel);font-size:11px;color:var(--text);margin-top:4px}
+  .trend .dots{margin-left:auto;color:var(--dim);font-size:14px}
+  .trend:hover .topic{color:var(--cyan)}
+  .follow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:2px dashed var(--line)}
+  .follow:last-child{border-bottom:0}
+  .follow .who{font-family:var(--font-pixel);font-size:9px;line-height:1.7}
+  .follow .who span{display:block;color:var(--dim);font-family:var(--font-term);font-size:15px;margin-top:4px}
+  .follow .btn-follow{margin-left:auto;font-family:var(--font-pixel);font-size:8px;color:#05060a;background:var(--text);padding:8px 10px;border:2px solid #05060a;box-shadow:0 0 0 2px var(--text);white-space:nowrap}
+  .follow .btn-follow:active{transform:translateY(1px)}
+
+  /* ---------- EXPLORE ---------- */
+  .explore-search{display:flex;align-items:center;gap:12px;margin:14px;padding:14px;border:2px solid var(--cyan);background:#04060d;box-shadow:0 0 20px rgba(53,242,255,.15)}
+  .explore-search svg{width:22px;height:22px;stroke:var(--cyan);fill:none;stroke-width:2}
+  .explore-search input{flex:1;background:none;border:0;outline:none;color:var(--text);font-size:22px}
+  .explore-search input::placeholder{color:var(--dim)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;padding:0 14px 8px}
+  .chip{font-family:var(--font-pixel);font-size:8px;color:var(--cyan);border:2px solid var(--line-hot);padding:8px 10px;transition:border-color .12s,transform .06s}
+  .chip:hover{border-color:var(--cyan);text-shadow:0 0 8px rgba(53,242,255,.6)}
+  .chip:active{transform:translateY(1px)}
+  .trend-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:8px 14px 14px}
+  .trend-card{border:2px solid var(--line);background:linear-gradient(180deg,#0c1020,#080b15);padding:12px;min-height:120px;display:flex;flex-direction:column;transition:border-color .12s}
+  .trend-card:hover{border-color:var(--cyan)}
+  .trend-card .c{font-family:var(--font-pixel);font-size:8px;color:var(--dim)}
+  .trend-card .t{font-family:var(--font-pixel);font-size:11px;margin-top:8px;line-height:1.7;color:var(--text)}
+  .trend-card .p{margin-top:auto;font-size:15px;color:var(--dim)}
+
+  /* ---------- NOTIFICATIONS ---------- */
+  .nrow{display:flex;gap:12px;padding:14px;border-bottom:2px solid var(--line);cursor:pointer;transition:background .12s}
+  .nrow:hover{background:rgba(53,242,255,.045)}
+  .nrow .ic{width:36px;height:36px;flex:0 0 auto;display:grid;place-items:center;border:2px solid var(--line-hot);color:var(--cyan)}
+  .nrow .ic svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:square}
+  .nrow .ic.like{color:var(--red);border-color:var(--red)}
+  .nrow .ic.rt{color:var(--green);border-color:var(--green)}
+  .nrow .ic.follow{color:var(--magenta);border-color:var(--magenta)}
+  .nrow .ic.at{color:var(--amber);border-color:var(--amber)}
+  .nrow .txt{flex:1;min-width:0;font-size:19px}
+  .nrow .txt .who{font-family:var(--font-pixel);font-size:9px;color:var(--text)}
+  .nrow .txt .time{color:var(--dim);font-size:15px;margin-top:8px}
+  .nrow.unread{background:rgba(53,242,255,.06)}
+  .nrow .dot{width:9px;height:9px;background:var(--cyan);border-radius:50%;box-shadow:0 0 9px var(--cyan);align-self:center;flex:0 0 auto}
+  .markall{margin-left:auto;font-family:var(--font-pixel);font-size:8px;color:var(--cyan);border:2px solid var(--line-hot);padding:7px 9px}
+  .markall:hover{border-color:var(--cyan)}
+
+  /* ---------- CHAT ---------- */
+  .messages{display:flex;flex-direction:column;height:100%}
+  .mrow{display:flex;gap:12px;padding:12px;border-bottom:2px solid var(--line);cursor:pointer;transition:background .12s}
+  .mrow:hover{background:rgba(53,242,255,.05)}
+  .mrow.on{background:rgba(53,242,255,.09);box-shadow:inset 3px 0 0 var(--cyan)}
+  .mrow .mbody{flex:1;min-width:0}
+  .mrow .top{display:flex;align-items:center;gap:6px}
+  .mrow .nm{font-family:var(--font-pixel);font-size:9px;color:var(--text)}
+  .mrow .hd{color:var(--dim);font-size:15px}
+  .mrow .last{color:var(--dim);font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:4px}
+  .mrow.unread .last{color:var(--text)}
+  .chat-wrap{display:grid;grid-template-columns:330px minmax(0,1fr);height:calc(100vh - 176px);min-height:520px}
+  .chat-list{border-right:2px solid var(--line);overflow:auto}
+  .chat-main{display:flex;flex-direction:column;min-width:0}
+  .thread-h{display:flex;align-items:center;gap:10px;padding:12px;border-bottom:2px solid var(--line)}
+  .thread-h .nm{font-family:var(--font-pixel);font-size:10px}
+  .thread-h .hd{color:var(--dim);font-size:15px}
+  .thread-b{flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:14px}
+  .bubble{max-width:78%;padding:10px 12px;border:2px solid var(--line-hot);font-size:18px;line-height:1.35;background:#0a0e1c;align-self:flex-start}
+  .bubble.me{align-self:flex-end;border-color:var(--cyan);background:rgba(53,242,255,.1)}
+  .bubble time{display:block;color:var(--dim);font-size:13px;margin-top:6px}
+  .thread-f{display:flex;gap:10px;padding:12px;border-top:2px solid var(--line)}
+  .thread-f input{flex:1;background:#04060d;border:2px solid var(--line-hot);color:var(--text);font-size:19px;padding:10px 12px;outline:none}
+  .thread-f input:focus{border-color:var(--cyan)}
+  .send{padding:10px 16px;font-family:var(--font-pixel);font-size:9px;background:var(--cyan);color:#05060a;border:2px solid #05060a;box-shadow:0 0 0 2px var(--cyan)}
+  .send:active{transform:translateY(2px)}
+
+  /* ---------- GROK ---------- */
+  .grok{display:flex;flex-direction:column;height:calc(100vh - 176px);min-height:520px;background:#02060a;border-left:2px solid var(--green);border-right:2px solid var(--green)}
+  .grok-h{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:2px solid var(--green);font-family:var(--font-pixel);font-size:11px;color:var(--green);text-shadow:0 0 10px rgba(57,255,136,.6)}
+  .grok-h .led{width:10px;height:10px;background:var(--green);box-shadow:0 0 10px var(--green);animation:blink 1s steps(1) infinite}
+  .grok-b{flex:1;overflow:auto;padding:16px;font-family:var(--font-term);font-size:19px;display:flex;flex-direction:column;gap:14px}
+  .gline{display:flex;gap:8px}
+  .gline .p{color:var(--green);flex:0 0 auto}
+  .gline.user .p{color:var(--cyan)}
+  .gline .c{color:var(--text)}
+  .gline .c .cmd{color:var(--amber)}
+  .grok-chips{display:flex;flex-wrap:wrap;gap:8px;padding:0 16px 12px}
+  .grok-f{display:flex;gap:10px;padding:12px 16px;border-top:2px solid var(--green)}
+  .grok-f input{flex:1;background:#02060a;border:2px solid var(--green);color:var(--green);font-size:19px;padding:10px 12px;outline:none}
+  .grok-f input::placeholder{color:#1f6a44}
+
+  /* ---------- PREMIUM ---------- */
+  .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding:14px}
+  .tier{border:2px solid var(--line);background:linear-gradient(180deg,#0c1020,#080b15);padding:16px;display:flex;flex-direction:column;gap:12px}
+  .tier.hot{border-color:var(--magenta);box-shadow:0 0 26px rgba(255,61,240,.18)}
+  .tier .tname{font-family:var(--font-pixel);font-size:13px;color:var(--text)}
+  .tier.hot .tname{color:var(--magenta);text-shadow:0 0 10px rgba(255,61,240,.6)}
+  .tier .tprice{font-family:var(--font-pixel);font-size:20px;color:var(--cyan)}
+  .tier .tprice small{font-family:var(--font-term);font-size:15px;color:var(--dim);display:block;margin-top:6px}
+  .tier ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px;flex:1}
+  .tier li{font-size:18px;color:var(--text);display:flex;gap:9px;align-items:flex-start}
+  .tier li::before{content:"\25B8";color:var(--green);flex:0 0 auto}
+  .tier .flag{font-family:var(--font-pixel);font-size:8px;color:var(--amber);border:1px solid var(--amber);padding:3px 5px;align-self:flex-start}
+  .benefits{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:0 14px 14px}
+  .benefit{border:2px solid var(--line);padding:14px;display:flex;gap:12px;align-items:flex-start}
+  .benefit .bic{color:var(--cyan);flex:0 0 auto}
+  .benefit .bic svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2}
+  .benefit .bt{font-family:var(--font-pixel);font-size:9px;color:var(--text)}
+  .benefit .bd{font-size:17px;color:var(--dim);margin-top:6px}
+
+  /* ---------- STUDIO ---------- */
+  .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:14px}
+  .tile{border:2px solid var(--line);padding:14px;background:#080b15}
+  .tile .k{font-family:var(--font-pixel);font-size:8px;color:var(--dim);line-height:1.8}
+  .tile .v{font-family:var(--font-pixel);font-size:18px;color:var(--cyan);margin-top:10px}
+  .tile .d{color:var(--green);font-size:15px;margin-top:6px}
+  .panel{margin:0 14px 14px;border:2px solid var(--line);background:#080b15}
+  .panel .ph2{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:2px solid var(--line);font-family:var(--font-pixel);font-size:11px}
+  .chart{display:flex;align-items:flex-end;gap:10px;height:190px;padding:18px 14px 12px}
+  .bar{flex:1;position:relative;background:linear-gradient(180deg,var(--cyan),#0a3a55);border:2px solid var(--cyan);box-shadow:0 0 14px rgba(53,242,255,.25);min-height:6px;transition:transform .12s}
+  .bar:hover{transform:scaleY(1.03)}
+  .bar span{position:absolute;bottom:-26px;left:0;right:0;text-align:center;font-family:var(--font-pixel);font-size:7px;color:var(--dim)}
+  .bar b{position:absolute;top:-22px;left:0;right:0;text-align:center;font-family:var(--font-term);font-size:15px;color:var(--cyan)}
+  .bars-week{padding-bottom:20px}
+
+  /* ---------- ARTICLES ---------- */
+  .art{display:flex;gap:14px;padding:14px;border-bottom:2px solid var(--line);cursor:pointer;transition:background .12s}
+  .art:hover{background:rgba(53,242,255,.035)}
+  .art .cover{width:150px;flex:0 0 auto;aspect-ratio:4/3;border:2px solid var(--line-hot);position:relative;overflow:hidden}
+  .art .cover i{position:absolute;inset:0;font-style:normal;display:grid;place-items:center;font-family:var(--font-pixel);font-size:18px;color:rgba(255,255,255,.85);text-shadow:0 0 12px rgba(0,0,0,.8)}
+  .art .abody{min-width:0}
+  .art .cat{font-family:var(--font-pixel);font-size:8px;color:var(--amber)}
+  .art .atitle{font-family:var(--font-pixel);font-size:12px;line-height:1.8;color:var(--text);margin-top:8px}
+  .art .adesc{font-size:18px;color:var(--dim);margin-top:8px;max-width:52ch}
+  .art .ameta{font-size:15px;color:var(--dim);margin-top:10px}
+  .c1{background:linear-gradient(135deg,#0b2a4a,#35f2ff)}
+  .c2{background:linear-gradient(135deg,#3a0b3a,#ff3df0)}
+  .c3{background:linear-gradient(135deg,#3a2a0b,#ffc94d)}
+  .c4{background:linear-gradient(135deg,#0b3a22,#39ff88)}
+
+  /* ---------- PROFILE ---------- */
+  .banner{height:180px;border-bottom:2px solid var(--line);position:relative;overflow:hidden;
+    background:
+      radial-gradient(60% 120% at 20% 0%, rgba(53,242,255,.5), transparent 60%),
+      radial-gradient(60% 140% at 85% 20%, rgba(255,61,240,.45), transparent 60%),
+      repeating-linear-gradient(90deg, #0a1024 0 22px, #0c1430 22px 24px);
+  }
+  .banner .grid{position:absolute;inset:0;background-image:linear-gradient(rgba(53,242,255,.12) 1px, transparent 1px),linear-gradient(90deg, rgba(53,242,255,.12) 1px, transparent 1px);background-size:26px 26px}
+  .p-head{padding:0 16px 14px;border-bottom:2px solid var(--line)}
+  .p-top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:-46px}
+  .p-name{font-family:var(--font-pixel);font-size:16px;color:var(--text)}
+  .p-handle{color:var(--dim);font-size:18px;margin-top:8px}
+  .p-bio{font-size:19px;margin-top:12px;max-width:60ch}
+  .p-meta{display:flex;flex-wrap:wrap;gap:16px;margin-top:12px;color:var(--dim);font-size:16px}
+  .p-stats{display:flex;gap:20px;margin-top:14px;font-size:18px;color:var(--dim)}
+  .p-stats b{color:var(--text);font-family:var(--font-pixel);font-size:11px}
+  .p-actions{display:flex;gap:10px;flex:0 0 auto}
+  .btn-ghost{font-family:var(--font-pixel);font-size:9px;color:var(--text);border:2px solid var(--line-hot);padding:11px 14px}
+  .btn-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+
+  /* ---------- SETTINGS / MORE ---------- */
+  .setrow{display:flex;align-items:center;gap:14px;padding:14px;border-bottom:2px solid var(--line)}
+  .setrow .sl{flex:1}
+  .setrow .sl .n{font-family:var(--font-pixel);font-size:10px;color:var(--text)}
+  .setrow .sl .d{color:var(--dim);font-size:17px;margin-top:6px}
+  .toggle{width:58px;height:28px;border:2px solid var(--line-hot);background:#04060d;position:relative;flex:0 0 auto;transition:border-color .12s}
+  .toggle::after{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;background:var(--dim);transition:left .12s,background .12s}
+  .toggle.on{border-color:var(--cyan)}
+  .toggle.on::after{left:32px;background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+  .keyrow{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:2px dashed var(--line);font-size:18px}
+  .keycap{font-family:var(--font-pixel);font-size:9px;color:var(--cyan);border:2px solid var(--line-hot);padding:6px 9px;min-width:36px;text-align:center}
+  .keyrow .kd{color:var(--dim);margin-left:auto;font-size:16px}
+
+  /* ---------- MODAL / TOASTS / COINPOP ---------- */
+  .modal{position:fixed;inset:0;z-index:var(--z-modal);display:none;place-items:center;padding:16px;background:rgba(2,3,10,.82)}
+  .modal.on{display:grid}
+  .modal .mbox{width:min(620px,100%);border:2px solid var(--cyan);background:#080b15;box-shadow:0 0 50px rgba(53,242,255,.28)}
+  .modal .mbox-h{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:2px solid var(--line);font-family:var(--font-pixel);font-size:11px;color:var(--cyan)}
+  .modal .mbox-h button{color:var(--dim);font-size:16px}
+  .modal .mcompose{display:flex;gap:12px;padding:14px}
+  .modal textarea{width:100%;min-height:140px;background:none;border:0;outline:none;color:var(--text);font-size:22px;padding:0;resize:vertical}
+  .modal textarea::placeholder{color:var(--dim)}
+  .modal .mbox-f{display:flex;align-items:center;gap:14px;padding:12px 14px;border-top:2px solid var(--line)}
+  .modal .pcount{font-family:var(--font-pixel);font-size:9px;color:var(--dim);margin-left:auto}
+  .toasts{position:fixed;left:50%;bottom:78px;transform:translateX(-50%);z-index:85;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:max-content;max-width:90vw}
+  .toast{border:2px solid var(--cyan);background:rgba(5,8,16,.96);color:var(--cyan);font-family:var(--font-pixel);font-size:9px;line-height:1.7;padding:11px 14px;box-shadow:0 0 22px rgba(53,242,255,.3);animation:toastin .2s ease-out}
+  .toast.mag{border-color:var(--magenta);color:var(--magenta);box-shadow:0 0 22px rgba(255,61,240,.3)}
+  .toast.amber{border-color:var(--amber);color:var(--amber);box-shadow:0 0 22px rgba(255,201,77,.3)}
+  @keyframes toastin{from{transform:translateY(10px);opacity:0}}
+  .coinpop{position:fixed;z-index:85;font-family:var(--font-pixel);font-size:11px;color:var(--amber);pointer-events:none;text-shadow:0 0 10px rgba(255,201,77,.8);animation:coinpop .9s ease-out forwards}
+  @keyframes coinpop{0%{transform:translateY(0);opacity:1}100%{transform:translateY(-70px);opacity:0}}
+
+  /* ---------- HUD ---------- */
+  .hud{position:fixed;left:0;right:0;bottom:0;height:62px;z-index:var(--z-hud);display:flex;align-items:center;gap:18px;padding:0 16px;background:linear-gradient(0deg,#0d1226,#070a14);border-top:3px solid var(--line-hot);box-shadow:0 0 0 3px #000, 0 -6px 0 rgba(0,0,0,.5), 0 0 26px rgba(57,255,136,.14);font-family:var(--font-pixel);font-size:10px}
+  .hud .stat{display:flex;flex-direction:column;gap:5px;white-space:nowrap}
+  .hud .stat .k{font-size:8px;color:var(--dim)}
+  .hud .stat .v{color:var(--cyan);text-shadow:0 0 9px rgba(53,242,255,.6)}
+  .hud .stat.amber .v{color:var(--amber);text-shadow:0 0 9px rgba(255,201,77,.6)}
+  .hud .stat.green .v{color:var(--green);text-shadow:0 0 9px rgba(57,255,136,.6)}
+  .hud .stat.mag .v{color:var(--magenta);text-shadow:0 0 9px rgba(255,61,240,.6)}
+  .hud .spacer{flex:1}
+  .hud .insert{padding:11px 14px;color:#05060a;background:var(--amber);font-size:9px;letter-spacing:1px;border:2px solid #05060a;box-shadow:0 0 0 2px var(--amber),0 0 16px rgba(255,201,77,.45);transition:transform .06s}
+  .hud .insert:active{transform:translateY(2px)}
+  .hud .coinicon{width:16px;height:16px;border-radius:50%;background:var(--amber);box-shadow:inset 0 -2px 0 rgba(0,0,0,.35),0 0 10px rgba(255,201,77,.6)}
+
+  /* ---------- BOOT ---------- */
+  .boot{position:fixed;inset:0;z-index:var(--z-boot);display:grid;place-content:center;gap:26px;text-align:center;background:radial-gradient(circle at 50% 40%, #0b1030, #02030a 70%);transition:opacity .5s ease, transform .5s ease}
+  .boot.hide{opacity:0;transform:scale(1.06);pointer-events:none}
+  .boot .logo{font-family:var(--font-pixel);font-size:clamp(30px,8vw,74px);color:var(--cyan);text-shadow:0 0 22px rgba(53,242,255,.8),0 0 4px #000, 4px 4px 0 rgba(255,61,240,.35);letter-spacing:4px}
+  .boot .sub{font-family:var(--font-pixel);font-size:11px;color:var(--amber);letter-spacing:3px;text-shadow:0 0 10px rgba(255,201,77,.6)}
+  .boot .press{font-family:var(--font-pixel);font-size:13px;color:var(--text);animation:blink 1.1s steps(1) infinite}
+  .boot .legal{font-family:var(--font-term);font-size:16px;color:var(--dim)}
+  .boot .slot{font-family:var(--font-pixel);font-size:9px;color:var(--green);letter-spacing:2px;animation:blink 1.6s steps(1) infinite}
+
+  @keyframes poweron{0%{transform:scaleY(.004) scaleX(1);filter:brightness(4)}45%{transform:scaleY(.02) scaleX(1.05);filter:brightness(3)}100%{transform:scaleY(1) scaleX(1);filter:brightness(1)}}
+  body.poweron .app,body.poweron .marquee,body.poweron .hud{animation:poweron .55s ease-out both;transform-origin:center}
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width:1180px){
+    .app{grid-template-columns:275px minmax(0,620px)}
+    .side-right{display:none}
+    .chat-wrap{grid-template-columns:280px minmax(0,1fr)}
+  }
+  @media (max-width:900px){
+    .app,.app.rail-off{grid-template-columns:74px minmax(0,1fr);border-left:0;border-right:0}
+    .side-left{padding:12px 8px}
+    .navitem{justify-content:center;padding:11px 0}
+    .navitem span.label,.navitem .num{display:none}
+    .brand-top{justify-content:center}
+    .brand-top .ver,.player1 .who,.postbtn{display:none}
+    .player1{justify-content:center}
+    .tiers{grid-template-columns:1fr}
+    .tiles{grid-template-columns:repeat(2,1fr)}
+    .benefits{grid-template-columns:1fr}
+    .trend-grid{grid-template-columns:1fr}
+  }
+  @media (max-width:600px){
+    body{padding-bottom:88px}
+    .app{display:block}
+    .side-left{display:none}
+    .feed-head{padding:0 2px;overflow-x:auto}
+    .tab{padding:13px 8px 10px;font-size:8px}
+    .pmeta .badge{display:none}
+    .hud{height:70px;gap:10px;overflow-x:auto}
+    .hi{display:none}
+    .chat-wrap{grid-template-columns:1fr;height:auto}
+    .chat-list{max-height:280px;border-right:0;border-bottom:2px solid var(--line)}
+    .chat-main{height:calc(100vh - 260px);min-height:420px}
+    .tiles{grid-template-columns:1fr}
+    .art{flex-direction:column}
+    .art .cover{width:100%;aspect-ratio:16/9}
+    .grok{height:calc(100vh - 260px)}
+    .banner{height:130px}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .crt-fx::after,.crt-fx .glowbar,.ticker-track,.boot .press,.boot .slot,.blink::after,.grok-h .led{animation:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="crt-fx" aria-hidden="true"><div class="glowbar"></div></div>
+
+<!-- ===== BOOT ===== -->
+<div class="boot" id="boot" role="dialog" aria-label="Start screen">
+  <div class="logo">X&nbsp;ARCADE</div>
+  <div class="sub">SOCIAL&nbsp;PLATFORM&nbsp;&mdash;&nbsp;1984&nbsp;EDITION</div>
+  <div class="press" id="press">&#9654; PRESS START &nbsp;/&nbsp; CLICK ANYWHERE &#9664;</div>
+  <div class="slot">INSERT COIN TO CONTINUE</div>
+  <div class="legal">&copy; 2026 X CORP &middot; 1 CREDIT &middot; BEST VIEWED ON CRT</div>
+</div>
+
+<!-- ===== MARQUEE ===== -->
+<header class="marquee">
+  <div class="brand">
+    <span class="xmark">X</span>
+    <span>ARCADE<small>&nbsp;v4.1</small></span>
+  </div>
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker-track">
+      <span>&#9733; WELCOME TO X ARCADE &#9733; POST = FREE PLAY &#9733; PRESS 1-9 TO WARP BETWEEN WORLDS &#9733; GROK ENTERS THE DUNGEON &#9733; PREMIUM+ UNLOCKS GOD MODE &#9733; INSERT COIN TO CONTINUE &#9733; HIGH SCORE 999,999,999 &#9733;</span>
+    </div>
+  </div>
+  <div class="hi">HI<b>999999</b></div>
+</header>
+
+<!-- ===== APP ===== -->
+<div class="app" id="app">
+
+  <!-- LEFT NAV -->
+  <nav class="col side-left" aria-label="Primary">
+    <div class="brand-top">
+      <span class="logo">X</span>
+      <span class="ver">v4.1-flash</span>
+    </div>
+
+    <a href="#home" class="navitem active" data-view="home">
+      <svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a2 2 0 0 1-2 2h-4v-6H9v6H5a2 2 0 0 1-2-2z"/></svg>
+      <span class="label">HOME</span><span class="num">01</span>
+    </a>
+    <a href="#explore" class="navitem" data-view="explore">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+      <span class="label">EXPLORE</span><span class="num">02</span>
+    </a>
+    <a href="#notifications" class="navitem" data-view="notifications">
+      <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+      <span class="label">ALERTS</span><span class="num">03</span>
+    </a>
+    <a href="#chat" class="navitem" data-view="chat">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/></svg>
+      <span class="label">CHAT</span><span class="num">04</span>
+    </a>
+    <a href="#grok" class="navitem" data-view="grok">
+      <svg viewBox="0 0 24 24"><path d="M12 3l1.9 5.6L19 10.5l-5.1 1.9L12 18l-1.9-5.6L5 10.5l5.1-1.9z"/></svg>
+      <span class="label">GROK</span><span class="num">05</span>
+    </a>
+    <a href="#premium" class="navitem" data-view="premium">
+      <svg viewBox="0 0 24 24"><path d="M6 3h12l3 6-9 12L3 9z"/><path d="M9 12l2 2 4-4"/></svg>
+      <span class="label">PREMIUM</span><span class="num">06</span>
+    </a>
+    <a href="#history" class="navitem" data-view="history">
+      <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+      <span class="label">HISTORY</span><span class="num">07</span>
+    </a>
+    <a href="#studio" class="navitem" data-view="studio">
+      <svg viewBox="0 0 24 24"><path d="M5 15l-1 5 5-1 11-11a2 2 0 0 0-3-3z"/><path d="M14 6l4 4"/></svg>
+      <span class="label">STUDIO</span><span class="num">08</span>
+    </a>
+    <a href="#articles" class="navitem" data-view="articles">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>
+      <span class="label">ARTICLES</span><span class="num">09</span>
+    </a>
+    <a href="#profile" class="navitem" data-view="profile">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+      <span class="label">PLAYER 1</span><span class="num">10</span>
+    </a>
+    <a href="#more" class="navitem" data-view="more">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="8" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="16" cy="12" r="1"/></svg>
+      <span class="label">MORE</span><span class="num">11</span>
+    </a>
+
+    <button class="postbtn" id="openCompose" data-beep="coin">&#9654; POST</button>
+
+    <div class="player1">
+      <div class="avatar" data-seed="player-one" data-size="46" aria-hidden="true"></div>
+      <div class="who">PLAYER&nbsp;1<span>@BuildFastWithAI</span></div>
+      <div class="lives" title="3 lives"><i class="life"></i><i class="life"></i><i class="life"></i></div>
+    </div>
+  </nav>
+
+  <!-- CENTER -->
+  <div class="col center-col">
+
+    <!-- ========== HOME ========== -->
+    <div class="view on" id="view-home">
+      <div class="feed-head" data-group="home">
+        <a href="#" class="tab on" data-tab>FOR&nbsp;YOU</a>
+        <a href="#" class="tab" data-tab>FOLLOWING&nbsp;&#9662;</a>
+        <a href="#" class="tab" data-tab>OS&nbsp;AI&nbsp;NEWS</a>
+        <a href="#" class="tab" data-tab>AI&nbsp;DEVS</a>
+        <button class="plus" aria-label="Add list" data-beep="blip">+</button>
+      </div>
+
+      <section class="compose">
+        <div class="avatar" data-seed="player-one" data-size="46" aria-hidden="true"></div>
+        <div class="field">
+          <div class="ph blink" id="composeTrigger">WHAT&#39;S HAPPENING, PLAYER?</div>
+          <div class="row2">
+            <button class="tool" data-beep="blip">IMG</button>
+            <button class="tool" data-beep="blip">GIF</button>
+            <button class="tool" data-beep="blip">POLL</button>
+            <button class="tool" data-beep="blip">EMOJI</button>
+            <button class="postbtn" data-beep="coin" data-compose>&#9654; POST</button>
+          </div>
+        </div>
+      </section>
+
+      <div id="home-posts">
+        <article class="post">
+          <div class="avatar" data-seed="atom-tan-studio" data-size="46" aria-hidden="true"></div>
+          <div class="body">
+            <div class="pmeta">
+              <span class="name">RICH&nbsp;&middot;&nbsp;ATOM&nbsp;TAN&nbsp;STUDIO</span>
+              <span class="verif" title="verified">&#10003;</span>
+              <span class="h">@atomtanstudio&nbsp;&middot;&nbsp;6h</span>
+              <span class="badge">LV.99</span>
+            </div>
+            <p class="ptext">Here is an example of a lyric video from my new music video pipeline featuring the fantastic new music model YuE2. I am working out some kinks with the third video option which requires proper lip syncing which is more of a challenge. Once I solve that I will be open sourcing the <a href="#" class="link">Show more</a></p>
+            <div class="screen" aria-label="Video preview">
+              <canvas class="starfield" data-stars="90"></canvas>
+              <div class="title">
+                <div class="lines">RENTAL&nbsp;HOURS</div>
+                <div class="big">FORWARDING&nbsp;ADDRESS</div>
+                <div class="lines">&#9679; NOW PLAYING &#9679;</div>
+              </div>
+              <div class="time">4:15</div>
+              <div class="coin">&#9654; PLAY</div>
+            </div>
+            <div class="acts">
+              <button class="act" data-beep="blip" aria-label="Reply"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/></svg></button>
+              <button class="act rt" data-beep="blip" aria-label="Repost"><svg viewBox="0 0 24 24"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>1</button>
+              <button class="act like" data-beep="like" data-count="4" aria-label="Like"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.6-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 6c-2.5 4.4-9.5 9-9.5 9z"/></svg><span class="n">4</span></button>
+              <button class="act" data-beep="blip" aria-label="Views"><svg viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>214</button>
+              <button class="act spacer" data-beep="blip" aria-label="Bookmark"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
+              <button class="act" data-beep="blip" aria-label="Share"><svg viewBox="0 0 24 24"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M12 15V3M8 7l4-4 4 4"/></svg></button>
+            </div>
+          </div>
+        </article>
+
+        <article class="post">
+          <div class="avatar" data-seed="victor-mustar" data-size="46" aria-hidden="true"></div>
+          <div class="body">
+            <div class="pmeta">
+              <span class="name">VICTOR&nbsp;M</span>
+              <span class="verif">&#10003;</span>
+              <span class="h">@victormustar&nbsp;&middot;&nbsp;2h</span>
+              <span class="badge">LV.77</span>
+            </div>
+            <p class="ptext">DeepSeek-V41-Flash: the BEST Boeing benchmark result I&#39;ve seen from an open-source model (by far). &#128640;</p>
+            <p class="ptext">It ran for hours with /goal. Where other models often stall quickly, it kept improving: inspect, spot a defect, zoom in, diagnose, fix, repeat. The video really shows how <a href="#" class="link">Show more</a></p>
+            <div class="acts">
+              <button class="act" data-beep="blip"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/></svg></button>
+              <button class="act rt" data-beep="blip"><svg viewBox="0 0 24 24"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>12</button>
+              <button class="act like" data-beep="like" data-count="87" aria-label="Like"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.6-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 6c-2.5 4.4-9.5 9-9.5 9z"/></svg><span class="n">87</span></button>
+              <button class="act" data-beep="blip"><svg viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>9.1K</button>
+              <button class="act spacer" data-beep="blip"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
+              <button class="act" data-beep="blip"><svg viewBox="0 0 24 24"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M12 15V3M8 7l4-4 4 4"/></svg></button>
+            </div>
+          </div>
+        </article>
+
+        <article class="post">
+          <div class="avatar" data-seed="pixel-quest" data-size="46" aria-hidden="true"></div>
+          <div class="body">
+            <div class="pmeta">
+              <span class="name">PIXEL&nbsp;QUEST</span>
+              <span class="verif">&#10003;</span>
+              <span class="h">@pixelquest&nbsp;&middot;&nbsp;9h</span>
+              <span class="badge">BOSS</span>
+            </div>
+            <p class="ptext">We finally beat the 100-hour build. The flagship model survived the whole run without a single <a href="#" class="mention">@debug</a> rage-quit. New high score for the pipeline: <span class="link">99.7% uptime</span>. Patch notes in the thread. &#127918;</p>
+            <div class="acts">
+              <button class="act" data-beep="blip"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/></svg></button>
+              <button class="act rt" data-beep="blip"><svg viewBox="0 0 24 24"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>34</button>
+              <button class="act like" data-beep="like" data-count="291" aria-label="Like"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.6-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 6c-2.5 4.4-9.5 9-9.5 9z"/></svg><span class="n">291</span></button>
+              <button class="act" data-beep="blip"><svg viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>22K</button>
+              <button class="act spacer" data-beep="blip"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
+              <button class="act" data-beep="blip"><svg viewBox="0 0 24 24"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M12 15V3M8 7l4-4 4 4"/></svg></button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <!-- ========== EXPLORE ========== -->
+    <div class="view" id="view-explore">
+      <div class="feed-head"><div class="vh-title" style="padding:14px 16px">EXPLORE<small>SEARCH &amp; DISCOVER NEW WORLDS</small></div></div>
+      <div class="explore-search">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input type="text" id="exploreInput" placeholder="SEARCH HIGH SCORES, PLAYERS, TOPICS" aria-label="Search" />
+      </div>
+      <div class="chips">
+        <button class="chip" data-beep="blip">#AI</button>
+        <button class="chip" data-beep="blip">#OPENSOURCE</button>
+        <button class="chip" data-beep="blip">#GROK</button>
+        <button class="chip" data-beep="blip">#PIXELART</button>
+        <button class="chip" data-beep="blip">#BUILDATHON</button>
+        <button class="chip" data-beep="blip">#RETRO</button>
+      </div>
+      <div class="feed-head" style="position:static;border-top:2px solid var(--line)"><div class="vh-title" style="font-size:14px;padding:12px 16px">TRENDING WORLDS</div></div>
+      <div class="trend-grid">
+        <a href="#home" class="trend-card"><span class="c">TECHNOLOGY &middot; TRENDING</span><span class="t">#DeepSeekV41</span><span class="p">142K posts</span></a>
+        <a href="#home" class="trend-card"><span class="c">SCIENCE &middot; TRENDING</span><span class="t">#AstroGPT6</span><span class="p">89K posts</span></a>
+        <a href="#home" class="trend-card"><span class="c">GAMING &middot; TRENDING</span><span class="t">#PixelQuest</span><span class="p">61K posts</span></a>
+        <a href="#home" class="trend-card"><span class="c">BUSINESS &middot; TRENDING</span><span class="t">#HDFCbank</span><span class="p">47K posts</span></a>
+        <a href="#home" class="trend-card"><span class="c">CREATOR &middot; TRENDING</span><span class="t">#BuildathonBhopal</span><span class="p">23K posts</span></a>
+        <a href="#home" class="trend-card"><span class="c">MUSIC &middot; TRENDING</span><span class="t">#YuE2</span><span class="p">18K posts</span></a>
+      </div>
+    </div>
+
+    <!-- ========== NOTIFICATIONS ========== -->
+    <div class="view" id="view-notifications">
+      <div class="feed-head" data-group="notif">
+        <div class="vh-title" style="padding:14px 12px;font-size:16px">ALERTS</div>
+        <a href="#" class="tab on" data-tab>ALL</a>
+        <a href="#" class="tab" data-tab>VERIFIED</a>
+        <a href="#" class="tab" data-tab>MENTIONS</a>
+        <button class="markall" id="markAll" data-beep="blip">MARK ALL READ</button>
+      </div>
+
+      <div class="nrow unread">
+        <div class="ic like"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.6-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 6c-2.5 4.4-9.5 9-9.5 9z"/></svg></div>
+        <div class="txt"><span class="who">ATOM TAN STUDIO</span> and <span class="who">2 OTHERS</span> liked your post. <div class="time">12m ago</div></div>
+        <span class="dot"></span>
+      </div>
+      <div class="nrow unread">
+        <div class="ic at"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-3.9 7.9"/></svg></div>
+        <div class="txt"><span class="who">PIXEL QUEST</span> mentioned you: &ldquo;@BuildFastWithAI the pipeline is unreal, run it again&rdquo;. <div class="time">48m ago</div></div>
+        <span class="dot"></span>
+      </div>
+      <div class="nrow unread">
+        <div class="ic follow"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M19 8v6M22 11h-6"/></svg></div>
+        <div class="txt"><span class="who">VICTOR M</span> started following you. <div class="time">2h ago</div></div>
+        <span class="dot"></span>
+      </div>
+      <div class="nrow">
+        <div class="ic rt"><svg viewBox="0 0 24 24"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div>
+        <div class="txt"><span class="who">GROK</span> reposted your benchmark thread. <div class="time">5h ago</div></div>
+      </div>
+      <div class="nrow">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7"/></svg></div>
+        <div class="txt">Your post reached <span class="who">1,000 IMPRESSIONS</span> &mdash; new personal high score. <div class="time">1d ago</div></div>
+      </div>
+      <div class="nrow">
+        <div class="ic follow"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M19 8v6M22 11h-6"/></svg></div>
+        <div class="txt"><span class="who">DEV NEWS</span> and <span class="who">14 OTHERS</span> followed you. <div class="time">2d ago</div></div>
+      </div>
+    </div>
+
+    <!-- ========== CHAT ========== -->
+    <div class="view" id="view-chat">
+      <div class="chat-wrap">
+        <div class="chat-list">
+          <div class="feed-head" style="position:sticky;top:0"><div class="vh-title" style="padding:14px 12px;font-size:14px">MESSAGES</div></div>
+          <div class="messages" id="chatList">
+            <div class="mrow on unread" data-thread="atom" data-name="ATOM TAN STUDIO" data-handle="@atomtanstudio">
+              <div class="avatar sm" data-seed="atom-tan-studio"></div>
+              <div class="mbody"><div class="top"><span class="nm">ATOM TAN STUDIO</span><span class="hd">@atomtanstudio &middot; 12m</span></div><div class="last">The lip sync option is finally stable!</div></div>
+            </div>
+            <div class="mrow unread" data-thread="victor" data-name="VICTOR M" data-handle="@victormustar">
+              <div class="avatar sm" data-seed="victor-mustar"></div>
+              <div class="mbody"><div class="top"><span class="nm">VICTOR M</span><span class="hd">@victormustar &middot; 1h</span></div><div class="last">Send the benchmark config please</div></div>
+            </div>
+            <div class="mrow" data-thread="pixel" data-name="PIXEL QUEST" data-handle="@pixelquest">
+              <div class="avatar sm" data-seed="pixel-quest"></div>
+              <div class="mbody"><div class="top"><span class="nm">PIXEL QUEST</span><span class="hd">@pixelquest &middot; 4h</span></div><div class="last">New high score: 99.7% uptime</div></div>
+            </div>
+            <div class="mrow" data-thread="grok" data-name="GROK BOT" data-handle="@grok">
+              <div class="avatar sm" data-seed="grok-bot"></div>
+              <div class="mbody"><div class="top"><span class="nm">GROK BOT</span><span class="hd">@grok &middot; 6h</span></div><div class="last">Your daily briefing is ready.</div></div>
+            </div>
+            <div class="mrow" data-thread="news" data-name="DEV NEWS" data-handle="@devnews">
+              <div class="avatar sm" data-seed="dev-news"></div>
+              <div class="mbody"><div class="top"><span class="nm">DEV NEWS</span><span class="hd">@devnews &middot; 1d</span></div><div class="last">GPT-6 sign-ups are paused again</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="chat-main">
+          <div class="thread-h">
+            <div class="avatar sm" id="threadAvatar" data-seed="atom-tan-studio"></div>
+            <div><div class="nm" id="threadName">ATOM TAN STUDIO</div><div class="hd" id="threadHandle">@atomtanstudio</div></div>
+          </div>
+          <div class="thread-b" id="threadBody">
+            <div class="bubble">Hey Player 1! The third video option now does proper lip sync.<time>12m ago</time></div>
+            <div class="bubble me">That is a boss-level unlock. Ship the open source build?<time>11m ago</time></div>
+            <div class="bubble">Yes. Writing the README tonight, then pushing to the repo.<time>10m ago</time></div>
+          </div>
+          <form class="thread-f" id="threadForm">
+            <input type="text" id="threadInput" placeholder="TYPE A MESSAGE..." aria-label="Message" autocomplete="off" />
+            <button class="send" type="submit" data-beep="coin">SEND</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== GROK ========== -->
+    <div class="view" id="view-grok">
+      <div class="grok">
+        <div class="grok-h"><span class="led"></span> GROK&nbsp;TERMINAL &mdash; v4.1&nbsp;FLASH &nbsp;<span style="margin-left:auto;color:var(--dim)">ONLINE</span></div>
+        <div class="grok-b" id="grokBody">
+          <div class="gline"><span class="p">grok&gt;</span><span class="c">Booting local model... online. Ask me anything, Player 1. Try a command below or just type.</span></div>
+          <div class="gline"><span class="p">grok&gt;</span><span class="c">Tip: type <span class="cmd">/goal</span> to start an autonomous run, or <span class="cmd">/score</span> for your stats.</span></div>
+        </div>
+        <div class="grok-chips">
+          <button class="chip" data-beep="blip" data-prompt="Write a launch post for my retro arcade build">WRITE A LAUNCH POST</button>
+          <button class="chip" data-beep="blip" data-prompt="Summarize today's AI news">SUMMARIZE THE NEWS</button>
+          <button class="chip" data-beep="blip" data-prompt="/goal fix the lip sync bug">/GOAL FIX THE BUG</button>
+          <button class="chip" data-beep="blip" data-prompt="/score">/SCORE</button>
+        </div>
+        <form class="grok-f" id="grokForm">
+          <span style="color:var(--green);align-self:center;font-size:20px">grok&gt;</span>
+          <input type="text" id="grokInput" placeholder="ENTER PROMPT..." aria-label="Grok prompt" autocomplete="off" />
+          <button class="send" type="submit" style="background:var(--green)" data-beep="coin">RUN</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ========== PREMIUM ========== -->
+    <div class="view" id="view-premium">
+      <div class="feed-head"><div class="vh-title" style="font-size:18px">UNLOCK MORE CREDITS<small>CHOOSE YOUR POWER-UP. CANCEL ANYTIME.</small></div></div>
+      <div class="tiers">
+        <div class="tier">
+          <div class="tname">FREE PLAY</div>
+          <div class="tprice">0<small>COINS / MONTH</small></div>
+          <ul>
+            <li>Post &amp; reply</li>
+            <li>3 lives per session</li>
+            <li>Standard timeline</li>
+            <li>Ads between stages</li>
+          </ul>
+          <button class="btn-coin cyan" data-beep="coin" style="align-self:flex-start">&#9654; CURRENT PLAN</button>
+        </div>
+        <div class="tier hot">
+          <div class="tname">PREMIUM+</div>
+          <div class="tprice">8,000<small>COINS / MONTH</small></div>
+          <ul>
+            <li>Verified blue check</li>
+            <li>Edit posts + longer text</li>
+            <li>Zero ads, all stages</li>
+            <li>Reply priority boost</li>
+            <li>Creator payouts (unlock at 500 followers)</li>
+          </ul>
+          <button class="btn-coin" data-beep="coin">&#9654; INSERT COIN</button>
+        </div>
+        <div class="tier">
+          <div class="tname">GOD MODE</div>
+          <div class="tprice">40,000<small>COINS / MONTH</small></div>
+          <ul>
+            <li>Everything in Premium+</li>
+            <li>Grok Heavy, unlimited runs</li>
+            <li>Top reply placement</li>
+            <li>Custom CRT cabinet skin</li>
+            <li>Priority support from Player 2</li>
+          </ul>
+          <button class="btn-coin cyan" data-beep="coin">&#9654; INSERT COIN</button>
+        </div>
+      </div>
+      <div class="feed-head" style="position:static;border-top:2px solid var(--line)"><div class="vh-title" style="font-size:14px;padding:12px 16px">WHY UPGRADE</div></div>
+      <div class="benefits">
+        <div class="benefit"><span class="bic"><svg viewBox="0 0 24 24"><path d="M12 2l2.4 6.9H21l-5.3 4 2 7-5.7-4.2L6.3 20l2-7-5.3-4h6.6z"/></svg></span><div><div class="bt">PRIORITY REPLIES</div><div class="bd">Your replies climb to the top of every thread.</div></div></div>
+        <div class="benefit"><span class="bic"><svg viewBox="0 0 24 24"><path d="M4 20V8M12 20V4M20 20v-9"/></svg></span><div><div class="bt">CREATOR PAYOUTS</div><div class="bd">Turn impressions into real coins.</div></div></div>
+        <div class="benefit"><span class="bic"><svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/></svg></span><div><div class="bt">ZERO ADS</div><div class="bd">No interruptions between stages.</div></div></div>
+        <div class="benefit"><span class="bic"><svg viewBox="0 0 24 24"><path d="M4 20l4-1 10-10a2 2 0 0 0-3-3L5 16z"/><path d="M14 6l4 4"/></svg></span><div><div class="bt">EDIT &amp; LONGER POSTS</div><div class="bd">Fix typos and post up to 25,000 characters.</div></div></div>
+      </div>
+    </div>
+
+    <!-- ========== HISTORY ========== -->
+    <div class="view" id="view-history">
+      <div class="feed-head" data-group="history">
+        <div class="vh-title" style="padding:14px 12px;font-size:16px">SAVED RUNS</div>
+        <a href="#" class="tab on" data-tab>BOOKMARKS</a>
+        <a href="#" class="tab" data-tab>LIKES</a>
+        <a href="#" class="tab" data-tab>HISTORY</a>
+      </div>
+      <article class="post">
+        <div class="avatar" data-seed="pixel-quest" data-size="46"></div>
+        <div class="body">
+          <div class="pmeta"><span class="name">PIXEL QUEST</span><span class="verif">&#10003;</span><span class="h">@pixelquest &middot; 9h</span><span class="badge">SAVED</span></div>
+          <p class="ptext">We finally beat the 100-hour build. New high score for the pipeline: <span class="link">99.7% uptime</span>. Patch notes in the thread.</p>
+          <div class="acts"><button class="act rt" data-beep="blip"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" fill="currentColor" stroke="none"/></svg>SAVED</button><button class="act spacer" data-beep="blip">DELETE</button></div>
+        </div>
+      </article>
+      <article class="post">
+        <div class="avatar" data-seed="victor-mustar" data-size="46"></div>
+        <div class="body">
+          <div class="pmeta"><span class="name">VICTOR M</span><span class="verif">&#10003;</span><span class="h">@victormustar &middot; 2h</span><span class="badge">SAVED</span></div>
+          <p class="ptext">DeepSeek-V41-Flash: the BEST Boeing benchmark result I&#39;ve seen from an open-source model.</p>
+          <div class="acts"><button class="act rt" data-beep="blip"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" fill="currentColor" stroke="none"/></svg>SAVED</button><button class="act spacer" data-beep="blip">DELETE</button></div>
+        </div>
+      </article>
+      <article class="post">
+        <div class="avatar" data-seed="atom-tan-studio" data-size="46"></div>
+        <div class="body">
+          <div class="pmeta"><span class="name">ATOM TAN STUDIO</span><span class="verif">&#10003;</span><span class="h">@atomtanstudio &middot; 6h</span><span class="badge">SAVED</span></div>
+          <p class="ptext">Here is an example of a lyric video from my new music video pipeline featuring the fantastic new music model YuE2.</p>
+          <div class="acts"><button class="act rt" data-beep="blip"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" fill="currentColor" stroke="none"/></svg>SAVED</button><button class="act spacer" data-beep="blip">DELETE</button></div>
+        </div>
+      </article>
+    </div>
+
+    <!-- ========== STUDIO ========== -->
+    <div class="view" id="view-studio">
+      <div class="feed-head"><div class="vh-title" style="font-size:18px">CREATOR STUDIO<small>PERFORMANCE DASHBOARD &middot; LAST 7 DAYS</small></div></div>
+      <div class="tiles">
+        <div class="tile"><div class="k">IMPRESSIONS</div><div class="v">128.4K</div><div class="d">&#9650; 24%</div></div>
+        <div class="tile"><div class="k">ENGAGEMENT</div><div class="v">4.2%</div><div class="d">&#9650; 0.8%</div></div>
+        <div class="tile"><div class="k">NEW FOLLOWERS</div><div class="v">1,204</div><div class="d">&#9650; 12%</div></div>
+        <div class="tile"><div class="k">COINS EARNED</div><div class="v">8,640</div><div class="d">&#9650; 31%</div></div>
+      </div>
+      <div class="panel">
+        <div class="ph2"><span>DAILY IMPRESSIONS</span><span style="color:var(--cyan)">+24%</span></div>
+        <div class="chart bars-week">
+          <div class="bar" style="height:38%"><b>9K</b><span>MON</span></div>
+          <div class="bar" style="height:52%"><b>12K</b><span>TUE</span></div>
+          <div class="bar" style="height:44%"><b>10K</b><span>WED</span></div>
+          <div class="bar" style="height:70%"><b>16K</b><span>THU</span></div>
+          <div class="bar" style="height:60%"><b>14K</b><span>FRI</span></div>
+          <div class="bar" style="height:86%"><b>20K</b><span>SAT</span></div>
+          <div class="bar" style="height:100%"><b>24K</b><span>SUN</span></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="ph2"><span>TOP POSTS</span><span style="color:var(--dim)">ALL TIME</span></div>
+        <div class="news" style="padding:12px 14px"><div class="hl">DeepSeek-V41-Flash benchmark thread</div><div class="meta">42.1K impressions &middot; 3.8K engagements</div></div>
+        <div class="news" style="padding:12px 14px"><div class="hl">Retro arcade X rebuild timelapse</div><div class="meta">31.6K impressions &middot; 2.1K engagements</div></div>
+        <div class="news" style="padding:12px 14px;border-bottom:0"><div class="hl">Open source lip sync pipeline</div><div class="meta">18.9K impressions &middot; 1.4K engagements</div></div>
+      </div>
+    </div>
+
+    <!-- ========== ARTICLES ========== -->
+    <div class="view" id="view-articles">
+      <div class="feed-head"><div class="vh-title" style="font-size:18px">ARTICLES<small>LONG-FORM POSTS FROM THE ARCADE</small></div></div>
+      <a href="#home" class="art">
+        <div class="cover c1"><i>&#9635;</i></div>
+        <div class="abody">
+          <div class="cat">ENGINEERING</div>
+          <div class="atitle">How We Trained a Pipeline That Runs for 100 Hours Straight</div>
+          <div class="adesc">Inside the inspect-diagnose-fix loop that pushed our flagship run past every previous high score.</div>
+          <div class="ameta">Victor M &middot; 9 min read &middot; 42K views</div>
+        </div>
+      </a>
+      <a href="#home" class="art">
+        <div class="cover c2"><i>&#9834;</i></div>
+        <div class="abody">
+          <div class="cat">CREATIVE</div>
+          <div class="atitle">Building a Lyric Video Pipeline on Top of YuE2</div>
+          <div class="adesc">From raw generated audio to frame-perfect lip sync, a full walkthrough of the production chain.</div>
+          <div class="ameta">Atom Tan Studio &middot; 12 min read &middot; 31K views</div>
+        </div>
+      </a>
+      <a href="#home" class="art">
+        <div class="cover c3"><i>&#9654;</i></div>
+        <div class="abody">
+          <div class="cat">DESIGN</div>
+          <div class="atitle">The CRT Design System: Making the Web Feel Like 1984</div>
+          <div class="adesc">Scanlines, phosphor glow, and pixel grids, a practical guide to retro interfaces that stay readable.</div>
+          <div class="ameta">Player 1 &middot; 7 min read &middot; 18K views</div>
+        </div>
+      </a>
+      <a href="#home" class="art">
+        <div class="cover c4"><i>&#9881;</i></div>
+        <div class="abody">
+          <div class="cat">OPEN SOURCE</div>
+          <div class="atitle">Open Sourcing the Arcade: Lessons From Shipping in Public</div>
+          <div class="adesc">What we learned giving away the entire stack behind a 60fps retro social client.</div>
+          <div class="ameta">Pixel Quest &middot; 6 min read &middot; 12K views</div>
+        </div>
+      </a>
+    </div>
+
+    <!-- ========== PROFILE ========== -->
+    <div class="view" id="view-profile">
+      <div class="feed-head" style="position:sticky;top:52px">
+        <div class="vh-title" style="padding:12px;font-size:16px">PLAYER 1 <span style="color:var(--cyan);font-size:10px">&#10003;</span><small style="display:inline;margin:0 0 0 12px">1,204 POSTS</small></div>
+      </div>
+      <div class="banner"><div class="grid"></div></div>
+      <div class="p-head">
+        <div class="p-top">
+          <div class="avatar lg" data-seed="player-one" data-size="96"></div>
+          <div class="p-actions">
+            <button class="btn-ghost" data-beep="blip">EDIT PROFILE</button>
+            <button class="btn-ghost" data-beep="blip">&#8942;</button>
+          </div>
+        </div>
+        <div class="p-name" style="margin-top:10px">PLAYER 1</div>
+        <div class="p-handle">@BuildFastWithAI</div>
+        <p class="p-bio">Building AI, shipping pixels. Currently speedrunning open-source models and retro interfaces. High score: 999,999.</p>
+        <div class="p-meta"><span>&#128205; Arcade Cabinet 01</span><span>&#128279; buildfastwithai.dev</span><span>&#128197; Joined 1984</span></div>
+        <div class="p-stats"><span><b>1,204</b> FOLLOWING</span><span><b>48.9K</b> FOLLOWERS</span><span><b>3</b> LIVES</span></div>
+      </div>
+      <div class="feed-head" data-group="profile" style="position:sticky;top:52px">
+        <a href="#" class="tab on" data-tab>POSTS</a>
+        <a href="#" class="tab" data-tab>REPLIES</a>
+        <a href="#" class="tab" data-tab>MEDIA</a>
+        <a href="#" class="tab" data-tab>LIKES</a>
+      </div>
+      <article class="post">
+        <div class="avatar" data-seed="player-one" data-size="46"></div>
+        <div class="body">
+          <div class="pmeta"><span class="name">PLAYER 1</span><span class="verif">&#10003;</span><span class="h">@BuildFastWithAI &middot; 3h</span></div>
+          <p class="ptext">Shipped a full retro-arcade rebuild of the timeline. Every section is a different stage now. Press 1-9 to warp. &#128377;&#65039;</p>
+          <div class="acts">
+            <button class="act" data-beep="blip"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/></svg></button>
+            <button class="act rt" data-beep="blip"><svg viewBox="0 0 24 24"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>64</button>
+            <button class="act like" data-beep="like" data-count="512" aria-label="Like"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.6-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 6c-2.5 4.4-9.5 9-9.5 9z"/></svg><span class="n">512</span></button>
+            <button class="act" data-beep="blip"><svg viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>18.2K</button>
+          </div>
+        </div>
+      </article>
+      <article class="post">
+        <div class="avatar" data-seed="player-one" data-size="46"></div>
+        <div class="body">
+          <div class="pmeta"><span class="name">PLAYER 1</span><span class="verif">&#10003;</span><span class="h">@BuildFastWithAI &middot; 1d</span></div>
+          <p class="ptext">Reminder: the best benchmark is the one you can reproduce at home. Open source wins again.</p>
+          <div class="acts">
+            <button class="act" data-beep="blip"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/></svg></button>
+            <button class="act rt" data-beep="blip"><svg viewBox="0 0 24 24"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>29</button>
+            <button class="act like" data-beep="like" data-count="203" aria-label="Like"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.6-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 6c-2.5 4.4-9.5 9-9.5 9z"/></svg><span class="n">203</span></button>
+            <button class="act" data-beep="blip"><svg viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>7.4K</button>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <!-- ========== MORE / SETTINGS ========== -->
+    <div class="view" id="view-more">
+      <div class="feed-head"><div class="vh-title" style="font-size:18px">MORE<small>CABINET SETTINGS &amp; CONTROLS</small></div></div>
+      <div class="setrow" data-setting="crt">
+        <div class="sl"><div class="n">CRT SCANLINES</div><div class="d">Phosphor scanline overlay and screen curvature glow.</div></div>
+        <button class="toggle on" aria-label="Toggle scanlines"></button>
+      </div>
+      <div class="setrow" data-setting="sound">
+        <div class="sl"><div class="n">SOUND FX</div><div class="d">Chiptune blips on interaction and coin inserts.</div></div>
+        <button class="toggle on" aria-label="Toggle sound"></button>
+      </div>
+      <div class="setrow" data-setting="anim">
+        <div class="sl"><div class="n">AMBIENT MOTION</div><div class="d">Marquee ticker, screen flicker and pulsing lights.</div></div>
+        <button class="toggle on" aria-label="Toggle motion"></button>
+      </div>
+      <div class="feed-head" style="position:static;border-top:2px solid var(--line)"><div class="vh-title" style="font-size:14px;padding:12px 16px">KEYBOARD CONTROLS</div></div>
+      <div class="keyrow"><span class="keycap">1-9</span><span>Warp to section</span><span class="kd">HOME ... ARTICLES</span></div>
+      <div class="keyrow"><span class="keycap">P</span><span>Compose a post</span><span class="kd">OPEN EDITOR</span></div>
+      <div class="keyrow"><span class="keycap">C</span><span>Insert coin</span><span class="kd">+1 CREDIT</span></div>
+      <div class="keyrow"><span class="keycap">G</span><span>Open Grok</span><span class="kd">TERMINAL</span></div>
+      <div class="keyrow"><span class="keycap">ESC</span><span>Close dialog</span><span class="kd">BACK TO GAME</span></div>
+      <div class="feed-head" style="position:static;border-top:2px solid var(--line)"><div class="vh-title" style="font-size:14px;padding:12px 16px">ACCOUNT</div></div>
+      <div style="padding:14px;display:flex;gap:12px;flex-wrap:wrap">
+        <button class="btn-ghost" data-beep="blip">LOG OUT</button>
+        <button class="btn-ghost" data-beep="blip">RESET HIGH SCORE</button>
+        <button class="btn-ghost" data-beep="blip">ABOUT X ARCADE</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT RAIL (discover) -->
+  <aside class="col side-right" aria-label="Discover">
+    <div class="searchbox">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" placeholder="SEARCH HIGH SCORES" aria-label="Search high scores" />
+    </div>
+
+    <section class="card promo">
+      <div class="card-h"><span>UPGRADE TO PREMIUM+</span><span class="x" data-beep="blip">&#10005;</span></div>
+      <div class="card-b">
+        <p>Enjoy additional benefits, zero ads and the largest reply prioritization. Extra lives included.</p>
+        <a href="#premium" class="btn-coin">&#9654; INSERT COIN</a>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-h"><span>TODAY&#39;S NEWS</span><span class="x" data-beep="blip">&#10005;</span></div>
+      <div class="card-b">
+        <article class="news">
+          <div class="tag">WORLD&nbsp;1-1</div>
+          <div class="hl">OpenAI Pauses New $200 ChatGPT Pro Sign-Ups Amid GPT-6 Astra Demand</div>
+          <div class="meta"><span class="avatars"><i class="avatar" data-seed="news-one"></i></span>1 day ago &middot; News &middot; 23.5K posts</div>
+        </article>
+        <article class="news">
+          <div class="tag">WORLD&nbsp;2-3</div>
+          <div class="hl">Developer Quits Vibe Coding After AI Update Obsoletes His App</div>
+          <div class="meta"><span class="avatars"><i class="avatar" data-seed="news-two"></i><i class="avatar" data-seed="news-three"></i><i class="avatar" data-seed="news-four"></i></span>Trending now &middot; 47 posts</div>
+        </article>
+        <article class="news">
+          <div class="tag">WORLD&nbsp;3-2</div>
+          <div class="hl">Claude&#39;s Fable 5.1 Buildathons Pick Bhopal as India&#39;s Only Host City</div>
+          <div class="meta"><span class="avatars"><i class="avatar" data-seed="news-five"></i><i class="avatar" data-seed="news-six"></i><i class="avatar" data-seed="news-seven"></i></span>9 hours ago &middot; 1,424 posts</div>
+        </article>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-h"><span>WHO TO FOLLOW</span></div>
+      <div class="card-b">
+        <div class="follow"><div class="avatar sm" data-seed="grok-bot"></div><div class="who">GROK<span>@grok</span></div><button class="btn-follow" data-beep="blip">FOLLOW</button></div>
+        <div class="follow"><div class="avatar sm" data-seed="atom-tan-studio"></div><div class="who">ATOM TAN STUDIO<span>@atomtanstudio</span></div><button class="btn-follow" data-beep="blip">FOLLOW</button></div>
+        <div class="follow"><div class="avatar sm" data-seed="dev-news"></div><div class="who">DEV NEWS<span>@devnews</span></div><button class="btn-follow" data-beep="blip">FOLLOW</button></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-h"><span>WHAT&#39;S HAPPENING</span></div>
+      <div class="card-b">
+        <a href="#explore" class="trend"><div class="top"><div><div class="cat">Business &amp; finance &middot; Trending</div><div class="topic">#HDFCbank</div></div><span class="dots">&#8942;</span></div></a>
+        <a href="#explore" class="trend"><div class="top"><div><div class="cat">Politics &middot; Trending</div><div class="topic">#IndiaRussia</div></div><span class="dots">&#8942;</span></div></a>
+        <a href="#explore" class="trend"><div class="top"><div><div class="cat">Trending in India</div><div class="topic">#MPYatriParivahan</div></div><span class="dots">&#8942;</span></div></a>
+      </div>
+    </section>
+  </aside>
+</div>
+
+<!-- ===== COMPOSE MODAL ===== -->
+<div class="modal" id="composeModal" role="dialog" aria-modal="true" aria-label="Compose post">
+  <div class="mbox">
+    <div class="mbox-h"><span>&#9654; NEW POST</span><button id="closeCompose" aria-label="Close" data-beep="blip">&#10005;</button></div>
+    <div class="mcompose">
+      <div class="avatar" data-seed="player-one" data-size="46"></div>
+      <textarea id="composeText" maxlength="280" placeholder="WHAT'S HAPPENING, PLAYER?"></textarea>
+    </div>
+    <div class="mbox-f">
+      <button class="tool" data-beep="blip">IMG</button>
+      <button class="tool" data-beep="blip">GIF</button>
+      <button class="tool" data-beep="blip">EMOJI</button>
+      <span class="pcount" id="pcount">0 / 280</span>
+      <button class="postbtn" id="publishPost" style="width:auto;margin:0;padding:12px 22px;font-size:10px" data-beep="coin">&#9654; POST</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TOASTS ===== -->
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<!-- ===== HUD ===== -->
+<footer class="hud" aria-label="Player status">
+  <div class="stat"><span class="k">PLAYER</span><span class="v">1</span></div>
+  <div class="stat green"><span class="k">SCORE</span><span class="v" id="score">001337</span></div>
+  <div class="stat amber"><span class="k">COINS</span><span class="v" id="coins">03</span></div>
+  <div class="stat mag"><span class="k">LIVES</span><span class="v">&#9829;&#9829;&#9829;</span></div>
+  <div class="stat"><span class="k">STAGE</span><span class="v" id="stage">HOME</span></div>
+  <div class="stat"><span class="k">TIME</span><span class="v" id="clock">--:--:--</span></div>
+  <span class="spacer"></span>
+  <span class="coinicon" aria-hidden="true"></span>
+  <button class="insert" id="insert" data-beep="coin">&#9654; INSERT COIN</button>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var reduceMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var state = { sound:true, crt:true, anim:!reduceMQ.matches };
+
+  /* ---------------- AUDIO ---------------- */
+  var actx = null;
+  function audio(){
+    if(!actx){ try{ actx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ actx = false; } }
+    return actx;
+  }
+  function tone(freq, dur, type, gain, when){
+    var a = audio(); if(!a) return;
+    var t0 = a.currentTime + (when||0);
+    var osc = a.createOscillator(), g = a.createGain();
+    osc.type = type||"square"; osc.frequency.setValueAtTime(freq, t0);
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(gain||0.06, t0+0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0+dur);
+    osc.connect(g); g.connect(a.destination);
+    osc.start(t0); osc.stop(t0+dur+0.02);
+  }
+  var SFX = {
+    blip: function(){ tone(660,0.06,"square",0.05); },
+    like: function(){ tone(880,0.07,"square",0.06); tone(1320,0.09,"square",0.05,0.06); },
+    coin: function(){ tone(988,0.07,"square",0.06); tone(1319,0.16,"square",0.06,0.07); },
+    start:function(){ tone(523,0.08,"square",0.06); tone(659,0.08,"square",0.06,0.09); tone(784,0.12,"square",0.06,0.18); tone(1047,0.2,"square",0.06,0.3); },
+    error:function(){ tone(160,0.18,"sawtooth",0.05); }
+  };
+  function play(kind){ if(state.sound && SFX[kind]){ try{ SFX[kind](); }catch(e){} } }
+
+  /* ---------------- PIXEL AVATARS ---------------- */
+  function hash(str){ var h=2166136261; for(var i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,16777619); } return h>>>0; }
+  function avatarSVG(seed, size){
+    var h = hash(seed);
+    var colors = ["#35f2ff","#ff3df0","#ffc94d","#39ff88","#7a8bff","#ff4d6d"];
+    var fg = colors[h % colors.length], bg = "#04060d", n = 5, px = size/n, cells = [];
+    for(var y=0;y<n;y++){
+      for(var x=0;x<Math.ceil(n/2);x++){
+        if((h >>> ((y*n+x) % 30)) & 1){
+          cells.push('<rect x="'+(x*px)+'" y="'+(y*px)+'" width="'+px+'" height="'+px+'"/>');
+          var mx = n-1-x;
+          if(mx!==x) cells.push('<rect x="'+(mx*px)+'" y="'+(y*px)+'" width="'+px+'" height="'+px+'"/>');
+        }
+      }
+    }
+    var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'" shape-rendering="crispEdges">'+
+      '<rect width="'+size+'" height="'+size+'" fill="'+bg+'"/><g fill="'+fg+'">'+cells.join("")+'</g></svg>';
+    return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+  }
+  function paintAvatars(root){
+    Array.prototype.forEach.call((root||document).querySelectorAll(".avatar[data-seed]"), function(el){
+      if(el.style.backgroundImage) return;
+      var size = parseInt(el.getAttribute("data-size")||"34", 10);
+      el.style.backgroundImage = 'url("'+avatarSVG(el.getAttribute("data-seed"), size)+'")';
+    });
+  }
+  paintAvatars(document);
+
+  /* ---------------- STARFIELD ---------------- */
+  function starfield(canvas){
+    var ctx = canvas.getContext("2d"), dpr = Math.min(window.devicePixelRatio||1,2);
+    var stars, w, h, t=0, raf;
+    function resize(){
+      w = canvas.clientWidth; h = canvas.clientHeight;
+      canvas.width = Math.max(1,w*dpr); canvas.height = Math.max(1,h*dpr);
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+      var n = parseInt(canvas.getAttribute("data-stars")||"80",10); stars = [];
+      for(var i=0;i<n;i++) stars.push({ x:Math.random(), y:Math.random(), z:Math.random()*0.9+0.1, c: Math.random()<0.82 ? "#cfe9ff" : (Math.random()<0.5?"#35f2ff":"#ffc94d") });
+    }
+    function draw(){
+      ctx.clearRect(0,0,w,h); ctx.fillStyle="#020409"; ctx.fillRect(0,0,w,h);
+      var cx=w*0.5, cy=h*0.52, g=ctx.createRadialGradient(cx,cy,0,cx,cy,Math.max(w,h)*0.55);
+      g.addColorStop(0,"rgba(40,90,180,0.28)"); g.addColorStop(1,"rgba(0,0,0,0)");
+      ctx.fillStyle=g; ctx.fillRect(0,0,w,h);
+      for(var i=0;i<stars.length;i++){
+        var s=stars[i]; s.x -= (0.0004+s.z*0.0011); if(s.x<0) s.x+=1;
+        var r=s.z*1.8; ctx.globalAlpha=0.35+s.z*0.65; ctx.fillStyle=s.c;
+        ctx.fillRect(s.x*w, s.y*h + Math.sin(t*0.0006+i)*3, r, r);
+      }
+      ctx.globalAlpha=1; t+=16; raf=requestAnimationFrame(draw);
+    }
+    resize(); draw();
+    window.addEventListener("resize", resize);
+    return { stop:function(){ cancelAnimationFrame(raf); } };
+  }
+  var starfields = [];
+  Array.prototype.forEach.call(document.querySelectorAll("canvas.starfield"), function(c){ starfields.push(starfield(c)); });
+  if(reduceMQ.matches){ starfields.forEach(function(s){ s.stop(); }); }
+
+  /* ---------------- GENERIC TABS ---------------- */
+  document.addEventListener("click", function(e){
+    var tab = e.target.closest(".tab");
+    if(tab){
+      e.preventDefault();
+      var bar = tab.closest("[data-group]");
+      if(bar){ Array.prototype.forEach.call(bar.querySelectorAll(".tab"), function(t){ t.classList.remove("on"); }); tab.classList.add("on"); }
+    }
+  });
+
+  /* ---------------- LIKE / REPOST / SAVE ---------------- */
+  function bindEngagement(root){
+    Array.prototype.forEach.call((root||document).querySelectorAll(".act.like"), function(btn){
+      if(btn.dataset.bound) return; btn.dataset.bound = "1";
+      btn.dataset.count = btn.getAttribute("data-count") || (btn.querySelector(".n") ? btn.querySelector(".n").textContent : "0");
+      btn.addEventListener("click", function(){
+        var count = parseInt(btn.dataset.count,10)||0;
+        var on = btn.classList.toggle("liked"); count += on ? 1 : -1;
+        btn.dataset.count = count;
+        var out = btn.querySelector(".n"); if(out) out.textContent = count;
+        if(on) addScore(5);
+      });
+    });
+    Array.prototype.forEach.call((root||document).querySelectorAll(".act.rt"), function(btn){
+      if(btn.dataset.bound) return; btn.dataset.bound = "1";
+      btn.addEventListener("click", function(){ btn.classList.toggle("rt"); toast(btn.classList.contains("rt") ? "REPOSTED +10 PTS" : "REPOST UNDONE"); if(btn.classList.contains("rt")) addScore(10); });
+    });
+  }
+  bindEngagement(document);
+
+  /* ---------------- SCORE / COINS ---------------- */
+  var scoreEl = document.getElementById("score"), coinsEl = document.getElementById("coins"), stageEl = document.getElementById("stage");
+  var score = 1337, coins = 3;
+  function pad(n,w){ n=String(Math.max(0,Math.floor(n))); while(n.length<w) n="0"+n; return n; }
+  function addScore(n){ score += n; scoreEl.textContent = pad(score,6); }
+  document.addEventListener("click", function(e){ if(e.target.closest("[data-beep]")) addScore(10); });
+  function coinPop(x,y,text){
+    var el=document.createElement("div"); el.className="coinpop"; el.textContent=text||"+1 CREDIT";
+    el.style.left=x+"px"; el.style.top=y+"px"; document.body.appendChild(el);
+    setTimeout(function(){ el.remove(); },900);
+  }
+  var insertBtn = document.getElementById("insert");
+  insertBtn.addEventListener("click", function(){
+    coins+=1; coinsEl.textContent=pad(coins,2); addScore(100);
+    var r=insertBtn.getBoundingClientRect(); coinPop(r.left, r.top-6, "+1 CREDIT");
+  });
+
+  /* ---------------- TOASTS ---------------- */
+  var toastWrap = document.getElementById("toasts");
+  function toast(msg, tone){
+    var el=document.createElement("div"); el.className="toast"+(tone?" "+tone:""); el.textContent=msg;
+    toastWrap.appendChild(el);
+    setTimeout(function(){ el.style.transition="opacity .3s"; el.style.opacity="0"; setTimeout(function(){ el.remove(); },320); }, 1900);
+  }
+
+  /* ---------------- CLOCK ---------------- */
+  var clock = document.getElementById("clock");
+  function tick(){ var d=new Date(); clock.textContent = pad(d.getHours(),2)+":"+pad(d.getMinutes(),2)+":"+pad(d.getSeconds(),2); }
+  tick(); setInterval(tick,1000);
+
+  /* ---------------- ROUTER ---------------- */
+  var VIEWS = {
+    home:{ rail:true,  stage:"HOME" },
+    explore:{ rail:true, stage:"EXPLORE" },
+    notifications:{ rail:false, stage:"ALERTS" },
+    chat:{ rail:false, stage:"CHAT" },
+    grok:{ rail:false, stage:"GROK" },
+    premium:{ rail:false, stage:"PREMIUM" },
+    history:{ rail:false, stage:"SAVED" },
+    studio:{ rail:false, stage:"STUDIO" },
+    articles:{ rail:true, stage:"ARTICLES" },
+    profile:{ rail:true, stage:"PLAYER 1" },
+    more:{ rail:false, stage:"SETTINGS" }
+  };
+  var app = document.getElementById("app");
+  function setView(name){
+    if(!VIEWS[name]) name = "home";
+    Array.prototype.forEach.call(document.querySelectorAll(".view"), function(v){ v.classList.toggle("on", v.id === "view-"+name); });
+    Array.prototype.forEach.call(document.querySelectorAll(".navitem"), function(n){ n.classList.toggle("active", n.getAttribute("data-view")===name); });
+    app.classList.toggle("rail-off", !VIEWS[name].rail);
+    stageEl.textContent = VIEWS[name].stage;
+    document.title = "X ARCADE — " + VIEWS[name].stage;
+    window.scrollTo(0,0);
+  }
+  function fromHash(){ return (location.hash||"#home").replace(/^#/,"") || "home"; }
+  window.addEventListener("hashchange", function(){ setView(fromHash()); });
+  setView(fromHash());
+
+  /* ---------------- COMPOSE MODAL ---------------- */
+  var modal = document.getElementById("composeModal");
+  var composeText = document.getElementById("composeText");
+  var pcount = document.getElementById("pcount");
+  var homePosts = document.getElementById("home-posts");
+  function openCompose(){ modal.classList.add("on"); setTimeout(function(){ composeText.focus(); },30); }
+  function closeCompose(){ modal.classList.remove("on"); }
+  document.getElementById("composeTrigger").addEventListener("click", openCompose);
+  Array.prototype.forEach.call(document.querySelectorAll("[data-compose]"), function(b){ b.addEventListener("click", openCompose); });
+  document.getElementById("openCompose").addEventListener("click", openCompose);
+  document.getElementById("closeCompose").addEventListener("click", closeCompose);
+  modal.addEventListener("click", function(e){ if(e.target===modal) closeCompose(); });
+  composeText.addEventListener("input", function(){ pcount.textContent = composeText.value.length + " / 280"; });
+
+  function esc(s){ return s.replace(/[&<>"]/g, function(c){ return ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c]; }); }
+  function buildPost(text){
+    var art = document.createElement("article");
+    art.className = "post";
+    art.innerHTML =
+      '<div class="avatar" data-seed="player-one" data-size="46"></div>'+
+      '<div class="body">'+
+        '<div class="pmeta"><span class="name">PLAYER 1</span><span class="verif">&#10003;</span><span class="h">@BuildFastWithAI &middot; now</span><span class="badge">NEW</span></div>'+
+        '<p class="ptext">'+esc(text)+'</p>'+
+        '<div class="acts">'+
+          '<button class="act" data-beep="blip"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/></svg></button>'+
+          '<button class="act rt" data-beep="blip"><svg viewBox="0 0 24 24"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>0</button>'+
+          '<button class="act like" data-beep="like" data-count="0"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.6-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 6c-2.5 4.4-9.5 9-9.5 9z"/></svg><span class="n">0</span></button>'+
+          '<button class="act" data-beep="blip"><svg viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>1</button>'+
+        '</div>'+
+      '</div>';
+    return art;
+  }
+  document.getElementById("publishPost").addEventListener("click", function(){
+    var text = composeText.value.trim();
+    if(!text){ toast("ERROR: EMPTY POST", "amber"); play("error"); return; }
+    var newPost = buildPost(text);
+    homePosts.insertBefore(newPost, homePosts.firstChild);
+    bindEngagement(newPost);
+    paintAvatars(newPost);
+    if(coins>0){ coins-=1; coinsEl.textContent=pad(coins,2); addScore(50); }
+    composeText.value=""; pcount.textContent="0 / 280"; closeCompose();
+    location.hash = "home"; setView("home");
+    toast("POST DEPLOYED +50 PTS");
+    addScore(50);
+  });
+
+  /* ---------------- CHAT ---------------- */
+  var THREADS = {
+    atom:[["Hey Player 1! The third video option now does proper lip sync.",false],["That is a boss-level unlock. Ship the open source build?",true],["Yes. Writing the README tonight, then pushing to the repo.",false]],
+    victor:[["Send the benchmark config please",false],["On it. Running /goal overnight.",true],["The best result I have seen from an open-source model. By far.",false]],
+    pixel:[["New high score: 99.7% uptime",false],["That is a full clear. GG.",true],["Patch notes coming in the thread.",false]],
+    grok:[["Your daily briefing is ready.",false],["Summarize the AI news.",true],["3 stories matched: GPT-6 demand, a vibe-coder quit, and Bhopal buildathon.",false]],
+    news:[["GPT-6 sign-ups are paused again",false],["Wild. Demand is unreal.",true],["More at 11, Player 1.",false]]
+  };
+  var threadBody = document.getElementById("threadBody");
+  function renderThread(key, name, handle){
+    var items = THREADS[key]||[];
+    threadBody.innerHTML = items.map(function(m){
+      return '<div class="bubble'+(m[1]?" me":"")+'">'+esc(m[0])+'<time>just now</time></div>';
+    }).join("");
+    threadBody.scrollTop = threadBody.scrollHeight;
+    document.getElementById("threadName").textContent = name;
+    document.getElementById("threadHandle").textContent = handle;
+    var av = document.getElementById("threadAvatar");
+    av.style.backgroundImage = ""; av.setAttribute("data-seed", key==="atom"?"atom-tan-studio":key==="victor"?"victor-mustar":key==="pixel"?"pixel-quest":key==="grok"?"grok-bot":"dev-news");
+    paintAvatars(av.parentElement);
+  }
+  Array.prototype.forEach.call(document.querySelectorAll(".mrow"), function(row){
+    row.addEventListener("click", function(){
+      Array.prototype.forEach.call(document.querySelectorAll(".mrow"), function(r){ r.classList.remove("on"); });
+      row.classList.add("on"); row.classList.remove("unread");
+      renderThread(row.dataset.thread, row.dataset.name, row.dataset.handle);
+    });
+  });
+  document.getElementById("threadForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    var input = document.getElementById("threadInput"), v = input.value.trim();
+    if(!v) return;
+    var b = document.createElement("div"); b.className="bubble me";
+    b.innerHTML = esc(v)+'<time>just now</time>';
+    threadBody.appendChild(b); threadBody.scrollTop = threadBody.scrollHeight;
+    input.value=""; addScore(10);
+  });
+
+  /* ---------------- GROK ---------------- */
+  var grokBody = document.getElementById("grokBody");
+  var GROK_REPLIES = [
+    "Processing... done. Here is a draft: \u201cWe shipped a retro-arcade rebuild of the timeline. Every section is a stage. Press 1-9 to warp.\u201d Want a shorter version?",
+    "Summary: 1) GPT-6 demand paused sign-ups. 2) A developer quit vibe coding after an AI update obsoleted his app. 3) Bhopal is the only Indian buildathon host city.",
+    "Run started. Iteration 1: inspect -> diagnose -> fix. Iteration 2: tests pass. Iteration 3: no regressions. Goal complete in 42 loops.",
+    "Stats: SCORE 001337, COINS 03, LIVES 3, STAGE TIMELINE. Keep playing, Player 1."
+  ];
+  var grokIdx = 0;
+  function grokAsk(text){
+    var u=document.createElement("div"); u.className="gline user"; u.innerHTML='<span class="p">p1&gt;</span><span class="c">'+esc(text)+'</span>';
+    grokBody.appendChild(u);
+    var g=document.createElement("div"); g.className="gline"; g.innerHTML='<span class="p">grok&gt;</span><span class="c">...</span>';
+    grokBody.appendChild(g); grokBody.scrollTop = grokBody.scrollHeight;
+    var reply = /score/i.test(text) ? GROK_REPLIES[2+1] : GROK_REPLIES[grokIdx++ % 3];
+    setTimeout(function(){ g.querySelector(".c").textContent = reply; grokBody.scrollTop = grokBody.scrollHeight; play("blip"); addScore(20); }, 420);
+  }
+  document.getElementById("grokForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    var input=document.getElementById("grokInput"), v=input.value.trim();
+    if(!v) return; grokAsk(v); input.value="";
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-prompt]"), function(chip){
+    chip.addEventListener("click", function(){ grokAsk(chip.getAttribute("data-prompt")); });
+  });
+
+  /* ---------------- NOTIFICATIONS ---------------- */
+  document.getElementById("markAll").addEventListener("click", function(){
+    Array.prototype.forEach.call(document.querySelectorAll(".nrow.unread"), function(r){ r.classList.remove("unread"); var d=r.querySelector(".dot"); if(d) d.remove(); });
+    toast("ALL ALERTS CLEARED", "amber"); addScore(30);
+  });
+  Array.prototype.forEach.call(document.querySelectorAll(".nrow"), function(r){
+    r.addEventListener("click", function(){ r.classList.remove("unread"); var d=r.querySelector(".dot"); if(d) d.remove(); });
+  });
+
+  /* ---------------- SETTINGS ---------------- */
+  Array.prototype.forEach.call(document.querySelectorAll(".setrow[data-setting]"), function(row){
+    var key = row.getAttribute("data-setting");
+    var tog = row.querySelector(".toggle");
+    tog.addEventListener("click", function(){
+      state[key] = !state[key];
+      tog.classList.toggle("on", state[key]);
+      if(key==="crt") document.body.classList.toggle("no-crt", !state.crt);
+      if(key==="anim") document.body.classList.toggle("no-anim", !state.anim);
+      toast((key.toUpperCase())+" "+(state[key]?"ON":"OFF"), state[key]?"":"amber");
+    });
+  });
+
+  /* ---------------- KEYBOARD SHORTCUTS ---------------- */
+  var NAV_KEYS = { "1":"home","2":"explore","3":"notifications","4":"chat","5":"grok","6":"premium","7":"history","8":"studio","9":"articles" };
+  document.addEventListener("keydown", function(e){
+    var tag = (e.target.tagName||"").toLowerCase();
+    if(tag==="input" || tag==="textarea") { if(e.key==="Escape") e.target.blur(); return; }
+    if(e.metaKey||e.ctrlKey||e.altKey) return;
+    if(e.key==="Escape"){ closeCompose(); return; }
+    if(e.key==="p"||e.key==="P"){ e.preventDefault(); openCompose(); return; }
+    if(e.key==="g"||e.key==="G"){ location.hash="grok"; return; }
+    if(e.key==="c"||e.key==="C"){ insertBtn.click(); return; }
+    if(NAV_KEYS[e.key]){ location.hash = NAV_KEYS[e.key]; }
+  });
+
+  /* ---------------- FOLLOW / MISC BUTTONS ---------------- */
+  Array.prototype.forEach.call(document.querySelectorAll(".btn-follow"), function(b){
+    b.addEventListener("click", function(e){
+      e.stopPropagation();
+      if(b.dataset.f){ b.textContent="FOLLOW"; delete b.dataset.f; }
+      else { b.textContent="FOLLOWING"; b.dataset.f="1"; addScore(15); }
+    });
+  });
+
+  /* ---------------- BOOT ---------------- */
+  var boot = document.getElementById("boot"), started=false;
+  function start(){
+    if(started) return; started=true;
+    boot.classList.add("hide"); document.body.classList.add("poweron");
+    play("start"); addScore(500);
+    setTimeout(function(){ boot.remove(); }, 600);
+  }
+  boot.addEventListener("click", start);
+  window.addEventListener("keydown", start);
+  setTimeout(function(){ var p=document.getElementById("press"); if(p) p.textContent="\u25B6 PRESS START \u00B7 CLICK TO BEGIN"; }, 2200);
+  if(reduceMQ.matches) start();
+})();
+</script>
+</body>
+</html>
