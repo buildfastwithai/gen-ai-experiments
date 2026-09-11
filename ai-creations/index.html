@@ -634,6 +634,26 @@ body.filtering #hero,body.filtering #featuredSec{display:none}
     <g opacity=".2" stroke="#fff" stroke-width=".6"><path d="M0 8h200M0 14h200M0 141h200M0 147h200"/></g>
   </symbol>
 
+  <symbol id="art-heist" viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice">
+    <rect width="200" height="150" fill="#070b12"/>
+    <rect width="200" height="92" fill="var(--m1)" opacity=".12"/>
+    <path d="M0 104h200v46H0z" fill="#0c1119"/>
+    <path d="M0 104h200" stroke="var(--m1)" stroke-width="2" opacity=".75"/>
+    <g fill="#18232d" stroke="#2a3946" stroke-width="1">
+      <rect x="10" y="30" width="36" height="74"/><rect x="52" y="22" width="30" height="82"/>
+      <rect x="118" y="24" width="31" height="80"/><rect x="154" y="36" width="36" height="68"/>
+    </g>
+    <g fill="var(--m1)" opacity=".7"><rect x="17" y="42" width="5" height="6"/><rect x="30" y="42" width="5" height="6"/><rect x="59" y="34" width="5" height="6"/><rect x="69" y="52" width="5" height="6"/><rect x="125" y="38" width="5" height="6"/><rect x="139" y="38" width="5" height="6"/><rect x="163" y="50" width="5" height="6"/><rect x="177" y="66" width="5" height="6"/></g>
+    <circle cx="100" cy="54" r="39" fill="#0b1018" stroke="var(--m2)" stroke-width="3"/>
+    <circle cx="100" cy="54" r="28" fill="none" stroke="var(--m1)" stroke-width="2" opacity=".85"/>
+    <circle cx="100" cy="54" r="6" fill="var(--m2)"/>
+    <g stroke="var(--m2)" stroke-width="3" stroke-linecap="round"><path d="M100 26v12M100 70v12M72 54h12M116 54h12"/><path d="m80 34 8 8M112 66l8 8M120 34l-8 8M88 66l-8 8"/></g>
+    <path d="M82 150v-27l8-9h20l8 9v27z" fill="#05070b" stroke="var(--m1)" stroke-width="1.5"/>
+    <circle cx="100" cy="116" r="7" fill="#05070b" stroke="var(--m2)" stroke-width="2"/>
+    <path d="M0 12h200M0 18h200M0 138h200M0 144h200" stroke="#fff" stroke-width=".6" opacity=".16"/>
+    <text x="12" y="18" fill="var(--m1)" font-family="monospace" font-size="7" letter-spacing="1">COLD VAULT // 01</text>
+  </symbol>
+
   <symbol id="art-phosphor" viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice">
     <rect width="200" height="150" fill="#030a06"/>
     <ellipse cx="100" cy="75" rx="120" ry="86" fill="var(--m1)" opacity=".10"/>
@@ -819,65 +839,69 @@ const SHORT = {
 };
 
 const GAMES = [
+  { id:'cold-vault', title:'OPERATION COLD VAULT', model:'deepseek-v4.1', type:'game', art:'heist', tech:'Three.js', kb:138, loc:2832,
+    href:'deepseek%20v4.1%20flash/bank-heist.html', tags:['3d','arcade'], featured:1,
+    desc:'A tactical first-person heist through a procedural bank: scout the vault, manage suspicion, crack the door and make the getaway before the alarm locks down the block.',
+    kw:'operation cold vault bank heist tactical fps stealth vault getaway alarm three js 3d deepseek v4.1 flash' },
   { id:'x-arcade', title:'X ARCADE: Insert Coin to Post', model:'deepseek-v4.1', type:'page', art:'xarcade', tech:'HTML / CSS / JS', kb:96, loc:1482,
-    href:'deepseek%20v4.1%20flash/x-arcade.html', tags:['arcade'], featured:1,
+    href:'deepseek%20v4.1%20flash/x-arcade.html', tags:['arcade'], featured:2,
     desc:'A full retro-arcade reinvention of X: post to the timeline, explore trends, open DMs, query Grok, compare Premium tiers and rack up score while you browse.',
     kw:'x arcade twitter social network retro pixel crt timeline posts trends messages grok premium deepseek v4.1 flash interactive web toy' },
   { id:'blr-after-hours', title:'BLR / After Hours', model:'gpt-6-astra', type:'game', art:'harbor', tech:'Three.js', kb:2243, loc:447,
-    href:'gpt%206%20astra/gta.html', tags:['3d','sandbox'], featured:2,
+    href:'gpt%206%20astra/gta.html', tags:['3d','sandbox'], featured:3,
     desc:'A procedural Bengaluru open world built in Three.js: explore on foot, get in and out of vehicles, and navigate a rain-soaked city after dark.',
     kw:'blr after hours bengaluru bangalore open world gta inspired vehicles rain three js 3d city street india gpt 6 astra' },
   { id:'phosphor-siege', title:'Phosphor Siege', model:'fable-5.1', type:'game', art:'phosphor', tech:'Canvas', kb:30, loc:921,
-    href:'fable%205.1/space-invaders.html', tags:['arcade'], featured:15,
+    href:'fable%205.1/space-invaders.html', tags:['arcade'], featured:16,
     desc:'Fable 5.1 rebuilds the invader standoff as a green-phosphor CRT: ranks stepping down toward you, crumbling shields, and nowhere left to hide by the late waves.',
     kw:'phosphor siege space invaders arcade retro classic crt green monochrome aliens shields bunkers waves cannon fable 5.1' },
   { id:'ox-invaders', title:'Neon Invaders', model:'ox-alpha', type:'game', art:'neon', tech:'Canvas', kb:36, loc:1051,
-    href:'ox-alpha/games/space-invaders.html', tags:['arcade'], featured:3,
+    href:'ox-alpha/games/space-invaders.html', tags:['arcade'], featured:4,
     desc:'OX Alpha takes on the arcade original: glowing alien ranks that press down a row at a time, a single cannon, and waves that stop forgiving you early.',
     kw:'neon invaders space invaders arcade retro classic aliens laser cannon waves shooter ox alpha canvas' },
   { id:'scribble-census', title:'Scribble Census', model:'opus-5', type:'page', art:'scribble', tech:'SVG / JS', kb:52, loc:1335,
-    href:'opus-5/games/scribble-census.html', tags:[], featured:4,
+    href:'opus-5/games/scribble-census.html', tags:[], featured:5,
     desc:'A procedurally drawn register of hand-inked faces. They blink, they follow your cursor, and any two of them can be bred together to produce a new one.',
     kw:'scribble census procedural generative faces portraits hand drawn ink svg blink breeding genetics toy generator opus' },
   { id:'slime-siege', title:'Slime Siege', model:'qwen-3.8-max', credit:'Qwen 3.8 27B', creditShort:'QWEN 3.8 27B',
     type:'game', art:'slime', tech:'Canvas', kb:643, loc:1659,
-    href:'qwen-3.8-max/games/slime-siege.html', tags:['arcade'], featured:5,
+    href:'qwen-3.8-max/games/slime-siege.html', tags:['arcade'], featured:6,
     desc:'A ForgeKit arena survivor — hold the keep as waves of slimes pour in, and stack upgrades between rounds to stay alive one wave longer.',
     kw:'slime siege forgekit arena survivor waves horde defence upgrades roguelite canvas qwen 27b' },
   { id:'arachnid', title:'ARACHNID: Vertical City', model:'grok-4.6', type:'game', art:'spider', tech:'Three.js', kb:488, loc:10210,
-    href:'grok%204.6/games/spider-city/index.html', tags:['3d','sandbox'], featured:6,
+    href:'grok%204.6/games/spider-city/index.html', tags:['3d','sandbox'], featured:7,
     desc:'An open-world traversal prototype: ~1,300 procedural buildings across eight districts, a physics-driven web-swing, wall running, melee combos, traffic, crowds and dynamic weather. Every texture, mesh and sound is generated in code at boot.',
     kw:'arachnid vertical city spider web swing open world superhero traversal three js 3d procedural city skyscrapers parkour wall run combat missions grok' },
   { id:'neon-invaders', title:'Neon Invaders', model:'grok-4.6', type:'game', art:'space', tech:'Canvas', kb:28, loc:970,
-    href:'grok%204.6/games/space-invaders.html', tags:['arcade'], featured:7,
+    href:'grok%204.6/games/space-invaders.html', tags:['arcade'], featured:8,
     desc:'Grok\'s neon-drenched take on the arcade original — glowing alien ranks, tight laser fire and a difficulty curve that keeps climbing.',
     kw:'neon space invaders arcade retro classic aliens laser shooting shooter grok xai glow' },
   { id:'signal47', title:'Signal 47', model:'opus-5', type:'game', art:'doll', tech:'Three.js', kb:105, loc:2567,
-    href:'opus-5/games/rl-gl.html', tags:['3d','arcade'], featured:8,
+    href:'opus-5/games/rl-gl.html', tags:['3d','arcade'], featured:9,
     desc:'Red light, green light. A giant robotic doll turns its head — and its optics read movement, not intent. Momentum will get you shot.',
     kw:'red light green light doll sentinel squid survival stop freeze running elimination three js 3d race finish line' },
   { id:'hex-opus', title:'Hex-A-Gone', model:'opus-5', type:'game', art:'hex', tech:'Three.js', kb:1341, loc:56679,
-    href:'opus-5/games/hex-a-gone.html', tags:['hex','3d'], featured:9,
+    href:'opus-5/games/hex-a-gone.html', tags:['hex','3d'], featured:10,
     desc:'Hexagon tiles vanish the second you touch them. Outlast the collapsing floor and be the last one standing.',
     kw:'hexagon fall guys tiles survival battle royale platform 3d' },
   { id:'yaadon', title:'Yaadon Ki Cassette', model:'opus-5', type:'page', art:'cassette', tech:'Video / JS', kb:55, loc:1903,
-    href:'opus-5/landing-pages/yaadon-ki-cassette/index.html', tags:[], featured:10,
+    href:'opus-5/landing-pages/yaadon-ki-cassette/index.html', tags:[], featured:11,
     desc:'A cinematic 90s Bollywood cassette player — spinning deck, song requests and a full retro playlist.',
     kw:'yaadon ki cassette bollywood 90s hindi radio music player retro nostalgia tape deck' },
   { id:'pulse', title:'Pulse Drift', model:'opus-5', type:'game', art:'pulse', tech:'Canvas', kb:65, loc:1934,
-    href:'opus-5/games/pulse-drift.html', tags:['arcade'], featured:11,
+    href:'opus-5/games/pulse-drift.html', tags:['arcade'], featured:12,
     desc:'A synthwave rhythm racer about sharp turns, clean drifts and perfectly timed boosts.',
     kw:'rhythm racer synthwave neon driving music drift boost' },
   { id:'summit', title:'Summit Runner', model:'opus-5', type:'game', art:'summit', tech:'Canvas', kb:100, loc:2060,
-    href:'opus-5/games/SummitRunner.html', tags:['arcade'], featured:12,
+    href:'opus-5/games/SummitRunner.html', tags:['arcade'], featured:13,
     desc:'Climb procedural peaks, ration your stamina and push through shifting weather.',
     kw:'mountain climbing platformer stamina weather procedural runner' },
   { id:'lumi', title:'LUMI: Spirit of the Aurora', model:'fable-5', type:'game', art:'runner', tech:'Canvas', kb:39, loc:852,
-    href:'fable-5/games/lumi_aurora_runner.html', tags:['arcade'], featured:13,
+    href:'fable-5/games/lumi_aurora_runner.html', tags:['arcade'], featured:14,
     desc:'Run through a glowing aurora landscape, gather energy and dodge drifting void crystals.',
     kw:'endless runner aurora spirit lights collect energy crystals atmospheric' },
   { id:'hexdrop', title:'Hex Drop Arena', model:'gpt-5.6', type:'game', art:'hex', tech:'Three.js', kb:738, loc:4706,
-    href:'gpt%205.6/games/Hex-Drop-Arena.html', tags:['hex','3d'], featured:14,
+    href:'gpt%205.6/games/Hex-Drop-Arena.html', tags:['hex','3d'], featured:15,
     desc:'A frantic drop-tile arena — keep moving as the hexagon floor falls away beneath you.',
     kw:'hexagon drop tiles arena battle royale fall openai 3d' },
   { id:'voxel-opus', title:'Voxel World', model:'opus-5', type:'game', art:'voxel', tech:'Three.js', kb:23, loc:669,
