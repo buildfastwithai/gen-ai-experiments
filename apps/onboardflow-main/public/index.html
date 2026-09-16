@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OnboardFlow | New-hire readiness board</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="sidebar"><div class="brand"><span>◒</span><b>onboardflow</b><small>READINESS</small></div><div class="org"><span>ENG</span><div><small>Workspace</small><b>Engineering</b></div></div><nav><a class="active" href="#overview"><span>◈</span>Overview</a><a href="#board"><span>◎</span>Onboarding board</a><a href="#assignees"><span>↗</span>Assignees</a></nav><div class="side-bottom"><div class="user"><span>AS</span><div><b>Onboarding lead</b><small>People ops</small></div></div></div></aside>
+      <main class="main" id="overview"><header><div class="crumbs">Workspace <i>/</i> <b>New-hire readiness</b></div><div class="header-right"><span class="status" id="status"><i></i> Merge connected</span><button id="theme-toggle">◐ Theme</button></div></header><div class="content">
+        <section class="hero"><div><p class="eyebrow"><span></span>First 14 days, every tool</p><h1>New hires start<br /><em>ready on day one.</em></h1><p class="hero-copy">OnboardFlow pulls every orientation ticket from Jira, Linear, GitHub and more into one readiness board through Merge's unified Ticketing API.</p></div><button class="scan-button" id="scan-button"><span>✦</span><div><b>Sync onboarding board</b><small id="scan-subtitle">Pull orientation tickets</small></div><strong>↗</strong></button></section>
+        <section class="stats"><div class="stat"><small>Onboarding tickets</small><strong id="total-tickets">--</strong><span>across trackers</span></div><div class="stat"><small>Progress</small><strong class="green" id="progress">--</strong><span>completed</span></div><div class="stat"><small>Open</small><strong class="blue" id="open-tickets">--</strong><span>in progress</span></div><div class="stat dark"><small>Overdue</small><strong id="overdue-count">--</strong><span>beyond window</span></div></section>
+        <section class="grid"><article class="card board-card" id="board"><div class="card-title"><div><p class="kicker"><span></span>Readiness board</p><h2>Orientation tickets</h2></div><div class="board-actions"><button class="resync-button" id="resync-button" title="Force Merge to re-sync">Sync now</button><span class="updated" id="updated">No sync yet</span></div></div><div class="board-list" id="board-list"><div class="empty">Sync to load orientation tickets.</div></div></article><article class="card assignees-card" id="assignees"><div class="card-title"><div><p class="kicker"><span></span>Readiness</p><h2>New-hire health</h2></div></div><div class="readiness-list" id="readiness-list"><div class="empty">No data.</div></div></article></section>
+        <section class="lower-grid"><article class="card triage-card" id="triage"><div class="card-title"><div><p class="kicker"><span></span>Needs attention</p><h2>Unassigned & due-soon</h2></div></div><div class="triage-list" id="triage-list"><div class="empty">Nothing waiting on a person.</div></div></article></section>
+        <footer><span>OnboardFlow beta</span><i></i><span>Merge Ticketing Unified API</span><span class="footer-status">Ready <b></b></span></footer>
+      </div></main>
+    </div>
+    <div class="ticket-modal-backdrop" id="ticket-modal" aria-hidden="true">
+      <section class="ticket-modal"><button class="modal-close" id="close-ticket">×</button><p class="kicker"><span>◎</span> Ticket detail</p><div class="ticket-header"><div><h2 id="modal-name">Ticket</h2><p id="modal-meta">--</p></div><span class="priority-pill" id="modal-priority">--</span></div><p id="modal-description" class="ticket-description"></p><div class="ticket-tags" id="modal-tags"></div><div class="status-control"><label>Mark status</label><div class="status-buttons" id="status-buttons"></div></div></section>
+    </div>
+    <script src="/app.js"></script>
+  </body>
+</html>
