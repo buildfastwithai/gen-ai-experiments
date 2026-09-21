@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Jev Post Scorer for X",
+  "version": "1.3.0",
+  "description": "Scores your X draft in real time with Jev, against the mechanics in xAI's open-source For You ranking code.",
+  "permissions": ["storage"],
+  "host_permissions": ["https://api.typesafe.ai/*"],
+  "background": { "service_worker": "background.js" },
+  "options_ui": { "page": "options.html", "open_in_tab": true },
+  "action": { "default_title": "Jev Post Scorer — click for settings" },
+  "icons": { "16": "icons/icon16.png", "48": "icons/icon48.png", "128": "icons/icon128.png" },
+  "content_scripts": [
+    {
+      "matches": ["https://x.com/*", "https://twitter.com/*"],
+      "js": ["content.js"],
+      "css": ["overlay.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}

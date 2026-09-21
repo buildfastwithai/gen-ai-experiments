@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Jev Post Scorer - Settings</title>
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    max-width: 560px; margin: 48px auto; padding: 0 24px; line-height: 1.5;
+    color: #0f1419; background: #fff;
+  }
+  @media (prefers-color-scheme: dark) { body { color: #e7e9ea; background: #16181c; } }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .sub { opacity: .6; font-size: 13px; margin-bottom: 28px; }
+  label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 6px; }
+  input[type=password], input[type=text] {
+    width: 100%; box-sizing: border-box; padding: 10px 12px; font-size: 14px;
+    border-radius: 9px; border: 1px solid #cfd9de; background: transparent; color: inherit;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) { input { border-color: #2f3336; } }
+  .row { display: flex; gap: 8px; align-items: center; margin-top: 12px; }
+  button {
+    padding: 9px 18px; font-size: 14px; font-weight: 600; border: 0;
+    border-radius: 999px; background: #0f1419; color: #fff; cursor: pointer;
+  }
+  @media (prefers-color-scheme: dark) { button { background: #e7e9ea; color: #0f1419; } }
+  button.secondary { background: transparent; color: inherit; border: 1px solid #cfd9de; }
+  #status { font-size: 13px; margin-left: 4px; }
+  .ok { color: #00ba7c; } .bad { color: #f4212e; }
+  .note { font-size: 12px; opacity: .6; margin-top: 26px; padding-top: 18px; border-top: 1px solid #cfd9de40; }
+  code { font-size: 11.5px; background: #8882; padding: 1px 4px; border-radius: 3px; }
+  .stat { font-size: 13px; opacity: .75; margin-top: 22px; }
+</style>
+</head>
+<body>
+  <h1>Jev Post Scorer</h1>
+  <div class="sub">Scores your X drafts against the mechanics in xAI's open-source ranking code.</div>
+
+  <label for="key">TypeSafe API key</label>
+  <input id="key" type="password" placeholder="apikey_..." autocomplete="off" spellcheck="false">
+  <div class="row">
+    <button id="save">Save</button>
+    <button id="test" class="secondary">Test key</button>
+    <button id="reveal" class="secondary">Show</button>
+    <span id="status"></span>
+  </div>
+
+  <div class="stat" id="stat"></div>
+
+  <div class="note">
+    The key is stored in <code>chrome.storage.local</code> on this machine only &mdash; it is not synced
+    to your Google account and never touches the x.com page. Your draft text is sent from the extension's
+    service worker to <code>api.typesafe.ai</code> to be scored, and nowhere else.
+    <br><br>
+    Scoring fires about <strong>750&thinsp;ms after you stop typing</strong>, only once the draft passes
+    20 characters, and identical text is served from cache rather than re-billed.
+    <br><br>
+    <button id="reset" class="secondary">Reset session cost counter</button>
+  </div>
+
+<script src="options.js"></script>
+</body>
+</html>
